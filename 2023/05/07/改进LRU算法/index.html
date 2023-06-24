@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="这是一篇关于MySQL和Linux操作系统是如何改进LRU算法的Blog。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL和Linux改进LRU算法">
+<meta property="og:url" content="http://example.com/2023/05/07/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/index.html">
+<meta property="og:site_name" content="John&#39;s Blog">
+<meta property="og:description" content="这是一篇关于MySQL和Linux操作系统是如何改进LRU算法的Blog。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-77ae6c39af682ef8c94ab6a40c951e9d_720w.webp">
+<meta property="og:image" content="http://example.com/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-ded4bc03d5e111c7dba4b27cbf63f54e_720w.webp">
+<meta property="og:image" content="http://example.com/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-c3f6d9d58c9ac8ea1498b9723c93fff6_720w.webp">
+<meta property="og:image" content="http://example.com/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-16c98d67dd7243176749c53c7d66f002_720w.webp">
+<meta property="og:image" content="http://example.com/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-28757626afd30788207112ce15a92ac9_720w.webp">
+<meta property="og:image" content="http://example.com/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-e1c99769f6b234af6e6e9c7c89051de6_720w.webp">
+<meta property="og:image" content="http://example.com/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-4c604b9639f35824aab2692e08691a1e_720w.webp">
+<meta property="og:image" content="http://example.com/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-7ba7ee9eb267c9d62e95c3e858419e32_720w.webp">
+<meta property="og:image" content="http://example.com/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-b381ae4b18804701b12cad3b770167b2_720w.webp">
+<meta property="og:image" content="http://example.com/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-73eeea4b1a6b0e6f0553b3ef07e36e4a_720w.webp">
+<meta property="article:published_time" content="2023-05-06T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-05-06T16:00:00.000Z">
+<meta property="article:author" content="John-1010-cmd">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-77ae6c39af682ef8c94ab6a40c951e9d_720w.webp">
+
+<link rel="canonical" href="http://example.com/2023/05/07/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MySQL和Linux改进LRU算法 | John's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">John's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/07/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John-1010-cmd">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="John's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL和Linux改进LRU算法
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-05-07 00:00:00" itemprop="dateCreated datePublished" datetime="2023-05-07T00:00:00+08:00">2023-05-07</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.2k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+            <div class="post-description">这是一篇关于MySQL和Linux操作系统是如何改进LRU算法的Blog。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>传统的 LRU 算法存在这两个问题：</p>
+<ul>
+<li><strong>「预读失效」导致缓存命中率下降（对应第一个问题）</strong></li>
+<li><strong>「缓存污染」导致缓存命中率下降（对应第二个问题）</strong></li>
+</ul>
+<p>Redis 的缓存淘汰算法则是通过<strong>实现 LFU 算法</strong>来避免「缓存污染」而导致缓存命中率下降的问题（Redis 没有预读机制）。</p>
+<p>MySQL 和 Linux 操作系统是通过<strong>改进 LRU 算法</strong>来避免「预读失效和缓存污染」而导致缓存命中率下降的问题。</p>
+<p>传统的 LRU 算法的实现思路是这样的：</p>
+<ul>
+<li>当访问的页在内存里，就直接把该页对应的 LRU 链表节点移动到链表的头部。</li>
+<li>当访问的页不在内存里，除了要把该页放入到 LRU 链表的头部，还要淘汰 LRU 链表末尾的页。</li>
+</ul>
+<p>假设 LRU 链表长度为 5，LRU 链表从左到右有编号为 1，2，3，4，5 的页。</p>
+<p><img src="/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-77ae6c39af682ef8c94ab6a40c951e9d_720w.webp" alt="img"></p>
+<p>如果访问了 3 号页，因为 3 号页已经在内存了，所以把 3 号页移动到链表头部即可，表示最近被访问了。</p>
+<p><img src="/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-ded4bc03d5e111c7dba4b27cbf63f54e_720w.webp" alt="img"></p>
+<p>而如果接下来，访问了 8 号页，因为 8 号页不在内存里，且 LRU 链表长度为 5，所以必须要淘汰数据，以腾出内存空间来缓存 8 号页，于是就会淘汰末尾的 5 号页，然后再将 8 号页加入到头部。</p>
+<p><img src="/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-c3f6d9d58c9ac8ea1498b9723c93fff6_720w.webp" alt="img"></p>
+<p>传统的 LRU 算法并没有被 Linux 和 MySQL 使用，因为传统的 LRU 算法无法避免下面这两个问题：</p>
+<ul>
+<li>预读失效导致缓存命中率下降；</li>
+<li>缓存污染导致缓存命中率下降；</li>
+</ul>
+<h2 id="预读失效"><a href="#预读失效" class="headerlink" title="预读失效"></a>预读失效</h2><p>如果<strong>这些被提前加载进来的页，并没有被访问</strong>，相当于这个预读工作是白做了，这个就是<strong>预读失效</strong>。</p>
+<h3 id="Linux避免预读失效"><a href="#Linux避免预读失效" class="headerlink" title="Linux避免预读失效"></a>Linux避免预读失效</h3><p>Linux 操作系统实现两个了 LRU 链表：<strong>活跃 LRU 链表（active_list）和非活跃 LRU 链表（inactive_list）</strong>。</p>
+<ul>
+<li><strong>active list</strong> 活跃内存页链表，这里存放的是最近被访问过（活跃）的内存页；</li>
+<li><strong>inactive list</strong> 不活跃内存页链表，这里存放的是很少被访问（非活跃）的内存页；</li>
+</ul>
+<p><strong>预读页就只需要加入到 inactive list 区域的头部，当页被真正访问的时候，才将页插入 active list 的头部</strong>。如果预读的页一直没有被访问，就会从 inactive list 移除，这样就不会影响 active list 中的热点数据。</p>
+<p>假设 active list 和 inactive list 的长度为 5，目前内存中已经有如下 10 个页：</p>
+<p><img src="/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-16c98d67dd7243176749c53c7d66f002_720w.webp" alt="img"></p>
+<p>现在有个编号为 20 的页被预读了，这个页只会被插入到 inactive list 的头部，而 inactive list 末尾的页（10号）会被淘汰掉。</p>
+<p><img src="/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-28757626afd30788207112ce15a92ac9_720w.webp" alt="img"></p>
+<p><strong>即使编号为 20 的预读页一直不会被访问，它也没有占用到 active list 的位置</strong>，而且还会比 active list 中的页更早被淘汰出去。</p>
+<p>如果 20 号页被预读后，立刻被访问了，那么就会将它插入到 active list 的头部， active list 末尾的页（5号），会被<strong>降级</strong>到 inactive list ，作为 inactive list 的头部，这个过程并不会有数据被淘汰。</p>
+<p><img src="/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-e1c99769f6b234af6e6e9c7c89051de6_720w.webp" alt="img"></p>
+<h3 id="MySQL避免预读失效"><a href="#MySQL避免预读失效" class="headerlink" title="MySQL避免预读失效"></a>MySQL避免预读失效</h3><p>MySQL 的 Innodb 存储引擎是在一个 LRU 链表上划分来 2 个区域，<strong>young 区域 和 old 区域</strong>。</p>
+<p>young 区域在 LRU 链表的前半部分，old 区域则是在后半部分，这两个区域都有各自的头和尾节点，如下图：</p>
+<p><img src="/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-4c604b9639f35824aab2692e08691a1e_720w.webp" alt="img"></p>
+<p><strong>划分这两个区域后，预读的页就只需要加入到 old 区域的头部，当页被真正访问的时候，才将页插入 young 区域的头部</strong>。如果预读的页一直没有被访问，就会从 old 区域移除，这样就不会影响 young 区域中的热点数据。</p>
+<p><img src="/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-7ba7ee9eb267c9d62e95c3e858419e32_720w.webp" alt="img"></p>
+<p>现在有个编号为 20 的页被预读了，这个页只会被插入到 old 区域头部，而 old 区域末尾的页（10号）会被淘汰掉。</p>
+<p><img src="/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-b381ae4b18804701b12cad3b770167b2_720w.webp" alt="img"></p>
+<p>如果 20 号页一直不会被访问，它也没有占用到 young 区域的位置，而且还会比 young 区域的数据更早被淘汰出去。</p>
+<p>如果 20 号页被预读后，立刻被访问了，那么就会将它插入到 young 区域的头部，young 区域末尾的页（7号），会被挤到 old 区域，作为 old 区域的头部，这个过程并不会有页被淘汰。</p>
+<p><img src="/%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95/v2-73eeea4b1a6b0e6f0553b3ef07e36e4a_720w.webp" alt="img"></p>
+<h2 id="缓存污染"><a href="#缓存污染" class="headerlink" title="缓存污染"></a>缓存污染</h2><p>虽然 Linux （实现两个 LRU 链表）和 MySQL （划分两个区域）通过改进传统的 LRU 数据结构，避免了预读失效带来的影响。但是如果还是使用「只要数据被访问一次，就将数据加入到活跃 LRU 链表头部（或者 young 区域）」这种方式的话，那么<strong>还存在缓存污染的问题</strong>。</p>
+<p>当我们在批量读取数据的时候，由于数据被访问了一次，这些大量数据都会被加入到「活跃 LRU 链表」里，然后之前缓存在活跃 LRU 链表（或者 young 区域）里的热点数据全部都被淘汰了，<strong>如果这些大量的数据在很长一段时间都不会被访问的话，那么整个活跃 LRU 链表（或者 young 区域）就被污染了</strong>。</p>
+<p>前面的 LRU 算法只要数据被访问一次，就将数据加入活跃 LRU 链表（或者 young 区域），<strong>这种 LRU 算法进入活跃 LRU 链表的门槛太低了</strong>！正式因为门槛太低，才导致在发生缓存污染的时候，很容就将原本在活跃 LRU 链表里的热点数据淘汰了。</p>
+<p>所以，<strong>只要提高进入到活跃 LRU 链表（或者 young 区域）的门槛，就能有效地保证活跃 LRU 链表（或者 young 区域）里的热点数据不会被轻易替换掉</strong>。</p>
+<h3 id="Linux避免缓存污染"><a href="#Linux避免缓存污染" class="headerlink" title="Linux避免缓存污染"></a>Linux避免缓存污染</h3><p>在内存页被访问<strong>第二次</strong>的时候，才将页从 inactive list 升级到 active list 里。</p>
+<h3 id="MySQL避免缓存污染"><a href="#MySQL避免缓存污染" class="headerlink" title="MySQL避免缓存污染"></a>MySQL避免缓存污染</h3><p>在内存页被访问<strong>第二次</strong>的时候，并不会马上将该页从 old 区域升级到 young 区域，因为还要进行<strong>停留在 old 区域的时间判断</strong>：</p>
+<ul>
+<li><p>如果第二次的访问时间与第一次访问的时间<strong>在 1 秒内</strong>（默认值），那么该页就<strong>不会</strong>被从 old 区域升级到 young 区域；</p>
+</li>
+<li><p>如果第二次的访问时间与第一次访问的时间<strong>超过 1 秒</strong>，那么该页就<strong>会</strong>从 old 区域升级到 young 区域；</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/05/06/Linux%E4%B9%8B%E5%B8%B8%E8%A7%81%E5%91%BD%E4%BB%A4/" rel="prev" title="Linux之常见命令">
+      <i class="fa fa-chevron-left"></i> Linux之常见命令
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/05/13/Redis%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6/" rel="next" title="Redis事件机制">
+      Redis事件机制 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%84%E8%AF%BB%E5%A4%B1%E6%95%88"><span class="nav-number">1.</span> <span class="nav-text">预读失效</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux%E9%81%BF%E5%85%8D%E9%A2%84%E8%AF%BB%E5%A4%B1%E6%95%88"><span class="nav-number">1.1.</span> <span class="nav-text">Linux避免预读失效</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL%E9%81%BF%E5%85%8D%E9%A2%84%E8%AF%BB%E5%A4%B1%E6%95%88"><span class="nav-number">1.2.</span> <span class="nav-text">MySQL避免预读失效</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E6%B1%A1%E6%9F%93"><span class="nav-number">2.</span> <span class="nav-text">缓存污染</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Linux%E9%81%BF%E5%85%8D%E7%BC%93%E5%AD%98%E6%B1%A1%E6%9F%93"><span class="nav-number">2.1.</span> <span class="nav-text">Linux避免缓存污染</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MySQL%E9%81%BF%E5%85%8D%E7%BC%93%E5%AD%98%E6%B1%A1%E6%9F%93"><span class="nav-number">2.2.</span> <span class="nav-text">MySQL避免缓存污染</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John-1010-cmd</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John-1010-cmd</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">586k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">8:53</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

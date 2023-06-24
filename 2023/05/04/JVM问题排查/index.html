@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="这是一篇关于JVM问题排查的Blog。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM问题排查">
+<meta property="og:url" content="http://example.com/2023/05/04/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/index.html">
+<meta property="og:site_name" content="John&#39;s Blog">
+<meta property="og:description" content="这是一篇关于JVM问题排查的Blog。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20230504105554106.png">
+<meta property="og:image" content="http://example.com/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20230504105840192.png">
+<meta property="og:image" content="http://example.com/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20230504105932639.png">
+<meta property="og:image" content="http://example.com/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20230504110003725.png">
+<meta property="og:image" content="http://example.com/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20230504110047575.png">
+<meta property="og:image" content="http://example.com/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20230504110214580.png">
+<meta property="og:image" content="http://example.com/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGVsb2lzZV95YW5neXVjaGFuZw==,size_20,color_FFFFFF,t_70,g_se,x_16.png">
+<meta property="og:image" content="http://example.com/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20230504110513065.png">
+<meta property="article:published_time" content="2023-05-03T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-05-03T16:00:00.000Z">
+<meta property="article:author" content="John-1010-cmd">
+<meta property="article:tag" content="JVM">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20230504105554106.png">
+
+<link rel="canonical" href="http://example.com/2023/05/04/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>JVM问题排查 | John's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">John's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/04/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John-1010-cmd">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="John's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          JVM问题排查
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-05-04 00:00:00" itemprop="dateCreated datePublished" datetime="2023-05-04T00:00:00+08:00">2023-05-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>2.1k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>2 分钟</span>
+            </span>
+            <div class="post-description">这是一篇关于JVM问题排查的Blog。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="JVM命令"><a href="#JVM命令" class="headerlink" title="JVM命令"></a>JVM命令</h2><h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h3><ul>
+<li><p>jps</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">jps # 显示进程的ID 和 类的名称</span><br><span class="line">jps –l # 输出输出完全的包名，应用主类名，jar的完全路径名 </span><br><span class="line">jps –v # 输出jvm参数</span><br><span class="line">jps –q # 显示java进程号</span><br><span class="line">jps -m # main 方法</span><br><span class="line">jps -l xxx.xxx.xx.xx # 远程查看 </span><br></pre></td></tr></table></figure></li>
+<li><p>jinfo</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出当前 jvm 进程的全部参数和系统属性</span></span><br><span class="line">jinfo 2815</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出所有的参数</span></span><br><span class="line">jinfo -flags 2815</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看指定的 jvm 参数的值</span></span><br><span class="line">jinfo -flag PrintGC 2815</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">开启/关闭指定的JVM参数</span></span><br><span class="line">jinfo -flag +PrintGC 2815</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">设置flag的参数</span></span><br><span class="line">jinfo -flag name=value 2815</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">输出当前 jvm 进行的全部的系统属性</span></span><br><span class="line">jinfo -sysprops 2815</span><br></pre></td></tr></table></figure></li>
+<li><p>jstat</p>
+<p>查看类装载信息<br>jstat -class PID 1000 10 查看某个java进程的类装载信息，每1000毫秒输出一次，共输出10次</p>
+<p>查看垃圾收集信息<br>jstat -gc PID 1000 10</p>
+</li>
+<li><p>jstack</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">基本</span></span><br><span class="line">jstack 2815</span><br><span class="line"></span><br><span class="line">-l #长列表. 打印关于锁的附加信息,例如属于java.util.concurrent 的 ownable synchronizers列表.</span><br><span class="line"></span><br><span class="line">-F #当’jstack [-l] pid’没有相应的时候强制打印栈信息</span><br><span class="line"></span><br><span class="line">-m #打印java和native c/c++框架的所有栈信息.</span><br><span class="line"></span><br><span class="line">-h | -help #打印帮助信息</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="排查死锁案例"><a href="#排查死锁案例" class="headerlink" title="排查死锁案例"></a>排查死锁案例</h3><p><img src="/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20230504105554106.png" alt="image-20230504105554106"></p>
+<p><img src="/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20230504105840192.png" alt="image-20230504105840192"></p>
+<p>jstack找出占用cpu最高的线程堆栈信息</p>
+<ol>
+<li><p>使用命令top -p 显示你的java进程的内存情况，pid是你的java进程号，比如19663</p>
+<p><img src="/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20230504105932639.png" alt="image-20230504105932639"></p>
+</li>
+<li><p>按H，获取每个线程的内存情况</p>
+<p><img src="/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20230504110003725.png" alt="image-20230504110003725"></p>
+</li>
+<li><p>找到内存和cpu占用最高的线程tid，比如19664</p>
+</li>
+<li><p>转为十六进制得到0x4cd0，此为线程id的十六进制表示</p>
+</li>
+<li><p>执行 jstack 19663|grep -A 10 4cd0，得到线程堆栈信息中 4cd0 这个线程所在行的后面10行</p>
+</li>
+<li><p>从堆栈中可以发现导致cpu飙高的调用方法，查看对应的堆栈信息找出可能存在问题的代码</p>
+<p><img src="/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20230504110047575.png" alt="image-20230504110047575"></p>
+</li>
+</ol>
+<p>jmap打印出堆内存相关信息</p>
+<p>jmap -heap PID</p>
+<p><img src="/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20230504110214580.png" alt="image-20230504110214580"></p>
+<p>dump出堆内存相关信息</p>
+<p>jmap -dump:format=b,file=heap.hprof PID</p>
+<p><img src="/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/watermark,type_d3F5LXplbmhlaQ,shadow_50,text_Q1NETiBASGVsb2lzZV95YW5neXVjaGFuZw==,size_20,color_FFFFFF,t_70,g_se,x_16.png" alt="在这里插入图片描述"></p>
+<p>一般在开发中，JVM参数可以加上下面两句，这样内存溢出时，会自动dump出该文件</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=heap.hprof</span><br></pre></td></tr></table></figure>
+
+<h2 id="JVM问题排查"><a href="#JVM问题排查" class="headerlink" title="JVM问题排查"></a>JVM问题排查</h2><h3 id="CPU飙高，load高，响应很慢"><a href="#CPU飙高，load高，响应很慢" class="headerlink" title="CPU飙高，load高，响应很慢"></a>CPU飙高，load高，响应很慢</h3><p>一个请求过程中多次dump；</p>
+<p>对比多次dump文件的runnable线程，如果执行的方法有比较大变化，说明比较正常。如果在执行同一个方法，就有一些问题了；</p>
+<h3 id="查找占用CPU最多的线程"><a href="#查找占用CPU最多的线程" class="headerlink" title="查找占用CPU最多的线程"></a>查找占用CPU最多的线程</h3><ol>
+<li>top</li>
+<li>top -H -p PID</li>
+<li>查看进程中占用CPU高的线程id，即tid</li>
+<li>jstack PID | grep tid</li>
+</ol>
+<p>使用命令：top -H -p pid（pid为被测系统的进程号），找到导致CPU高的线程ID，对应thread dump信息中线程的nid，只不过一个是十进制，一个是十六进制；<br>在thread dump中，根据top命令查找的线程id，查找对应的线程堆栈信息；</p>
+<h3 id="CPU使用率不高但是响应很慢"><a href="#CPU使用率不高但是响应很慢" class="headerlink" title="CPU使用率不高但是响应很慢"></a>CPU使用率不高但是响应很慢</h3><p>进行dump，查看是否有很多thread struck在了i/o、数据库等地方，定位瓶颈原因；</p>
+<h3 id="请求无法响应"><a href="#请求无法响应" class="headerlink" title="请求无法响应"></a>请求无法响应</h3><p>多次dump，对比是否所有的runnable线程都一直在执行相同的方法，如果是，那就是锁住了。</p>
+<h4 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h4><p>死锁经常表现为程序的停顿，或者不再响应用户的请求。从操作系统上观察，对应进程的CPU占用率为零，很快会从top或prstat的输出中消失。</p>
+<p>线程 Dump中可以直接报告出 Java级别的死锁</p>
+<h4 id="活锁"><a href="#活锁" class="headerlink" title="活锁"></a>活锁</h4><p>其表现特征为：由于多个线程对临界区，或者锁的竞争，可能出现：</p>
+<ul>
+<li>频繁的线程的上下文切换：从操作系统对线程的调度来看，当线程在等待资源而阻塞的时候，操作系统会将之切换出来，放到等待的队列，当线程获得资源之后，调度算法会将这个线程切换进去，放到执行队列中。</li>
+<li>大量的系统调用：因为线程的上下文切换，以及热锁的竞争，或者临界区的频繁的进出，都可能导致大量的系统调用。</li>
+<li>大部分CPU开销用在“系统态”：线程上下文切换，和系统调用，都会导致 CPU在 “系统态 ”运行，换而言之，虽然系统很忙碌，但是CPU用在 “用户态 ”的比例较小，应用程序得不到充分的 CPU资源。</li>
+<li>随着CPU数目的增多，系统的性能反而下降。因为CPU数目多，同时运行的线程就越多，可能就会造成更频繁的线程上下文切换和系统态的CPU开销，从而导致更糟糕的性能。</li>
+</ul>
+<p>从整体的性能指标看，由于线程热锁的存在，程序的响应时间会变长，吞吐量会降低。</p>
+<p>解决方法：</p>
+<ul>
+<li>一个重要的方法是结合操作系统的各种工具观察系统资源使用状况</li>
+<li>以及收集Java线程的DUMP信息，看线程都阻塞在什么方法上，了解原因，才能找到对应的解决方法。</li>
+</ul>
+<h3 id="JVM性能优化方向"><a href="#JVM性能优化方向" class="headerlink" title="JVM性能优化方向"></a>JVM性能优化方向</h3><p><img src="/JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5/image-20230504110513065.png" alt="image-20230504110513065"></p>
+<blockquote>
+<p>参考资料来源：</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_35958391/article/details/124367061?spm=1001.2014.3001.5502">https://blog.csdn.net/qq_35958391/article/details/124367061?spm=1001.2014.3001.5502</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_35958391/article/details/124367955">https://blog.csdn.net/qq_35958391/article/details/124367955</a></p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/JVM/" rel="tag"># JVM</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/05/04/Linux%E4%B9%8Btop%E5%91%BD%E4%BB%A4/" rel="prev" title="Linux之top命令">
+      <i class="fa fa-chevron-left"></i> Linux之top命令
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/05/05/Collection%E9%9B%86%E5%90%88%E7%B1%BB/" rel="next" title="Collection集合类">
+      Collection集合类 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM%E5%91%BD%E4%BB%A4"><span class="nav-number">1.</span> <span class="nav-text">JVM命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">1.1.</span> <span class="nav-text">常用命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%92%E6%9F%A5%E6%AD%BB%E9%94%81%E6%A1%88%E4%BE%8B"><span class="nav-number">1.2.</span> <span class="nav-text">排查死锁案例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM%E9%97%AE%E9%A2%98%E6%8E%92%E6%9F%A5"><span class="nav-number">2.</span> <span class="nav-text">JVM问题排查</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU%E9%A3%99%E9%AB%98%EF%BC%8Cload%E9%AB%98%EF%BC%8C%E5%93%8D%E5%BA%94%E5%BE%88%E6%85%A2"><span class="nav-number">2.1.</span> <span class="nav-text">CPU飙高，load高，响应很慢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E5%8D%A0%E7%94%A8CPU%E6%9C%80%E5%A4%9A%E7%9A%84%E7%BA%BF%E7%A8%8B"><span class="nav-number">2.2.</span> <span class="nav-text">查找占用CPU最多的线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CPU%E4%BD%BF%E7%94%A8%E7%8E%87%E4%B8%8D%E9%AB%98%E4%BD%86%E6%98%AF%E5%93%8D%E5%BA%94%E5%BE%88%E6%85%A2"><span class="nav-number">2.3.</span> <span class="nav-text">CPU使用率不高但是响应很慢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E6%97%A0%E6%B3%95%E5%93%8D%E5%BA%94"><span class="nav-number">2.4.</span> <span class="nav-text">请求无法响应</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%AD%BB%E9%94%81"><span class="nav-number">2.4.1.</span> <span class="nav-text">死锁</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B4%BB%E9%94%81"><span class="nav-number">2.4.2.</span> <span class="nav-text">活锁</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JVM%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96%E6%96%B9%E5%90%91"><span class="nav-number">2.5.</span> <span class="nav-text">JVM性能优化方向</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John-1010-cmd</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John-1010-cmd</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">586k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">8:53</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

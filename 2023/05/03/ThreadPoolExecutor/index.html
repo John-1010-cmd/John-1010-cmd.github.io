@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="这是一篇关于ThreadPoolExecutor的Blog。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ThreadPoolExecutor">
+<meta property="og:url" content="http://example.com/2023/05/03/ThreadPoolExecutor/index.html">
+<meta property="og:site_name" content="John&#39;s Blog">
+<meta property="og:description" content="这是一篇关于ThreadPoolExecutor的Blog。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/ThreadPoolExecutor/image-20230503213508460.png">
+<meta property="og:image" content="http://example.com/ThreadPoolExecutor/image-20230503213648225.png">
+<meta property="og:image" content="http://example.com/ThreadPoolExecutor/20200815190117670.png">
+<meta property="article:published_time" content="2023-05-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-05-02T16:00:00.000Z">
+<meta property="article:author" content="John-1010-cmd">
+<meta property="article:tag" content="ThreadPoolExecutor">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/ThreadPoolExecutor/image-20230503213508460.png">
+
+<link rel="canonical" href="http://example.com/2023/05/03/ThreadPoolExecutor/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ThreadPoolExecutor | John's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">John's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/03/ThreadPoolExecutor/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John-1010-cmd">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="John's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ThreadPoolExecutor
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-05-03 00:00:00" itemprop="dateCreated datePublished" datetime="2023-05-03T00:00:00+08:00">2023-05-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>9.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>9 分钟</span>
+            </span>
+            <div class="post-description">这是一篇关于ThreadPoolExecutor的Blog。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="ThreadPoolExecutor类"><a href="#ThreadPoolExecutor类" class="headerlink" title="ThreadPoolExecutor类"></a>ThreadPoolExecutor类</h2><h3 id="线程池状态"><a href="#线程池状态" class="headerlink" title="线程池状态"></a>线程池状态</h3><ol>
+<li>RUNNING：允许提交并处理任务</li>
+<li>SHUTDOWN：不允许提交新的任务，但是会处理完已提交的任务</li>
+<li>STOP：不允许提交新的任务，也不会处理阻塞队列中未执行的任务，并设置正在执行的线程的中断标志位</li>
+<li>TIDYING：所有任务执行完毕，池中工作的线程数为0，等待执行terminated()勾子方法</li>
+<li>TERMINATED：terminated()勾子方法执行完毕</li>
+</ol>
+<p>注意：</p>
+<ul>
+<li>线程池的shutdown() 方法，将线程池由 RUNNING（运行状态）转换为 SHUTDOWN状态</li>
+<li>线程池的shutdownNow()方法，将线程池由RUNNING 或 SHUTDOWN 状态转换为 STOP 状态。</li>
+<li>SHUTDOWN 状态 和 STOP 状态 先会转变为 TIDYING 状态，最终都会变为 TERMINATED</li>
+</ul>
+<h3 id="ThreadPoolExecutor构造函数"><a href="#ThreadPoolExecutor构造函数" class="headerlink" title="ThreadPoolExecutor构造函数"></a>ThreadPoolExecutor构造函数</h3><p>ThreadPoolExecutor继承自AbstractExecutorService，而AbstractExecutorService实现了ExecutorService接口。</p>
+<p><img src="/ThreadPoolExecutor/image-20230503213508460.png" alt="image-20230503213508460"></p>
+<p><img src="/ThreadPoolExecutor/image-20230503213648225.png" alt="image-20230503213648225"></p>
+<p>当调用线程池execute() 方法添加一个任务时，线程池会做如下判断：</p>
+<ol>
+<li>如果有空闲线程，则直接执行该任务；</li>
+<li>如果没有空闲线程，且当前运行的线程数少于corePoolSize，则创建新的线程执行该任务；</li>
+<li>如果没有空闲线程，且当前的线程数等于corePoolSize，同时阻塞队列未满，则将任务入队列，而不添加新的线程；</li>
+<li>如果没有空闲线程，且阻塞队列已满，同时池中的线程数小于maximumPoolSize ，则创建新的线程执行任务；</li>
+<li>如果没有空闲线程，且阻塞队列已满，同时池中的线程数等于maximumPoolSize ，则根据构造函数中的 handler 指定的策略来拒绝新的任务。</li>
+</ol>
+<p>当一个线程无事可做，超过一定的时间（keepAliveTime）时，线程池会判断，如果当前运行的线程数大于 corePoolSize，那么这个线程就被停掉。所以线程池的所有任务完成后，它最终会收缩到 corePoolSize 的大小。</p>
+<p>注意：如果线程池设置了allowCoreThreadTimeout参数为true（默认false），那么当空闲线程超过keepaliveTime后直接停掉。（不会判断线程数是否大于corePoolSize）即：最终线程数会变为0。</p>
+<h4 id="workQueue"><a href="#workQueue" class="headerlink" title="workQueue"></a>workQueue</h4><p>workQueue 任务队列决定了缓存任务的排队策略，ThreadPoolExecutor线程池推荐了三种等待队列，SynchronousQueue 、LinkedBlockingQueue 和 ArrayBlockingQueue。</p>
+<ol>
+<li><p>有界队列：</p>
+<p>SynchronousQueue ：一个不存储元素的阻塞队列，每个插入操作必须等到另一个线程调用移除操作，否则插入操作一直处于 阻塞状态，吞吐量通常要高于LinkedBlockingQueue，静态工厂方法 Executors.newCachedThreadPool 使用了这个队列。<br>ArrayBlockingQueue：一个由数组支持的有界阻塞队列。此队列按 FIFO（先进先出）原则对元素进行排序。一旦创建了这样的缓存区，就不能再增加其容量。试图向已满队列中放入元素会导致操作受阻塞；试图从空队列中提取元素将导致类似阻塞。</p>
+</li>
+<li><p>无界队列：</p>
+<p>LinkedBlockingQueue：基于链表结构的无界阻塞队列，它可以指定容量也可以不指定容量（实际上任何无限容量的队列/栈都是有容量的，这个容量就是Integer.MAX_VALUE）<br>PriorityBlockingQueue：是一个按照优先级进行内部元素排序的无界阻塞队列。队列中的元素必须实现 Comparable 接口，这样才能通过实现compareTo()方法进行排序。优先级最高的元素将始终排在队列的头部；PriorityBlockingQueue 不会保证优先级一样的元素的排序。</p>
+</li>
+</ol>
+<p>注意：keepAliveTime和maximumPoolSize及BlockingQueue的类型均有关系。如果BlockingQueue是无界的，那么永远不会触发maximumPoolSize，自然keepAliveTime也就没有了意义。</p>
+<h4 id="threadFactory"><a href="#threadFactory" class="headerlink" title="threadFactory"></a>threadFactory</h4><p>threadFactory如果不指定线程工厂时，ThreadPoolExecutor 会使用ThreadPoolExecutor.defaultThreadFactory 创建线程。默认工厂创建的线程：同属于相同的线程组，具有同为 Thread.NORM_PRIORITY 的优先级，以及名为 “pool-XXX-thread-” 的线程名（XXX为创建线程时顺序序号），且创建的线程都是非守护进程。</p>
+<h4 id="handler"><a href="#handler" class="headerlink" title="handler"></a>handler</h4><p>handler ：表示当 workQueue 已满，且池中的线程数达到 maximumPoolSize 时，线程池拒绝添加新任务时采取的策略。（可以不指定）</p>
+<table>
+<thead>
+<tr>
+<th>ThreadPoolExecutor.AbortPolicy()</th>
+<th>抛出RejectedExecutionException异常。默认策略</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ThreadPoolExecutor.CallerRunsPolicy()</td>
+<td>由向线程池提交任务的线程来执行该任务</td>
+</tr>
+<tr>
+<td>ThreadPoolExecutor.DiscardPolicy()</td>
+<td>抛弃当前的任务</td>
+</tr>
+<tr>
+<td>ThreadPoolExecutor.DiscardOldestPolicy()</td>
+<td>抛弃最旧的任务（最先提交而没有得到执行的任务）</td>
+</tr>
+</tbody></table>
+<h3 id="Executor类"><a href="#Executor类" class="headerlink" title="Executor类"></a>Executor类</h3><p>Executors类的底层实现便是ThreadPoolExecutor！ Executors 工厂方法有：</p>
+<ul>
+<li>Executors.newCachedThreadPool()：无界线程池，可以进行自动线程回收</li>
+<li>Executors.newFixedThreadPool(int)：固定大小线程池</li>
+<li>Executors.newSingleThreadExecutor()：单个后台线程</li>
+</ul>
+<h2 id="线程池相关接口介绍"><a href="#线程池相关接口介绍" class="headerlink" title="线程池相关接口介绍"></a>线程池相关接口介绍</h2><h3 id="ExecutorService接口"><a href="#ExecutorService接口" class="headerlink" title="ExecutorService接口"></a>ExecutorService接口</h3><p>该接口是真正的线程池接口。上面的ThreadPoolExecutor以及下面的ScheduledThreadPoolExecutor都是该接口的实现类。改接口常用方法：</p>
+<ul>
+<li>Future&lt;?&gt; submit(Runnable task)：提交Runnable任务到线程池，返回Future对象，由于Runnable没有返回值，也就是说调用Future对象get()方法返回null；</li>
+<li><T> Future<T> submit(Callable<T> task)：提交Callable任务到线程池，返回Future对象，调用Future对象get()方法可以获取Callable的返回值；</li>
+<li><T> Future<T> submit(Runnable task，T result)：提交Runnable任务到线程池，返回Future对象，调用Future对象get()方法可以获取Runnable的参数值；</li>
+<li>invokeAll(collection of tasks)/invokeAll(collection of tasks, long timeout, TimeUnit unit)：invokeAll会按照任务集合中的顺序将所有的Future添加到返回的集合中，该方法是一个阻塞的方法。只有当所有的任务都执行完毕时，或者调用线程被中断，又或者超出指定时限时，invokeAll方法才会返回。当invokeAll返回之后每个任务要么返回，要么取消，此时客户端可以调用get/isCancelled来判断具体是什么情况。</li>
+<li>invokeAny(collection of tasks)/invokeAny(collection of tasks, long timeout, TimeUnit unit)：阻塞的方法，不会返回 Future 对象，而是返回集合中某一个Callable 对象的结果，而且无法保证调用之后返回的结果是哪一个 Callable，如果一个任务运行完毕或者抛出异常，方法会取消其它的 Callable 的执行。和invokeAll区别是只要有一个任务执行完了，就把结果返回，并取消其他未执行完的任务；同样，也带有超时功能；</li>
+<li>shutdown()：在完成已提交的任务后关闭服务，不再接受新任；</li>
+<li>shutdownNow()：停止所有正在执行的任务并关闭服务；</li>
+<li>isTerminated()：测试是否所有任务都执行完毕了；</li>
+<li>isShutdown()：测试是否该ExecutorService已被关闭。</li>
+</ul>
+<h4 id="submit"><a href="#submit" class="headerlink" title="submit()"></a>submit()</h4><p><img src="/ThreadPoolExecutor/20200815190117670.png" alt="img"></p>
+<p><strong>Runnable</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">runnableTest</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">	<span class="comment">//runnable</span></span><br><span class="line">	Future&lt;?&gt; future1 = threadPool.submit(<span class="keyword">new</span> <span class="title class_">Runnable</span>()&#123;</span><br><span class="line">		<span class="meta">@Override</span></span><br><span class="line">		<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">			<span class="type">int</span> <span class="variable">b</span> <span class="operator">=</span> a + <span class="number">100</span>;</span><br><span class="line">			System.out.println(b);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;);</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;feature.get&quot;</span>);</span><br><span class="line">		<span class="type">Object</span> <span class="variable">x</span> <span class="operator">=</span> future1.get(<span class="number">900</span>,TimeUnit.MILLISECONDS);</span><br><span class="line">		System.out.println(x);<span class="comment">//null</span></span><br><span class="line">	&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125; <span class="keyword">catch</span> (ExecutionException e) &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;execute exception...&quot;</span>);</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125; <span class="keyword">catch</span> (TimeoutException e) &#123;</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Callable</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">ThreadPoolExecutor</span> <span class="variable">threadPool</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ThreadPoolExecutor</span>(<span class="number">5</span>, <span class="number">50</span>, <span class="number">300</span>, TimeUnit.SECONDS, </span><br><span class="line">			<span class="keyword">new</span> <span class="title class_">ArrayBlockingQueue</span>&lt;Runnable&gt;(<span class="number">50</span>),  </span><br><span class="line">			<span class="keyword">new</span> <span class="title class_">ThreadFactory</span>()&#123; <span class="keyword">public</span> Thread <span class="title function_">newThread</span><span class="params">(Runnable r)</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Thread</span>(r, <span class="string">&quot;schema_task_pool_&quot;</span> + r.hashCode());</span><br><span class="line">            &#125;&#125;, <span class="keyword">new</span> <span class="title class_">ThreadPoolExecutor</span>.DiscardOldestPolicy());</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">callableTest</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">	<span class="comment">//callable</span></span><br><span class="line">	Future&lt;Boolean&gt; future = threadPool.submit(<span class="keyword">new</span> <span class="title class_">Callable</span>&lt;Boolean&gt;()&#123;</span><br><span class="line">		<span class="meta">@Override</span></span><br><span class="line">		<span class="keyword">public</span> Boolean <span class="title function_">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">			<span class="type">int</span> <span class="variable">b</span> <span class="operator">=</span> a + <span class="number">100</span>;</span><br><span class="line">			System.out.println(b);</span><br><span class="line">			<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;);</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;feature.get&quot;</span>);</span><br><span class="line">		<span class="type">Boolean</span> <span class="variable">boolean1</span> <span class="operator">=</span> future.get();</span><br><span class="line">		System.out.println(boolean1);</span><br><span class="line">	&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;InterruptedException...&quot;</span>);</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125; <span class="keyword">catch</span> (ExecutionException e) &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;execute exception...&quot;</span>);</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Runnable+result</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">RunnableTask</span> <span class="keyword">implements</span> <span class="title class_">Runnable</span> &#123;</span><br><span class="line">	Person p;</span><br><span class="line">	RunnableTask(Person p) &#123;</span><br><span class="line">		<span class="built_in">this</span>.p = p;</span><br><span class="line">	&#125;</span><br><span class="line"> </span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span> &#123;</span><br><span class="line">		p.setId(<span class="number">1</span>);</span><br><span class="line">		p.setName(<span class="string">&quot;Runnable Task...&quot;</span>);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Person</span> &#123;</span><br><span class="line">	<span class="keyword">private</span> Integer id;</span><br><span class="line">	<span class="keyword">private</span> String name;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">public</span> <span class="title function_">Person</span><span class="params">(Integer id, String name)</span> &#123;</span><br><span class="line">		<span class="built_in">super</span>();</span><br><span class="line">		<span class="built_in">this</span>.id = id;</span><br><span class="line">		<span class="built_in">this</span>.name = name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">public</span> Integer <span class="title function_">getId</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> id;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setId</span><span class="params">(Integer id)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.id = id;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setName</span><span class="params">(String name)</span> &#123;</span><br><span class="line">		<span class="built_in">this</span>.name = name;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> String <span class="title function_">toString</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> <span class="string">&quot;Person [id=&quot;</span> + id + <span class="string">&quot;, name=&quot;</span> + name + <span class="string">&quot;]&quot;</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">runnableTest2</span><span class="params">()</span> &#123;</span><br><span class="line">	<span class="comment">//runnable + result</span></span><br><span class="line">	<span class="type">Person</span> <span class="variable">p</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>(<span class="number">0</span>,<span class="string">&quot;person&quot;</span>);</span><br><span class="line">	Future&lt;Person&gt; future2 = threadPool.submit(<span class="keyword">new</span> <span class="title class_">RunnableTask</span>(p),p);</span><br><span class="line">	<span class="keyword">try</span> &#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;feature.get&quot;</span>);</span><br><span class="line">		<span class="type">Person</span> <span class="variable">person</span> <span class="operator">=</span> future2.get();</span><br><span class="line">		System.out.println(person);</span><br><span class="line">	&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125; <span class="keyword">catch</span> (ExecutionException e) &#123;</span><br><span class="line">		e.printStackTrace();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="线程池执行时Callable的call方法（Runnable的run方法）抛出异常"><a href="#线程池执行时Callable的call方法（Runnable的run方法）抛出异常" class="headerlink" title="线程池执行时Callable的call方法（Runnable的run方法）抛出异常"></a>线程池执行时Callable的call方法（Runnable的run方法）抛出异常</h4><ul>
+<li>如果get方法被打断，进入InterruptedException异常；</li>
+<li>如果线程执行过程（call、run方法）中抛出异常，进入ExecutionException异常；</li>
+<li>如果get方法超时，进入TimeoutException异常；</li>
+</ul>
+<h4 id="submit-和execute-方法区别"><a href="#submit-和execute-方法区别" class="headerlink" title="submit()和execute()方法区别"></a>submit()和execute()方法区别</h4><p>ExecutorService、ScheduledExecutorService接口的submit()和execute()方法都是把任务提交到线程池中，但二者的区别是</p>
+<ul>
+<li>接收的参数不一样，execute只能接收Runnable类型、submit可以接收Runnable和Callable两种类型；</li>
+<li>submit有返回值，而execute没有返回值；submit方便Exception处理；</li>
+</ul>
+<h4 id="ScheduledExecutorService接口"><a href="#ScheduledExecutorService接口" class="headerlink" title="ScheduledExecutorService接口"></a>ScheduledExecutorService接口</h4><p>继承ExecutorService，并且提供了按时间安排执行任务的功能，它提供的方法主要有：</p>
+<p>schedule(task, initDelay): 安排所提交的Callable或Runnable任务在initDelay指定的时间后执行；<br>scheduleAtFixedRate()：安排所提交的Runnable任务按指定的间隔重复执行；<br>scheduleWithFixedDelay()：安排所提交的Runnable任务在每次执行完后，等待delay所指定的时间后重复执行；<br>注意：该接口的实现类是ScheduledThreadPoolExecutor。</p>
+<h3 id="Callable接口"><a href="#Callable接口" class="headerlink" title="Callable接口"></a>Callable接口</h3><p><strong>Callable和Runnale接口区别</strong></p>
+<ul>
+<li>Callable可以抛出异常，和Future、FutureTask配合可以用来获取异步执行的结果；</li>
+<li>Runnable没有返回结果，异常只能内部消化；</li>
+</ul>
+<p><strong>执行Callable的线程的方法</strong></p>
+<ul>
+<li>借助FutureTask，使用Thread的start方法来执行；</li>
+<li>加入到线程池中，使用线程池的execute或submit执行；</li>
+</ul>
+<p>注意：Callable无法直接使用Thread来执行；</p>
+<p><strong>通过Executors工具类可以把Runnable接口转换成Callable接口</strong></p>
+<p>Executors中的callable方法可以将Runnable转成Callable</p>
+<h3 id="Future接口"><a href="#Future接口" class="headerlink" title="Future接口"></a>Future接口</h3><h4 id="Future"><a href="#Future" class="headerlink" title="Future"></a>Future</h4><ol>
+<li>boolean cancel(boolean mayInterruptIfRunning)：试图取消对此任务的执行。如果任务已完成、或已取消，或者由于某些其他原因而无法取消，则此尝试将失败。当调用 cancel 时，如果调用成功，而此任务尚未启动，则此任务将永不运行。如果任务已经启动，则 mayInterruptIfRunning 参数确定是否应该以试图停止任务的方式来中断执行此任务的线程。此方法返回后，对 isDone() 的后续调用将始终返回 true。如果此方法返回 true，则对 isCancelled() 的后续调用将始终返回 true。</li>
+<li>boolean isCancelled()：如果在任务正常完成前将其取消，则返回 true。</li>
+<li>boolean isDone()：如果任务已完成，则返回 true，可能由于正常终止、异常或取消而完成，在所有这些情况中，此方法都将返回 true。</li>
+<li>V get()throws InterruptedException,ExecutionException：获取异步结果，此方法会一直阻塞等到计算完成；</li>
+<li>V get(long timeout,TimeUnit unit) throws InterruptedException,ExecutionException,TimeoutException：获取异步结果，此方法会在指定时间内一直阻塞等到计算完成，超时后会抛出超时异常。</li>
+</ol>
+<p>Future提供了3种功能：</p>
+<ul>
+<li>能够中断执行中的任务；</li>
+<li>判断任务是否执行完成；</li>
+<li>获取任务执行完成后额结果。</li>
+</ul>
+<p>但是Future只是一个接口，我们无法直接创建对象，因此就需要其实现类FutureTask。</p>
+<h4 id="FutureTask"><a href="#FutureTask" class="headerlink" title="FutureTask"></a>FutureTask</h4><p>FutureTask实现了Runnable、Future两个接口。由于FutureTask实现了Runnable，因此它既可以通过Thread包装来直接执行，也可以提交给ExecuteService来执行。并且还可以直接通过get()函数获取执行结果，该函数会阻塞，直到结果返回。因此FutureTask既是Future、Runnable，又是包装了Callable( 如果是Runnable最终也会被转换为Callable )， 它是这两者的合体。</p>
+<p><strong>FutureTask包装过的Callable在Thread、线程池上执行：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">test3</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="type">int</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">1</span>,b = <span class="number">2</span>;</span><br><span class="line">		Callable&lt;Integer&gt; callable = <span class="keyword">new</span> <span class="title class_">Callable</span>&lt;Integer&gt;() &#123;</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="keyword">public</span> Integer <span class="title function_">call</span><span class="params">()</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">				<span class="keyword">return</span> a + b;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;;</span><br><span class="line">		<span class="comment">//通过futureTask来执行Callable</span></span><br><span class="line">		FutureTask&lt;Integer&gt; futureTask = <span class="keyword">new</span> <span class="title class_">FutureTask</span>&lt;&gt;(callable);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//1.使用Thread执行线程</span></span><br><span class="line">		<span class="keyword">new</span> <span class="title class_">Thread</span>(futureTask).start();</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="type">Integer</span> <span class="variable">integer</span> <span class="operator">=</span> futureTask.get();</span><br><span class="line">			System.out.println(integer);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; <span class="keyword">catch</span> (ExecutionException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//2.使用线程池执行线程</span></span><br><span class="line">		Executors.newFixedThreadPool(<span class="number">1</span>).submit(futureTask);</span><br><span class="line">		threadPool.shutdown();</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="type">Integer</span> <span class="variable">integer</span> <span class="operator">=</span> futureTask.get();</span><br><span class="line">			System.out.println(integer);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (InterruptedException | ExecutionException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; </span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>FutureTask包装过的Runnable在Thread、线程池上执行：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">test4</span><span class="params">()</span> &#123;</span><br><span class="line">		<span class="type">Person</span> <span class="variable">p</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Person</span>(<span class="number">0</span>,<span class="string">&quot;person&quot;</span>);</span><br><span class="line">		<span class="type">RunnableTask</span> <span class="variable">runnableTask</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">RunnableTask</span>(p);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//创建futureTask来执行Runnable</span></span><br><span class="line">		FutureTask&lt;Person&gt; futureTask = <span class="keyword">new</span> <span class="title class_">FutureTask</span>&lt;&gt;(runnableTask,p);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//1.使用Thread执行线程</span></span><br><span class="line">		<span class="keyword">new</span> <span class="title class_">Thread</span>(futureTask).start();</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="type">Person</span> <span class="variable">x</span> <span class="operator">=</span> futureTask.get();</span><br><span class="line">			System.out.println(x);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (InterruptedException | ExecutionException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125; </span><br><span class="line">		</span><br><span class="line">		<span class="comment">//2.使用线程池执行线程</span></span><br><span class="line">		threadPool.submit(futureTask);</span><br><span class="line">		threadPool.shutdown();</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="type">Person</span> <span class="variable">y</span> <span class="operator">=</span> futureTask.get();</span><br><span class="line">			System.out.println(y);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (InterruptedException | ExecutionException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/ThreadPoolExecutor/" rel="tag"># ThreadPoolExecutor</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/05/01/Dubbo/" rel="prev" title="Dubbo">
+      <i class="fa fa-chevron-left"></i> Dubbo
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/05/04/%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86/" rel="next" title="动态代理">
+      动态代理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#ThreadPoolExecutor%E7%B1%BB"><span class="nav-number">1.</span> <span class="nav-text">ThreadPoolExecutor类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%8A%B6%E6%80%81"><span class="nav-number">1.1.</span> <span class="nav-text">线程池状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ThreadPoolExecutor%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0"><span class="nav-number">1.2.</span> <span class="nav-text">ThreadPoolExecutor构造函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#workQueue"><span class="nav-number">1.2.1.</span> <span class="nav-text">workQueue</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#threadFactory"><span class="nav-number">1.2.2.</span> <span class="nav-text">threadFactory</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#handler"><span class="nav-number">1.2.3.</span> <span class="nav-text">handler</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Executor%E7%B1%BB"><span class="nav-number">1.3.</span> <span class="nav-text">Executor类</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9B%B8%E5%85%B3%E6%8E%A5%E5%8F%A3%E4%BB%8B%E7%BB%8D"><span class="nav-number">2.</span> <span class="nav-text">线程池相关接口介绍</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ExecutorService%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.1.</span> <span class="nav-text">ExecutorService接口</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#submit"><span class="nav-number">2.1.1.</span> <span class="nav-text">submit()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%89%A7%E8%A1%8C%E6%97%B6Callable%E7%9A%84call%E6%96%B9%E6%B3%95%EF%BC%88Runnable%E7%9A%84run%E6%96%B9%E6%B3%95%EF%BC%89%E6%8A%9B%E5%87%BA%E5%BC%82%E5%B8%B8"><span class="nav-number">2.1.2.</span> <span class="nav-text">线程池执行时Callable的call方法（Runnable的run方法）抛出异常</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#submit-%E5%92%8Cexecute-%E6%96%B9%E6%B3%95%E5%8C%BA%E5%88%AB"><span class="nav-number">2.1.3.</span> <span class="nav-text">submit()和execute()方法区别</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ScheduledExecutorService%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.1.4.</span> <span class="nav-text">ScheduledExecutorService接口</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Callable%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.2.</span> <span class="nav-text">Callable接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Future%E6%8E%A5%E5%8F%A3"><span class="nav-number">2.3.</span> <span class="nav-text">Future接口</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Future"><span class="nav-number">2.3.1.</span> <span class="nav-text">Future</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#FutureTask"><span class="nav-number">2.3.2.</span> <span class="nav-text">FutureTask</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John-1010-cmd</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John-1010-cmd</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">586k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">8:53</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

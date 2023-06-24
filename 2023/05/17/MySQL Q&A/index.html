@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="这是一篇关于MySQL Q&amp;A的Blog。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL Q&amp;A">
+<meta property="og:url" content="http://example.com/2023/05/17/MySQL%20Q&A/index.html">
+<meta property="og:site_name" content="John&#39;s Blog">
+<meta property="og:description" content="这是一篇关于MySQL Q&amp;A的Blog。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2023-05-21T16:00:00.000Z">
+<meta property="article:author" content="John-1010-cmd">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2023/05/17/MySQL%20Q&A/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>MySQL Q&A | John's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">John's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/17/MySQL%20Q&A/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John-1010-cmd">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="John's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          MySQL Q&A
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-05-17 00:00:00" itemprop="dateCreated datePublished" datetime="2023-05-17T00:00:00+08:00">2023-05-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-05-22 00:00:00" itemprop="dateModified" datetime="2023-05-22T00:00:00+08:00">2023-05-22</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          <br>
+            <span class="post-meta-item" title="本文字数">
+              <span class="post-meta-item-icon">
+                <i class="far fa-file-word"></i>
+              </span>
+                <span class="post-meta-item-text">本文字数：</span>
+              <span>7.6k</span>
+            </span>
+            <span class="post-meta-item" title="阅读时长">
+              <span class="post-meta-item-icon">
+                <i class="far fa-clock"></i>
+              </span>
+                <span class="post-meta-item-text">阅读时长 &asymp;</span>
+              <span>7 分钟</span>
+            </span>
+            <div class="post-description">这是一篇关于MySQL Q&A的Blog。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="什么是BufferPool"><a href="#什么是BufferPool" class="headerlink" title="什么是BufferPool"></a>什么是BufferPool</h2><p>BufferPool（缓冲池）是计算机系统中的一种内存管理机制，用于缓存和管理数据的临时存储空间。它主要用于提高数据读写的性能和效率。</p>
+<p>在计算机系统中，数据的读写往往涉及大量的输入输出操作，而每次进行输入输出操作都会涉及到内存的分配和释放，这样的频繁操作会带来额外的开销。为了解决这个问题，BufferPool被引入。</p>
+<p>BufferPool维护了一个固定大小的内存缓冲区，可以预先分配一块连续的内存空间，并将其划分为多个较小的缓冲区（也称为Buffer）。应用程序可以从BufferPool中获取一个可用的Buffer，用于临时存储读取或写入的数据。当数据处理完成后，可以将Buffer归还给BufferPool供其他操作使用，而不是每次都进行内存的分配和释放操作。</p>
+<p>使用BufferPool的好处是可以减少内存分配和释放的次数，避免了频繁的内存管理开销，提高了数据读写的性能和效率。此外，BufferPool还可以提供更好的内存资源管理和控制，避免内存溢出或过度消耗的问题。</p>
+<p>在Java中，可以使用<code>java.nio.Buffer</code>和<code>java.nio.ByteBuffer</code>等相关类来实现BufferPool的功能，它们提供了一组操作方法来管理和操作内存缓冲区。</p>
+<h2 id="InnoDB引擎如何管理Page页"><a href="#InnoDB引擎如何管理Page页" class="headerlink" title="InnoDB引擎如何管理Page页"></a>InnoDB引擎如何管理Page页</h2><p>InnoDB引擎是MySQL数据库的默认存储引擎，它采用了基于页的存储方式来管理数据。下面是InnoDB引擎如何管理Page页的一般流程：</p>
+<ol>
+<li>内存池（Buffer Pool）：InnoDB引擎维护了一个内存池，用于缓存数据库中的数据页。数据页是InnoDB存储数据的基本单位，一般大小为16KB。通过内存池，InnoDB引擎可以快速读取和写入数据。</li>
+<li>页的读取和写入：当需要读取数据时，InnoDB引擎首先检查数据页是否在内存池中。如果数据页已经在内存池中，可以直接读取数据；如果不在内存池中，则从磁盘读取数据页到内存池，并进行缓存，以便后续的读取操作。对于写入操作，InnoDB引擎将数据写入内存池中的数据页，并定期将修改的数据页刷新回磁盘。</li>
+<li>LRU算法：内存池使用了Least Recently Used (LRU) 算法来管理数据页的缓存。通过LRU算法，InnoDB引擎可以根据数据页的使用频率来维护内存池中的数据页，保持经常访问的数据页在内存中，而不常用的数据页则会被替换出去，以避免内存溢出。</li>
+<li>Checkpoint：为了保证数据的一致性和持久性，InnoDB引擎会定期执行Checkpoint操作。Checkpoint操作将内存池中被修改的数据页刷新回磁盘，以确保数据的更新持久化到存储介质中。</li>
+<li>日志：InnoDB引擎还使用了事务日志（Transaction Log），它记录了数据库的变更操作。通过事务日志，InnoDB引擎可以保证在数据库发生故障时，能够将未提交的事务进行回滚，保证数据的一致性。</li>
+</ol>
+<p>通过以上的管理机制，InnoDB引擎能够高效地管理Page页，实现数据的读取和写入，并保证数据的一致性和持久性。</p>
+<h2 id="为什么写缓冲区仅适用非唯一普通索引页"><a href="#为什么写缓冲区仅适用非唯一普通索引页" class="headerlink" title="为什么写缓冲区仅适用非唯一普通索引页"></a>为什么写缓冲区仅适用非唯一普通索引页</h2><p>写缓冲区（Write Buffer）是InnoDB引擎的一个重要组成部分，用于提高写入操作的性能。它在处理写入操作时，将数据先写入内存中的写缓冲区，然后再定期将数据刷新到磁盘上的数据页中。</p>
+<p>写缓冲区主要适用于非唯一普通索引页，而不适用于唯一索引页的原因如下：</p>
+<ol>
+<li>非唯一普通索引页的写入不需要保证唯一性：非唯一普通索引允许重复的键值存在，因此写缓冲区可以暂存待写入的数据，而不需要等待磁盘上原始的数据页被更新。这样可以减少磁盘I/O操作，提高写入性能。</li>
+<li>唯一索引页需要保证键值的唯一性：唯一索引要求键值是唯一的，因此在写入操作时需要进行额外的检查，以确保不会出现重复的键值。对于唯一索引页的写入操作，写缓冲区并不能完全代替磁盘上的原始数据页，因为需要确保写入的数据不会与已经存在的数据发生冲突。所以对于唯一索引页，需要先将数据写入磁盘上的原始数据页，然后再进行检查和处理，以保证唯一性。</li>
+</ol>
+<p>综上所述，写缓冲区主要适用于非唯一普通索引页，因为非唯一索引的写入操作不需要保证唯一性，可以先将数据写入写缓冲区，然后再定期批量刷新到磁盘上的数据页中，从而提高写入性能。而对于唯一索引页，由于需要保证键值的唯一性，需要直接写入磁盘上的原始数据页，不能完全依赖写缓冲区。</p>
+<h2 id="MySQL为什么要改进LRU算法"><a href="#MySQL为什么要改进LRU算法" class="headerlink" title="MySQL为什么要改进LRU算法"></a>MySQL为什么要改进LRU算法</h2><p>MySQL在InnoDB存储引擎中使用了LRU（Least Recently Used，最近最少使用）算法来管理缓冲池（Buffer Pool），用于缓存热数据，提高查询性能。然而，传统的LRU算法存在一些问题，因此MySQL对其进行了改进。</p>
+<p>传统的LRU算法是根据页面最近被访问的时间来决定页面的使用频率，当缓冲池满时，会淘汰最长时间未被访问的页面。但是在实际应用中，存在一些场景导致传统LRU算法效果不佳，比如：</p>
+<ol>
+<li>冷热数据分离：在数据库中，存在一些数据是频繁访问的热数据，而另一些数据是很少被访问的冷数据。传统LRU算法无法区分热数据和冷数据，导致冷数据也被频繁缓存，占用了宝贵的缓冲池空间。</li>
+<li>随机访问模式：某些查询模式下，数据库可能会出现随机访问的情况，导致传统LRU算法无法准确判断数据的热度，频繁淘汰一些实际上是热数据的页面。</li>
+</ol>
+<p>为了解决上述问题，MySQL对LRU算法进行了改进，引入了多种策略来更精确地决定页面的热度，其中一种改进方式是使用LRU-K算法。</p>
+<p>LRU-K算法是基于LRU算法的改进，它引入了一个参数K，表示在判断页面热度时要考虑过去K次访问的历史。通过记录最近K次访问的时间戳，可以更准确地评估页面的使用频率，从而更好地决定页面的淘汰策略。通常情况下，较小的K值能够更好地适应数据库的访问模式。</p>
+<p>改进后的LRU算法可以更加灵活地适应不同的访问模式，更准确地判断页面的热度，提高缓冲池的利用率，进而提升查询性能。</p>
+<h2 id="使用索引一定可以提升效率吗"><a href="#使用索引一定可以提升效率吗" class="headerlink" title="使用索引一定可以提升效率吗"></a>使用索引一定可以提升效率吗</h2><p>使用索引可以提升查询效率，但并不是一定能够提升效率。索引是一种数据结构，用于加快数据库的查询速度。通过在表上创建适当的索引，可以减少数据库的扫描和比较操作，从而加快查询的执行。</p>
+<p>然而，索引并非适用于所有情况，有时甚至可能导致查询效率下降。以下是一些可能导致索引无法提升效率的情况：</p>
+<ol>
+<li>数据量较小：如果表中的数据量很小，使用索引可能会导致查询过程中频繁地进行索引查找，反而增加了查询的开销。</li>
+<li>数据分布不均匀：如果表中的数据分布不均匀，即某些值的重复度较高，而其他值的重复度较低，使用索引可能会导致索引的选择性下降，查询时需要扫描更多的数据块，降低了索引的效果。</li>
+<li>复杂的查询条件：对于复杂的查询条件，可能需要多个索引的组合或者使用函数表达式，这样会增加索引的复杂度和维护成本。</li>
+<li>大量的更新操作：索引需要维护，当表中有大量的更新操作时，频繁地更新索引可能会导致性能下降。</li>
+</ol>
+<p>因此，在使用索引时需要根据具体的场景和查询需求进行评估和优化。适当地创建索引可以提升查询效率，但过多或者不合适的索引可能会带来负面影响。在设计数据库和查询语句时，需要综合考虑数据量、数据分布、查询模式等因素，权衡索引的利弊，以获得最佳的查询性能。</p>
+<h2 id="介绍下Page页的结构"><a href="#介绍下Page页的结构" class="headerlink" title="介绍下Page页的结构"></a>介绍下Page页的结构</h2><p>在计算机系统中，Page（页）是一种内存管理单位，用于将物理内存和逻辑地址空间进行映射。Page是操作系统将内存划分为固定大小的块，通常为4KB或8KB。</p>
+<p>Page页的结构通常包含以下几个字段：</p>
+<ol>
+<li>Page Frame Number (PFN)：表示页帧号，指向物理内存中实际存储页内容的位置。</li>
+<li>Valid/Invalid Bit：用于表示该页是否有效，即是否被加载到物理内存中。当该位为有效时，表示页在内存中；当该位为无效时，表示页不在内存中，需要进行页面调度。</li>
+<li>Protection/Access Control Bits：用于控制对页的访问权限，包括读、写、执行等。这些位可以根据需求设置，以确保对内存的安全访问。</li>
+<li>Dirty Bit：用于标记页是否被修改过。当页面发生写操作时，Dirty Bit被设置为1，表示该页内容已被修改，需要在未来进行写回操作。</li>
+<li>Reference Bit：用于记录页面是否被访问过。当页面被访问时，Reference Bit被设置为1，表示该页已被读取。</li>
+</ol>
+<p>通过这些字段，操作系统可以对内存进行管理和控制，实现虚拟内存的功能。通过页的映射和管理，操作系统可以将大于物理内存大小的逻辑地址空间映射到有限的物理内存中，实现了内存的抽象和扩展，提高了系统的资源利用率和性能。</p>
+<h2 id="说一下聚簇索引与非聚簇索引"><a href="#说一下聚簇索引与非聚簇索引" class="headerlink" title="说一下聚簇索引与非聚簇索引"></a>说一下聚簇索引与非聚簇索引</h2><p>聚簇索引（Clustered Index）和非聚簇索引（Non-Clustered Index）是数据库中两种常见的索引类型，它们在索引的组织方式和访问方式上有所不同。</p>
+<p>聚簇索引：</p>
+<ul>
+<li>聚簇索引的叶子节点存储了数据行的实际数据，而不仅仅是索引值。因此，聚簇索引的叶子节点是按照索引键的顺序存储的，这意味着具有相邻索引值的数据行在物理上也是相邻存储的。</li>
+<li>一张表只能有一个聚簇索引，它决定了表中数据行的物理存储顺序。</li>
+<li>聚簇索引对于按照索引键进行范围查询或排序操作非常高效，但对于插入、更新和删除操作的性能影响较大，因为这些操作可能导致数据行的物理重新排列。</li>
+</ul>
+<p>非聚簇索引：</p>
+<ul>
+<li>非聚簇索引的叶子节点不包含实际的数据行，而是包含索引键和指向数据行的指针。</li>
+<li>一张表可以有多个非聚簇索引，每个非聚簇索引都有独立的索引结构，不会影响数据行的物理存储顺序。</li>
+<li>非聚簇索引适合用于查找特定的数据行，因为它们可以通过索引键快速定位到数据行的位置。但对于范围查询或排序操作，性能可能较差。</li>
+</ul>
+<p>综合来说，聚簇索引适用于频繁进行范围查询或排序操作的列，而非聚簇索引适用于经常用于查询条件的列。在设计数据库索引时，需要根据具体的查询需求和访问模式来选择适当的索引类型，以提高查询性能和数据访问效率。</p>
+<h2 id="介绍下最佳左前缀法则"><a href="#介绍下最佳左前缀法则" class="headerlink" title="介绍下最佳左前缀法则"></a>介绍下最佳左前缀法则</h2><p>最佳左前缀法则（Best Left Prefix Rule）是数据库索引设计中的一个原则，用于确定在复合索引（Composite Index）中最有效的索引顺序。</p>
+<p>复合索引是指包含多个列的索引，可以在查询中根据这些列的组合进行快速的数据定位。而最佳左前缀法则则指出，在使用复合索引进行查询时，应该优先使用最左边的列来进行查询条件，以获得最佳的性能。</p>
+<p>根据最佳左前缀法则，当查询条件只涉及到复合索引的前缀列时，数据库可以充分利用该复合索引来加速查询。而如果查询条件涉及到复合索引的非前缀列，数据库则无法有效地使用复合索引，性能可能会受到影响。</p>
+<p>举个例子，假设有一个复合索引包含两列（A, B），按照最佳左前缀法则，当查询条件只涉及到列A时，数据库可以利用该索引进行高效的查询。但是，如果查询条件同时涉及到列A和列B，但只使用了列B作为查询条件，那么数据库将无法有效地利用该复合索引。</p>
+<p>因此，在设计复合索引时，需要根据实际的查询需求和查询条件来确定最佳的索引顺序。通常情况下，将最频繁用于查询条件的列放在复合索引的最左边，可以更好地利用索引，提高查询性能。同时，需要避免创建过于冗长的复合索引，以避免索引维护的开销和占用额外的存储空间。</p>
+<h2 id="什么是索引下推"><a href="#什么是索引下推" class="headerlink" title="什么是索引下推"></a>什么是索引下推</h2><p>索引下推（Index Condition Pushdown）是一种数据库查询优化技术，它在查询执行过程中，将部分过滤条件下推到存储引擎层级进行处理，减少了不必要的数据读取和处理，从而提高查询性能。</p>
+<p>通常情况下，数据库查询会先根据索引定位到符合条件的数据行，然后再应用查询条件进行过滤，最后返回满足条件的结果集。这种方式需要将索引定位的数据行加载到内存中，再进行过滤操作，存在额外的数据读取和处理开销。</p>
+<p>而索引下推技术则在索引层级上执行更多的过滤操作，将部分查询条件下推到存储引擎层级进行处理。这样可以减少从磁盘加载到内存的数据量，减少不必要的数据读取和处理开销，提高查询性能。</p>
+<p>具体而言，索引下推的过程如下：</p>
+<ol>
+<li>根据查询条件中的索引列，定位到符合条件的索引节点，获取索引键的值。</li>
+<li>将索引键的值下推到存储引擎层级，存储引擎可以根据索引键的值，直接定位到对应的数据页，并获取满足条件的数据行。</li>
+<li>存储引擎在获取数据行时，继续应用剩余的查询条件进行过滤，最终返回满足条件的结果集。</li>
+</ol>
+<p>通过索引下推，可以减少数据的读取和处理量，减少不必要的磁盘访问和内存消耗，提高查询效率。索引下推在一些查询场景下特别有效，例如带有大量过滤条件的查询、多表关联查询等。</p>
+<p>需要注意的是，索引下推的可用性和效果取决于数据库管理系统和存储引擎的实现，不同的数据库产品和版本可能对索引下推的支持程度不同。因此，在实际应用中，可以结合查询场景和数据库特性来评估和选择是否使用索引下推技术。</p>
+<h2 id="什么是自适应哈希索引"><a href="#什么是自适应哈希索引" class="headerlink" title="什么是自适应哈希索引"></a>什么是自适应哈希索引</h2><p>自适应哈希索引（Adaptive Hash Index）是一种用于数据库索引的数据结构，它通过动态地调整索引的大小和形状来提高查询性能。</p>
+<p>传统的哈希索引在建立时需要指定哈希表的大小，当数据量增加或数据分布不均匀时，哈希冲突会增加，导致查询性能下降。而自适应哈希索引通过动态调整哈希表的大小和形状来解决这个问题。</p>
+<p>自适应哈希索引的基本原理如下：</p>
+<ol>
+<li>初始阶段：在索引建立的初始阶段，哈希表的大小相对较小。当查询命中时，索引会记录哈希冲突的次数。</li>
+<li>动态调整：根据记录的哈希冲突次数，自适应哈希索引会动态调整哈希表的大小和形状。当哈希冲突次数超过一定阈值时，自适应哈希索引会增加哈希表的大小，以减少冲突的可能性。反之，当哈希冲突次数较少时，自适应哈希索引可以减小哈希表的大小，以节省空间和提高查询效率。</li>
+<li>迭代优化：自适应哈希索引会根据实际的查询模式和数据分布不断迭代优化哈希表的大小和形状，以达到最佳的查询性能。</li>
+</ol>
+<p>自适应哈希索引的优点是可以根据实际的查询模式和数据分布动态调整索引，提高查询性能和空间利用率。然而，自适应哈希索引也有一些缺点，例如在索引调整过程中可能会产生额外的开销，而且可能会影响到并发性能。因此，在实际应用中需要根据具体的场景和需求进行权衡和选择。</p>
+<h2 id="为什么LIKE以-开头索引会失效"><a href="#为什么LIKE以-开头索引会失效" class="headerlink" title="为什么LIKE以%开头索引会失效"></a>为什么LIKE以%开头索引会失效</h2><p>当使用 <code>LIKE</code> 操作符进行模糊查询时，如果模式字符串以 <code>%</code> 开头，索引可能会失效。这是因为 <code>%</code> 通配符表示匹配任意数量的字符（包括零个字符），因此对于以 <code>%</code> 开头的模式字符串，无法利用普通的 B-Tree 索引进行快速匹配。</p>
+<p>当模式字符串以 <code>%</code> 开头时，数据库引擎需要扫描整个索引来查找匹配的数据行。这是因为 B-Tree 索引是按照索引键的有序性进行组织的，无法直接定位到以 <code>%</code> 开头的模式字符串所匹配的数据行。因此，即使存在索引，数据库引擎仍然需要遍历整个索引来找到匹配的结果，导致索引失效。</p>
+<p>为了解决这个问题，可以考虑以下几种方式：</p>
+<ol>
+<li>前缀索引：创建一个以固定前缀开头的索引，而不是全列索引。例如，如果经常使用 <code>LIKE &#39;%abc&#39;</code> 的查询，可以创建一个以 <code>abc</code> 开头的前缀索引。这样可以利用前缀索引快速定位到匹配的数据行。</li>
+<li>全文索引：对于需要进行模糊查询的字段，可以考虑使用全文索引。全文索引在处理文本数据的模糊查询时更加高效，可以支持以 <code>%</code> 开头的模式字符串的快速匹配。</li>
+<li>数据预处理：如果查询模式固定，可以在数据插入或更新时，根据模式字符串的特征进行预处理，生成辅助字段或辅助索引，以加快模糊查询的速度。这种方式需要根据具体情况进行设计和实现。</li>
+</ol>
+<p>需要根据具体的查询场景和数据库引擎的特性选择合适的优化策略。同时，还可以通过合理的索引设计、查询优化以及数据库调优来提升模糊查询的性能。</p>
+<h2 id="自增还是UUID？数据库主键的类型该如何选择？"><a href="#自增还是UUID？数据库主键的类型该如何选择？" class="headerlink" title="自增还是UUID？数据库主键的类型该如何选择？"></a>自增还是UUID？数据库主键的类型该如何选择？</h2><p>选择自增（Auto Increment）还是UUID（Universally Unique Identifier）作为数据库主键类型，取决于具体的业务需求和场景。</p>
+<p>自增主键（比如使用 MySQL 的 AUTO_INCREMENT）是数据库自动生成的唯一标识符。它具有以下优点：</p>
+<ol>
+<li>简单性：自增主键是数据库自动生成的，不需要额外的逻辑来生成唯一标识符。</li>
+<li>索引性能：自增主键通常是单调递增的，可以更好地支持索引的高效查询和范围扫描。</li>
+<li>空间效率：自增主键只需要占用较小的存储空间。</li>
+</ol>
+<p>UUID主键（比如使用标准的 UUID、GUID）是使用全局唯一标识符生成算法生成的，具有以下优点：</p>
+<ol>
+<li>唯一性：UUID主键具有全局唯一性，不同数据库实例之间的主键冲突几乎不存在。</li>
+<li>分散性：UUID主键不依赖于数据库自增，可以在多个数据库实例之间独立生成，避免了分布式系统的主键冲突问题。</li>
+<li>随机性：UUID主键是随机生成的，不容易被猜测和推断。</li>
+</ol>
+<p>在选择数据库主键类型时，可以考虑以下几点：</p>
+<ol>
+<li>数据库规模和分布式需求：如果需要横向扩展到多个数据库实例，避免主键冲突，可以选择UUID主键。</li>
+<li>数据库性能需求：如果需要高性能的索引查询和范围扫描，自增主键可能更适合，因为它们在物理上更有序。</li>
+<li>存储空间和数据复制成本：自增主键通常占用较小的存储空间，并且在数据复制过程中的网络传输成本较低。</li>
+<li>数据库的特定要求：有些数据库引擎对主键类型有限制，可能更适合使用自增主键或特定类型的UUID。</li>
+</ol>
+<p>综上所述，选择自增主键还是UUID主键应根据具体的业务需求、性能要求和数据库引擎的特性进行评估和权衡。</p>
+<h2 id="InnoDB与MyIsam的区别"><a href="#InnoDB与MyIsam的区别" class="headerlink" title="InnoDB与MyIsam的区别"></a>InnoDB与MyIsam的区别</h2><p>InnoDB和MyISAM是MySQL数据库两种常见的存储引擎，它们在功能、性能和特性上有以下区别：</p>
+<ol>
+<li>事务支持：InnoDB是支持事务的存储引擎，而MyISAM不支持事务。事务是一组操作的原子性单位，可以保证数据的一致性和完整性。</li>
+<li>并发性能：InnoDB相较于MyISAM在并发性能上更优。InnoDB采用行级锁定，可以实现更好的并发处理，多个事务可以同时读写不同的行，提高了数据库的并发性能。而MyISAM采用表级锁定，对于写操作需要锁定整个表，可能导致较高的锁冲突和并发性能下降。</li>
+<li>外键约束：InnoDB支持外键约束，可以确保关联表之间的数据完整性和一致性，而MyISAM不支持外键约束。</li>
+<li>数据缓存：InnoDB使用了缓冲池（Buffer Pool）机制，可以将数据和索引缓存在内存中，提高读取性能。而MyISAM在读取时会直接操作磁盘文件，没有数据缓存机制。</li>
+<li>数据恢复：InnoDB支持崩溃恢复能力，具有自动崩溃恢复和日志重播机制，可以保证数据库的一致性和可靠性。而MyISAM没有崩溃恢复的能力，一旦发生异常关闭，可能会导致数据丢失或损坏。</li>
+<li>全文索引：MyISAM支持全文索引，可以实现对文本内容的高效搜索。而InnoDB在MySQL 5.6版本及以上也开始支持全文索引。</li>
+</ol>
+<p>综上所述，InnoDB适用于需要事务支持、并发性能较高以及数据完整性要求较高的场景，适合用于OLTP（联机事务处理）应用；而MyISAM适用于读取密集型应用，例如用于日志记录、数据仓库等场景。在选择存储引擎时，需根据具体的业务需求和性能要求进行评估和选择。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/MySQL/" rel="tag"># MySQL</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/05/17/SpringCloud%20Q&A/" rel="prev" title="SpringCloud Q&A">
+      <i class="fa fa-chevron-left"></i> SpringCloud Q&A
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/05/17/JVM%20Q&A/" rel="next" title="JVM Q&A">
+      JVM Q&A <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFBufferPool"><span class="nav-number">1.</span> <span class="nav-text">什么是BufferPool</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB%E5%BC%95%E6%93%8E%E5%A6%82%E4%BD%95%E7%AE%A1%E7%90%86Page%E9%A1%B5"><span class="nav-number">2.</span> <span class="nav-text">InnoDB引擎如何管理Page页</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%86%99%E7%BC%93%E5%86%B2%E5%8C%BA%E4%BB%85%E9%80%82%E7%94%A8%E9%9D%9E%E5%94%AF%E4%B8%80%E6%99%AE%E9%80%9A%E7%B4%A2%E5%BC%95%E9%A1%B5"><span class="nav-number">3.</span> <span class="nav-text">为什么写缓冲区仅适用非唯一普通索引页</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%94%B9%E8%BF%9BLRU%E7%AE%97%E6%B3%95"><span class="nav-number">4.</span> <span class="nav-text">MySQL为什么要改进LRU算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E7%B4%A2%E5%BC%95%E4%B8%80%E5%AE%9A%E5%8F%AF%E4%BB%A5%E6%8F%90%E5%8D%87%E6%95%88%E7%8E%87%E5%90%97"><span class="nav-number">5.</span> <span class="nav-text">使用索引一定可以提升效率吗</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D%E4%B8%8BPage%E9%A1%B5%E7%9A%84%E7%BB%93%E6%9E%84"><span class="nav-number">6.</span> <span class="nav-text">介绍下Page页的结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B4%E4%B8%80%E4%B8%8B%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95%E4%B8%8E%E9%9D%9E%E8%81%9A%E7%B0%87%E7%B4%A2%E5%BC%95"><span class="nav-number">7.</span> <span class="nav-text">说一下聚簇索引与非聚簇索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8B%E7%BB%8D%E4%B8%8B%E6%9C%80%E4%BD%B3%E5%B7%A6%E5%89%8D%E7%BC%80%E6%B3%95%E5%88%99"><span class="nav-number">8.</span> <span class="nav-text">介绍下最佳左前缀法则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E7%B4%A2%E5%BC%95%E4%B8%8B%E6%8E%A8"><span class="nav-number">9.</span> <span class="nav-text">什么是索引下推</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%87%AA%E9%80%82%E5%BA%94%E5%93%88%E5%B8%8C%E7%B4%A2%E5%BC%95"><span class="nav-number">10.</span> <span class="nav-text">什么是自适应哈希索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88LIKE%E4%BB%A5-%E5%BC%80%E5%A4%B4%E7%B4%A2%E5%BC%95%E4%BC%9A%E5%A4%B1%E6%95%88"><span class="nav-number">11.</span> <span class="nav-text">为什么LIKE以%开头索引会失效</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%A2%9E%E8%BF%98%E6%98%AFUUID%EF%BC%9F%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%BB%E9%94%AE%E7%9A%84%E7%B1%BB%E5%9E%8B%E8%AF%A5%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%EF%BC%9F"><span class="nav-number">12.</span> <span class="nav-text">自增还是UUID？数据库主键的类型该如何选择？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InnoDB%E4%B8%8EMyIsam%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">13.</span> <span class="nav-text">InnoDB与MyIsam的区别</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John-1010-cmd</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">34</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">31</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John-1010-cmd</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-area"></i>
+    </span>
+    <span title="站点总字数">586k</span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">8:53</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
