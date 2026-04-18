@@ -310,7 +310,7 @@
 <p>每次获取 Prototype Bean 都会创建新实例，Spring 无法缓存和提前暴露。遇到循环依赖直接抛出异常。</p>
 <p>解决方案：重构代码消除循环依赖，或使用 <code>@Lazy</code>。</p>
 <h2 id="SpringBoot-2-6-的变更"><a href="#SpringBoot-2-6-的变更" class="headerlink" title="SpringBoot 2.6+ 的变更"></a>SpringBoot 2.6+ 的变更</h2><p>从 SpringBoot 2.6 开始，<code>spring.main.allow-circular-references</code> 默认为 <code>false</code>，即默认禁止循环依赖：</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 如果确实需要循环依赖，可以手动开启</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">main:</span></span><br><span class="line">    <span class="attr">allow-circular-references:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#​ 如果确实需要循环依赖，可以手动开启</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">main:</span></span><br><span class="line">    <span class="attr">allow-circular-references:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 
 <p>这个变更的目的是推动开发者重构代码，消除循环依赖这一设计缺陷。最佳实践是通过提取公共逻辑到第三个 Bean 来解耦。</p>
 
