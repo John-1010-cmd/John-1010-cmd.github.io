@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"john-1010-cmd.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Spring AI 高级特性：Function Calling、RAG、Advisor 链与多模型编排。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring AI进阶开发">
+<meta property="og:url" content="https://john-1010-cmd.github.io/2025/06/20/Spring%20AI%E8%BF%9B%E9%98%B6/index.html">
+<meta property="og:site_name" content="John&#39;s Blog">
+<meta property="og:description" content="Spring AI 高级特性：Function Calling、RAG、Advisor 链与多模型编排。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-06-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-06-19T16:00:00.000Z">
+<meta property="article:author" content="John-1010-cmd">
+<meta property="article:tag" content="实战">
+<meta property="article:tag" content="Spring AI">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://john-1010-cmd.github.io/2025/06/20/Spring%20AI%E8%BF%9B%E9%98%B6/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Spring AI进阶开发 | John's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">John's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-系列导航">
+
+    <a href="/%E7%B3%BB%E5%88%97%E5%AF%BC%E8%88%AA/" rel="section"><i class="fa fa-fw fa-book"></i>系列导航</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://john-1010-cmd.github.io/2025/06/20/Spring%20AI%E8%BF%9B%E9%98%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John-1010-cmd">
+      <meta itemprop="description" content="Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="John's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring AI进阶开发
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-06-20 00:00:00" itemprop="dateCreated datePublished" datetime="2025-06-20T00:00:00+08:00">2025-06-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring-AI/" itemprop="url" rel="index"><span itemprop="name">Spring AI</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">Spring AI 高级特性：Function Calling、RAG、Advisor 链与多模型编排。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Function-Calling"><a href="#Function-Calling" class="headerlink" title="Function Calling"></a>Function Calling</h2><p>Function Calling（函数调用）是 Spring AI 中连接 LLM 与外部世界的关键能力。通过注册 Java 方法作为”工具”，LLM 在对话过程中可以自主决定是否调用这些工具来获取实时数据或执行操作。</p>
+<h3 id="自定义工具函数"><a href="#自定义工具函数" class="headerlink" title="自定义工具函数"></a>自定义工具函数</h3><h4 id="1-定义工具函数"><a href="#1-定义工具函数" class="headerlink" title="1. 定义工具函数"></a>1. 定义工具函数</h4><p>使用 <code>@Bean</code> + <code>@Description</code> 注解注册工具函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ToolConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Description(&quot;查询指定城市的天气信息&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Function&lt;WeatherRequest, WeatherResponse&gt; <span class="title function_">weatherFunction</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> request -&gt; weatherService.getWeather(request.city());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">WeatherRequest</span><span class="params">(String city, String unit)</span> &#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">WeatherResponse</span><span class="params">(</span></span><br><span class="line"><span class="params">        <span class="type">double</span> temperature,</span></span><br><span class="line"><span class="params">        String unit,</span></span><br><span class="line"><span class="params">        String description,</span></span><br><span class="line"><span class="params">        String city</span></span><br><span class="line"><span class="params">    )</span> &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-在-ChatClient-中引用工具"><a href="#2-在-ChatClient-中引用工具" class="headerlink" title="2. 在 ChatClient 中引用工具"></a>2. 在 ChatClient 中引用工具</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/api/chat&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ToolCallingController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ChatClient chatClient;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ToolCallingController</span><span class="params">(ChatClient.Builder builder)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.chatClient = builder.build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">chat</span><span class="params">(<span class="meta">@RequestParam</span> String message)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> chatClient.prompt()</span><br><span class="line">            .user(message)</span><br><span class="line">            .functions(<span class="string">&quot;weatherFunction&quot;</span>)  <span class="comment">// 引用注册的 Bean 名称</span></span><br><span class="line">            .call()</span><br><span class="line">            .content();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当用户输入”北京今天天气怎么样？”时，LLM 会自动识别需要调用天气查询函数，提取参数 <code>city=北京</code>，执行函数后结合结果生成自然语言回答。</p>
+<h4 id="3-工具函数的完整执行流程"><a href="#3-工具函数的完整执行流程" class="headerlink" title="3. 工具函数的完整执行流程"></a>3. 工具函数的完整执行流程</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">用户请求 → ChatClient → LLM 判断需要调用工具 → 返回工具调用请求</span><br><span class="line">    ↓</span><br><span class="line">Spring AI 自动执行工具函数 → 将结果附加到对话上下文</span><br><span class="line">    ↓</span><br><span class="line">LLM 结合工具结果生成最终回答 → 返回给用户</span><br></pre></td></tr></table></figure>
+
+<h3 id="多工具编排"><a href="#多工具编排" class="headerlink" title="多工具编排"></a>多工具编排</h3><p>一个对话中可以注册多个工具，LLM 会根据需要选择调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="meta">@Description(&quot;查询股票实时价格&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Function&lt;StockRequest, StockResponse&gt; <span class="title function_">stockPriceFunction</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> request -&gt; stockService.getPrice(request.symbol());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="meta">@Description(&quot;查询天气预报&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Function&lt;WeatherRequest, WeatherResponse&gt; <span class="title function_">weatherFunction</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> request -&gt; weatherService.getWeather(request.city());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用时指定多个工具</span></span><br><span class="line"><span class="type">String</span> <span class="variable">response</span> <span class="operator">=</span> chatClient.prompt()</span><br><span class="line">    .user(<span class="string">&quot;苹果公司的股价和库比蒂诺今天的天气&quot;</span>)</span><br><span class="line">    .functions(<span class="string">&quot;stockPriceFunction&quot;</span>, <span class="string">&quot;weatherFunction&quot;</span>)</span><br><span class="line">    .call()</span><br><span class="line">    .content();</span><br></pre></td></tr></table></figure>
+
+<h3 id="工具调用回调"><a href="#工具调用回调" class="headerlink" title="工具调用回调"></a>工具调用回调</h3><p>可以通过 Advisor 监控工具调用的过程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">chatClient.prompt()</span><br><span class="line">    .user(<span class="string">&quot;查询北京的天气&quot;</span>)</span><br><span class="line">    .functions(<span class="string">&quot;weatherFunction&quot;</span>)</span><br><span class="line">    .advisors(advisor -&gt; advisor</span><br><span class="line">        .observeToolCall((toolName, args, result) -&gt; &#123;</span><br><span class="line">            log.info(<span class="string">&quot;工具调用: &#123;&#125; 参数: &#123;&#125; 结果: &#123;&#125;&quot;</span>,</span><br><span class="line">                toolName, args, result);</span><br><span class="line">        &#125;))</span><br><span class="line">    .call()</span><br><span class="line">    .content();</span><br></pre></td></tr></table></figure>
+
+<h2 id="RAG-集成"><a href="#RAG-集成" class="headerlink" title="RAG 集成"></a>RAG 集成</h2><p>RAG（Retrieval-Augmented Generation，检索增强生成）是解决 LLM 知识时效性和专业领域覆盖不足的核心方案。Spring AI 提供了完整的 RAG 管道支持。</p>
+<h3 id="RAG-的核心流程"><a href="#RAG-的核心流程" class="headerlink" title="RAG 的核心流程"></a>RAG 的核心流程</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">用户提问 → 文本 Embedding → 向量检索 → 获取相关文档</span><br><span class="line">    ↓</span><br><span class="line">将文档作为上下文注入 Prompt → LLM 基于上下文生成回答</span><br></pre></td></tr></table></figure>
+
+<h3 id="DocumentReader：文档加载"><a href="#DocumentReader：文档加载" class="headerlink" title="DocumentReader：文档加载"></a>DocumentReader：文档加载</h3><p>DocumentReader 负责从不同数据源读取原始文档：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 读取 PDF 文档</span></span><br><span class="line"><span class="type">PagePdfDocumentReader</span> <span class="variable">pdfReader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PagePdfDocumentReader</span>(</span><br><span class="line">    <span class="keyword">new</span> <span class="title class_">FileSystemResource</span>(<span class="string">&quot;knowledge-base.pdf&quot;</span>),</span><br><span class="line">    PdfDocumentReaderConfig.builder()</span><br><span class="line">        .withPageExtractedTextFormatter(</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">ExtractedTextFormatter</span>.Builder().build())</span><br><span class="line">        .withPagesPerDocument(<span class="number">1</span>)</span><br><span class="line">        .build()</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">List&lt;Document&gt; documents = pdfReader.get();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 读取文本文件</span></span><br><span class="line"><span class="type">TextReader</span> <span class="variable">textReader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TextReader</span>(</span><br><span class="line">    <span class="keyword">new</span> <span class="title class_">FileSystemResource</span>(<span class="string">&quot;knowledge-base.txt&quot;</span>)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h3 id="DocumentTransformer：文档处理"><a href="#DocumentTransformer：文档处理" class="headerlink" title="DocumentTransformer：文档处理"></a>DocumentTransformer：文档处理</h3><p>文档通常需要分块（Chunking）后才能有效进行向量化检索：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 按 Token 数量分块</span></span><br><span class="line"><span class="type">TokenTextSplitter</span> <span class="variable">splitter</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TokenTextSplitter</span>(</span><br><span class="line">    <span class="number">800</span>,   <span class="comment">// 每块目标大小</span></span><br><span class="line">    <span class="number">200</span>,   <span class="comment">// 重叠大小</span></span><br><span class="line">    <span class="number">5</span>,     <span class="comment">// 最大块数</span></span><br><span class="line">    <span class="number">10000</span>, <span class="comment">// 最小块大小</span></span><br><span class="line">    <span class="literal">true</span>   <span class="comment">// 保留分隔符</span></span><br><span class="line">);</span><br><span class="line"></span><br><span class="line">List&lt;Document&gt; chunks = splitter.apply(documents);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 添加元数据</span></span><br><span class="line"><span class="type">DocumentTransformer</span> <span class="variable">metadataEnricher</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ContentFormatTransformer</span>();</span><br><span class="line">List&lt;Document&gt; enriched = metadataEnricher.apply(chunks);</span><br></pre></td></tr></table></figure>
+
+<h3 id="VectorStore：向量存储与检索"><a href="#VectorStore：向量存储与检索" class="headerlink" title="VectorStore：向量存储与检索"></a>VectorStore：向量存储与检索</h3><p>VectorStore 是 RAG 的核心组件，负责文档的向量化和相似度检索：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 存入文档</span></span><br><span class="line">vectorStore.add(chunks);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 相似度检索</span></span><br><span class="line">List&lt;Document&gt; results = vectorStore.similaritySearch(</span><br><span class="line">    SearchRequest.builder()</span><br><span class="line">        .query(<span class="string">&quot;Spring AI 如何实现 RAG&quot;</span>)</span><br><span class="line">        .topK(<span class="number">5</span>)</span><br><span class="line">        .similarityThreshold(<span class="number">0.7</span>)</span><br><span class="line">        .build()</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h3 id="QuestionAnswerAdvisor：开箱即用的-RAG"><a href="#QuestionAnswerAdvisor：开箱即用的-RAG" class="headerlink" title="QuestionAnswerAdvisor：开箱即用的 RAG"></a>QuestionAnswerAdvisor：开箱即用的 RAG</h3><p>Spring AI 提供了 QuestionAnswerAdvisor，一行代码即可实现 RAG：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 首先添加 Maven 依赖</span></span><br><span class="line"><span class="comment">// spring-ai-advisors-vector-store</span></span><br><span class="line"></span><br><span class="line"><span class="type">ChatClient</span> <span class="variable">chatClient</span> <span class="operator">=</span> ChatClient.builder(chatModel)</span><br><span class="line">    .defaultAdvisors(</span><br><span class="line">        QuestionAnswerAdvisor.builder(vectorStore)</span><br><span class="line">            .searchRequest(SearchRequest.builder()</span><br><span class="line">                .topK(<span class="number">5</span>)</span><br><span class="line">                .similarityThreshold(<span class="number">0.7</span>)</span><br><span class="line">                .build())</span><br><span class="line">            .build()</span><br><span class="line">    )</span><br><span class="line">    .build();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 自动检索相关文档并注入上下文</span></span><br><span class="line"><span class="type">String</span> <span class="variable">answer</span> <span class="operator">=</span> chatClient.prompt()</span><br><span class="line">    .user(<span class="string">&quot;公司的退款政策是什么？&quot;</span>)</span><br><span class="line">    .call()</span><br><span class="line">    .content();</span><br></pre></td></tr></table></figure>
+
+<h4 id="自定义-RAG-Prompt-模板"><a href="#自定义-RAG-Prompt-模板" class="headerlink" title="自定义 RAG Prompt 模板"></a>自定义 RAG Prompt 模板</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">PromptTemplate</span> <span class="variable">customTemplate</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">PromptTemplate</span>(<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">    基于以下参考资料回答用户的问题。</span></span><br><span class="line"><span class="string">    如果参考资料中没有相关信息，请回答&quot;我无法找到相关信息&quot;。</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    参考资料：</span></span><br><span class="line"><span class="string">    &#123;question_answer_context&#125;</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    用户问题：&#123;query&#125;</span></span><br><span class="line"><span class="string">    &quot;&quot;&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="type">QuestionAnswerAdvisor</span> <span class="variable">ragAdvisor</span> <span class="operator">=</span> QuestionAnswerAdvisor.builder(vectorStore)</span><br><span class="line">    .promptTemplate(customTemplate)</span><br><span class="line">    .searchRequest(SearchRequest.builder().topK(<span class="number">3</span>).build())</span><br><span class="line">    .build();</span><br></pre></td></tr></table></figure>
+
+<h4 id="动态过滤条件"><a href="#动态过滤条件" class="headerlink" title="动态过滤条件"></a>动态过滤条件</h4><p>根据用户上下文动态构建检索过滤条件：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">answer</span> <span class="operator">=</span> chatClient.prompt()</span><br><span class="line">    .user(<span class="string">&quot;企业版的价格是多少？&quot;</span>)</span><br><span class="line">    .advisors(advisor -&gt; advisor</span><br><span class="line">        .param(QuestionAnswerAdvisor.FILTER_EXPRESSION,</span><br><span class="line">            <span class="string">&quot;category == &#x27;pricing&#x27;&quot;</span>))</span><br><span class="line">    .call()</span><br><span class="line">    .content();</span><br></pre></td></tr></table></figure>
+
+<h4 id="获取检索到的原始文档"><a href="#获取检索到的原始文档" class="headerlink" title="获取检索到的原始文档"></a>获取检索到的原始文档</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ChatClientResponse</span> <span class="variable">response</span> <span class="operator">=</span> chatClient.prompt()</span><br><span class="line">    .user(<span class="string">&quot;请解释退款政策&quot;</span>)</span><br><span class="line">    .call()</span><br><span class="line">    .chatClientResponse();</span><br><span class="line"></span><br><span class="line">List&lt;Document&gt; retrievedDocs = (List&lt;Document&gt;) response</span><br><span class="line">    .chatResponse()</span><br><span class="line">    .getMetadata()</span><br><span class="line">    .get(QuestionAnswerAdvisor.RETRIEVED_DOCUMENTS);</span><br><span class="line"></span><br><span class="line">retrievedDocs.forEach(doc -&gt;</span><br><span class="line">    System.out.println(<span class="string">&quot;来源: &quot;</span> + doc.getMetadata().get(<span class="string">&quot;source&quot;</span>)));</span><br></pre></td></tr></table></figure>
+
+<h2 id="向量存储"><a href="#向量存储" class="headerlink" title="向量存储"></a>向量存储</h2><p>Spring AI 支持多种向量数据库，通过统一的 VectorStore 接口抽象。</p>
+<h3 id="PgVectorStore"><a href="#PgVectorStore" class="headerlink" title="PgVectorStore"></a>PgVectorStore</h3><p>基于 PostgreSQL + pgvector 扩展，适合已有 PostgreSQL 基础设施的场景：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> VectorStore <span class="title function_">pgVectorStore</span><span class="params">(</span></span><br><span class="line"><span class="params">        JdbcTemplate jdbcTemplate, EmbeddingModel embeddingModel)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> PgVectorStore.builder(jdbcTemplate, embeddingModel)</span><br><span class="line">        .dimensions(<span class="number">1536</span>)</span><br><span class="line">        .distanceType(DistanceType.COSINE)</span><br><span class="line">        .removeExistingVectorStoreTable(<span class="literal">false</span>)</span><br><span class="line">        .initializeSchema(<span class="literal">true</span>)</span><br><span class="line">        .build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>配置：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">ai:</span></span><br><span class="line">    <span class="attr">vectorstore:</span></span><br><span class="line">      <span class="attr">pgvector:</span></span><br><span class="line">        <span class="attr">dimensions:</span> <span class="number">1536</span></span><br><span class="line">        <span class="attr">distance-type:</span> <span class="string">cosine_distance</span></span><br><span class="line">        <span class="attr">index-type:</span> <span class="string">hnsw</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="MilvusVectorStore"><a href="#MilvusVectorStore" class="headerlink" title="MilvusVectorStore"></a>MilvusVectorStore</h3><p>Milvus 是专业的向量数据库，适合大规模生产环境：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> VectorStore <span class="title function_">milvusVectorStore</span><span class="params">(MilvusServiceClient milvusClient,</span></span><br><span class="line"><span class="params">        EmbeddingModel embeddingModel)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> MilvusVectorStore.builder(milvusClient, embeddingModel)</span><br><span class="line">        .collectionName(<span class="string">&quot;spring_ai_docs&quot;</span>)</span><br><span class="line">        .databaseName(<span class="string">&quot;default&quot;</span>)</span><br><span class="line">        .embeddingDimension(<span class="number">1536</span>)</span><br><span class="line">        .metricType(MetricType.COSINE)</span><br><span class="line">        .indexType(IndexType.IVF_FLAT)</span><br><span class="line">        .initializeSchema(<span class="literal">true</span>)</span><br><span class="line">        .build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="SimpleVectorStore"><a href="#SimpleVectorStore" class="headerlink" title="SimpleVectorStore"></a>SimpleVectorStore</h3><p>基于内存的简单实现，适合开发和测试：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> VectorStore <span class="title function_">vectorStore</span><span class="params">(EmbeddingModel embeddingModel)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> SimpleVectorStore.builder(embeddingModel).build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>SimpleVectorStore 支持将数据持久化到本地文件：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">SimpleVectorStore</span> <span class="variable">store</span> <span class="operator">=</span> SimpleVectorStore.builder(embeddingModel).build();</span><br><span class="line">store.add(documents);</span><br><span class="line">store.save(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;vector-store.json&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 加载已有数据</span></span><br><span class="line">store.load(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;vector-store.json&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<h3 id="ChromaVectorStore"><a href="#ChromaVectorStore" class="headerlink" title="ChromaVectorStore"></a>ChromaVectorStore</h3><p>Chroma 是轻量级的开源向量数据库：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> VectorStore <span class="title function_">chromaVectorStore</span><span class="params">(EmbeddingModel embeddingModel,</span></span><br><span class="line"><span class="params">        ChromaApi chromaApi)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> ChromaVectorStore.builder(chromaApi, embeddingModel)</span><br><span class="line">        .collectionName(<span class="string">&quot;my_collection&quot;</span>)</span><br><span class="line">        .initializeSchema(<span class="literal">true</span>)</span><br><span class="line">        .build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Advisor-链"><a href="#Advisor-链" class="headerlink" title="Advisor 链"></a>Advisor 链</h2><p>Advisor 是 Spring AI 的请求/响应拦截机制，类似于 Servlet Filter 或 Spring Interceptor，可以在不修改业务代码的情况下增强 ChatClient 的能力。</p>
+<h3 id="Advisor-的工作原理"><a href="#Advisor-的工作原理" class="headerlink" title="Advisor 的工作原理"></a>Advisor 的工作原理</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">用户请求 → Advisor1.before → Advisor2.before → LLM 调用</span><br><span class="line">    ↓</span><br><span class="line">LLM 响应 → Advisor2.after → Advisor1.after → 返回结果</span><br></pre></td></tr></table></figure>
+
+<h3 id="内置-Advisor"><a href="#内置-Advisor" class="headerlink" title="内置 Advisor"></a>内置 Advisor</h3><h4 id="MessageChatMemoryAdvisor"><a href="#MessageChatMemoryAdvisor" class="headerlink" title="MessageChatMemoryAdvisor"></a>MessageChatMemoryAdvisor</h4><p>自动管理对话历史消息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ChatClient</span> <span class="variable">chatClient</span> <span class="operator">=</span> ChatClient.builder(chatModel)</span><br><span class="line">    .defaultAdvisors(</span><br><span class="line">        MessageChatMemoryAdvisor.builder(chatMemory)</span><br><span class="line">            .maxSize(<span class="number">20</span>)</span><br><span class="line">            .build()</span><br><span class="line">    )</span><br><span class="line">    .build();</span><br></pre></td></tr></table></figure>
+
+<h4 id="QuestionAnswerAdvisor"><a href="#QuestionAnswerAdvisor" class="headerlink" title="QuestionAnswerAdvisor"></a>QuestionAnswerAdvisor</h4><p>自动实现 RAG 检索增强：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ChatClient</span> <span class="variable">chatClient</span> <span class="operator">=</span> ChatClient.builder(chatModel)</span><br><span class="line">    .defaultAdvisors(</span><br><span class="line">        QuestionAnswerAdvisor.builder(vectorStore)</span><br><span class="line">            .searchRequest(SearchRequest.builder().topK(<span class="number">5</span>).build())</span><br><span class="line">            .build()</span><br><span class="line">    )</span><br><span class="line">    .build();</span><br></pre></td></tr></table></figure>
+
+<h3 id="自定义-Advisor"><a href="#自定义-Advisor" class="headerlink" title="自定义 Advisor"></a>自定义 Advisor</h3><h4 id="请求日志-Advisor"><a href="#请求日志-Advisor" class="headerlink" title="请求日志 Advisor"></a>请求日志 Advisor</h4><p>记录每次请求和响应的详细信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LoggingAdvisor</span> <span class="keyword">implements</span> <span class="title class_">CallAdvisor</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Logger</span> <span class="variable">log</span> <span class="operator">=</span> LoggerFactory.getLogger(LoggingAdvisor.class);</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;LoggingAdvisor&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> ChatClientResponse <span class="title function_">adviseCall</span><span class="params">(ChatClientRequest request,</span></span><br><span class="line"><span class="params">            CallAdvisorChain chain)</span> &#123;</span><br><span class="line">        log.info(<span class="string">&quot;请求内容: &#123;&#125;&quot;</span>, request.text());</span><br><span class="line">        <span class="type">ChatClientResponse</span> <span class="variable">response</span> <span class="operator">=</span> chain.nextCall(request);</span><br><span class="line">        log.info(<span class="string">&quot;响应内容: &#123;&#125;&quot;</span>, response.chatResponse()</span><br><span class="line">            .getResult().getOutput().getText());</span><br><span class="line">        <span class="keyword">return</span> response;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="内容安全过滤-Advisor"><a href="#内容安全过滤-Advisor" class="headerlink" title="内容安全过滤 Advisor"></a>内容安全过滤 Advisor</h4><p>对输入和输出进行安全检查：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ContentSafetyAdvisor</span> <span class="keyword">implements</span> <span class="title class_">CallAdvisor</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> List&lt;String&gt; blockedWords;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ContentSafetyAdvisor</span><span class="params">(List&lt;String&gt; blockedWords)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.blockedWords = blockedWords;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> ChatClientResponse <span class="title function_">adviseCall</span><span class="params">(ChatClientRequest request,</span></span><br><span class="line"><span class="params">            CallAdvisorChain chain)</span> &#123;</span><br><span class="line">        <span class="comment">// 检查用户输入</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">userInput</span> <span class="operator">=</span> request.text();</span><br><span class="line">        <span class="keyword">for</span> (String word : blockedWords) &#123;</span><br><span class="line">            <span class="keyword">if</span> (userInput.contains(word)) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ContentSafetyException</span>(</span><br><span class="line">                    <span class="string">&quot;输入包含不允许的内容&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="type">ChatClientResponse</span> <span class="variable">response</span> <span class="operator">=</span> chain.nextCall(request);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 检查模型输出</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">output</span> <span class="operator">=</span> response.chatResponse()</span><br><span class="line">            .getResult().getOutput().getText();</span><br><span class="line">        <span class="keyword">for</span> (String word : blockedWords) &#123;</span><br><span class="line">            <span class="keyword">if</span> (output.contains(word)) &#123;</span><br><span class="line">                <span class="keyword">return</span> sanitizeResponse(response, word);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> response;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Advisor-链组合"><a href="#Advisor-链组合" class="headerlink" title="Advisor 链组合"></a>Advisor 链组合</h3><p>多个 Advisor 按顺序组成处理链：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ChatClient</span> <span class="variable">chatClient</span> <span class="operator">=</span> ChatClient.builder(chatModel)</span><br><span class="line">    .defaultAdvisors(</span><br><span class="line">        <span class="comment">// 顺序执行：日志 → 安全检查 → 记忆管理 → RAG</span></span><br><span class="line">        loggingAdvisor,</span><br><span class="line">        contentSafetyAdvisor,</span><br><span class="line">        MessageChatMemoryAdvisor.builder(chatMemory).build(),</span><br><span class="line">        QuestionAnswerAdvisor.builder(vectorStore).build()</span><br><span class="line">    )</span><br><span class="line">    .build();</span><br></pre></td></tr></table></figure>
+
+<h2 id="结构化输出"><a href="#结构化输出" class="headerlink" title="结构化输出"></a>结构化输出</h2><p>除了基础的 BeanOutputConverter，Spring AI 还提供了更灵活的结构化输出方案。</p>
+<h3 id="MapOutputConverter"><a href="#MapOutputConverter" class="headerlink" title="MapOutputConverter"></a>MapOutputConverter</h3><p>将 LLM 输出解析为 Map 结构：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">MapOutputConverter</span> <span class="variable">converter</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MapOutputConverter</span>();</span><br><span class="line"></span><br><span class="line"><span class="type">String</span> <span class="variable">response</span> <span class="operator">=</span> chatClient.prompt()</span><br><span class="line">    .user(u -&gt; u.text(<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">        分析以下技术栈的优缺点：</span></span><br><span class="line"><span class="string">        &#123;techStack&#125;</span></span><br><span class="line"><span class="string">        &#123;format&#125;</span></span><br><span class="line"><span class="string">        &quot;&quot;&quot;</span>)</span><br><span class="line">        .param(<span class="string">&quot;techStack&quot;</span>, <span class="string">&quot;Spring Boot + MyBatis + MySQL&quot;</span>)</span><br><span class="line">        .param(<span class="string">&quot;format&quot;</span>, converter.getFormat()))</span><br><span class="line">    .call()</span><br><span class="line">    .content();</span><br><span class="line"></span><br><span class="line">Map&lt;String, Object&gt; analysis = converter.convert(response);</span><br></pre></td></tr></table></figure>
+
+<h3 id="自定义-OutputConverter"><a href="#自定义-OutputConverter" class="headerlink" title="自定义 OutputConverter"></a>自定义 OutputConverter</h3><p>实现自定义的输出格式转换器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MarkdownTableConverter</span> <span class="keyword">implements</span> <span class="title class_">OutputConverter</span>&lt;List&lt;Map&lt;String, String&gt;&gt;&gt; &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String formatInstructions;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MarkdownTableConverter</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.formatInstructions = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">            请以 Markdown 表格格式输出，列名用英文，值用中文。</span></span><br><span class="line"><span class="string">            格式示例：</span></span><br><span class="line"><span class="string">            | 名称 | 说明 |</span></span><br><span class="line"><span class="string">            |------|------|</span></span><br><span class="line"><span class="string">            | xxx  | xxx  |</span></span><br><span class="line"><span class="string">            &quot;&quot;&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getFormat</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> formatInstructions;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Map&lt;String, String&gt;&gt; <span class="title function_">convert</span><span class="params">(String text)</span> &#123;</span><br><span class="line">        <span class="comment">// 解析 Markdown 表格为 List&lt;Map&gt;</span></span><br><span class="line">        <span class="keyword">return</span> parseMarkdownTable(text);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="使用-entity-的链式映射"><a href="#使用-entity-的链式映射" class="headerlink" title="使用 entity() 的链式映射"></a>使用 entity() 的链式映射</h3><p>ChatClient 的 entity() 方法支持泛型推断：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 映射到单个对象</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">CodeReview</span><span class="params">(</span></span><br><span class="line"><span class="params">    String summary,</span></span><br><span class="line"><span class="params">    List&lt;String&gt; issues,</span></span><br><span class="line"><span class="params">    List&lt;String&gt; suggestions,</span></span><br><span class="line"><span class="params">    <span class="type">int</span> severityScore</span></span><br><span class="line"><span class="params">)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="type">CodeReview</span> <span class="variable">review</span> <span class="operator">=</span> chatClient.prompt()</span><br><span class="line">    .user(<span class="string">&quot;审查以下代码：\n&quot;</span> + code)</span><br><span class="line">    .call()</span><br><span class="line">    .entity(CodeReview.class);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 映射到嵌套结构</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">ApiDocumentation</span><span class="params">(</span></span><br><span class="line"><span class="params">    String endpoint,</span></span><br><span class="line"><span class="params">    String method,</span></span><br><span class="line"><span class="params">    List&lt;ParamDoc&gt; parameters,</span></span><br><span class="line"><span class="params">    String responseBody</span></span><br><span class="line"><span class="params">)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">ParamDoc</span><span class="params">(String name, String type, String description)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">List&lt;ApiDocumentation&gt; docs = chatClient.prompt()</span><br><span class="line">    .user(<span class="string">&quot;为以下 Controller 生成 API 文档：\n&quot;</span> + controllerCode)</span><br><span class="line">    .call()</span><br><span class="line">    .entity(<span class="keyword">new</span> <span class="title class_">ParameterizedTypeReference</span>&lt;List&lt;ApiDocumentation&gt;&gt;() &#123;&#125;);</span><br></pre></td></tr></table></figure>
+
+<h2 id="多轮对话管理"><a href="#多轮对话管理" class="headerlink" title="多轮对话管理"></a>多轮对话管理</h2><h3 id="ChatMemory-架构"><a href="#ChatMemory-架构" class="headerlink" title="ChatMemory 架构"></a>ChatMemory 架构</h3><p>Spring AI 的 ChatMemory 采用分层设计：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ChatMemory（接口）</span><br><span class="line">├── InMemoryChatMemory       — 内存存储，开发测试用</span><br><span class="line">├── VectorStoreChatMemory    — 向量存储，支持语义检索</span><br><span class="line">└── CassandraChatMemory      — 持久化存储，生产环境用</span><br></pre></td></tr></table></figure>
+
+<h3 id="会话隔离"><a href="#会话隔离" class="headerlink" title="会话隔离"></a>会话隔离</h3><p>通过 conversationId 实现多用户会话隔离：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ConversationService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ChatClient chatClient;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ChatMemory chatMemory;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ConversationService</span><span class="params">(ChatClient.Builder builder,</span></span><br><span class="line"><span class="params">            ChatMemory chatMemory)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.chatMemory = chatMemory;</span><br><span class="line">        <span class="built_in">this</span>.chatClient = builder</span><br><span class="line">            .defaultAdvisors(</span><br><span class="line">                MessageChatMemoryAdvisor.builder(chatMemory)</span><br><span class="line">                    .maxSize(<span class="number">20</span>)</span><br><span class="line">                    .build()</span><br><span class="line">            )</span><br><span class="line">            .build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">chat</span><span class="params">(String userId, String message)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">conversationId</span> <span class="operator">=</span> <span class="string">&quot;user-&quot;</span> + userId;</span><br><span class="line">        <span class="keyword">return</span> chatClient.prompt()</span><br><span class="line">            .user(message)</span><br><span class="line">            .advisors(a -&gt; a.param(</span><br><span class="line">                ChatMemory.CONVERSATION_ID_KEY, conversationId))</span><br><span class="line">            .call()</span><br><span class="line">            .content();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">clearHistory</span><span class="params">(String userId)</span> &#123;</span><br><span class="line">        chatMemory.clear(<span class="string">&quot;user-&quot;</span> + userId);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="对话历史窗口策略"><a href="#对话历史窗口策略" class="headerlink" title="对话历史窗口策略"></a>对话历史窗口策略</h3><p>通过 maxSize 控制保留的历史消息数量，避免 Token 超限：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 保留最近 10 条消息（5 轮对话）</span></span><br><span class="line">MessageChatMemoryAdvisor.builder(chatMemory)</span><br><span class="line">    .maxSize(<span class="number">10</span>)</span><br><span class="line">    .build()</span><br><span class="line"></span><br><span class="line"><span class="comment">// 保留最近 50 条消息（25 轮对话）</span></span><br><span class="line">MessageChatMemoryAdvisor.builder(chatMemory)</span><br><span class="line">    .maxSize(<span class="number">50</span>)</span><br><span class="line">    .build()</span><br></pre></td></tr></table></figure>
+
+<h2 id="模型评估"><a href="#模型评估" class="headerlink" title="模型评估"></a>模型评估</h2><h3 id="Evaluator-接口"><a href="#Evaluator-接口" class="headerlink" title="Evaluator 接口"></a>Evaluator 接口</h3><p>Spring AI 提供了模型评估框架，用于量化评估 LLM 输出的质量：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Evaluator</span> &#123;</span><br><span class="line">    EvaluationResponse <span class="title function_">evaluate</span><span class="params">(EvaluationRequest request)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="RelevancyEvaluator"><a href="#RelevancyEvaluator" class="headerlink" title="RelevancyEvaluator"></a>RelevancyEvaluator</h3><p>评估 LLM 回答与上下文的相关性：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EvaluationService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> RelevancyEvaluator relevancyEvaluator;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">EvaluationService</span><span class="params">(ChatModel evaluationChatModel)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.relevancyEvaluator = RelevancyEvaluator.builder()</span><br><span class="line">            .chatModel(evaluationChatModel)</span><br><span class="line">            .build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isRelevant</span><span class="params">(String userQuery, String context,</span></span><br><span class="line"><span class="params">            String response)</span> &#123;</span><br><span class="line">        <span class="type">EvaluationRequest</span> <span class="variable">request</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">EvaluationRequest</span>(</span><br><span class="line">            userQuery,</span><br><span class="line">            List.of(<span class="keyword">new</span> <span class="title class_">Context</span>(context)),</span><br><span class="line">            response</span><br><span class="line">        );</span><br><span class="line">        <span class="type">EvaluationResponse</span> <span class="variable">result</span> <span class="operator">=</span> relevancyEvaluator.evaluate(request);</span><br><span class="line">        <span class="keyword">return</span> result.isPass();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="批量评估"><a href="#批量评估" class="headerlink" title="批量评估"></a>批量评估</h3><p>对 RAG 系统进行端到端的质量评估：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="keyword">void</span> <span class="title function_">evaluateRagQuality</span><span class="params">()</span> &#123;</span><br><span class="line">    List&lt;TestData&gt; testCases = loadTestCases();</span><br><span class="line"></span><br><span class="line">    <span class="type">int</span> <span class="variable">passCount</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (TestData test : testCases) &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">answer</span> <span class="operator">=</span> ragService.query(test.question());</span><br><span class="line"></span><br><span class="line">        <span class="type">EvaluationRequest</span> <span class="variable">request</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">EvaluationRequest</span>(</span><br><span class="line">            test.question(),</span><br><span class="line">            List.of(<span class="keyword">new</span> <span class="title class_">Context</span>(test.expectedContext())),</span><br><span class="line">            answer</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        <span class="type">EvaluationResponse</span> <span class="variable">result</span> <span class="operator">=</span> relevancyEvaluator.evaluate(request);</span><br><span class="line">        <span class="keyword">if</span> (result.isPass()) passCount++;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="type">double</span> <span class="variable">passRate</span> <span class="operator">=</span> (<span class="type">double</span>) passCount / testCases.size();</span><br><span class="line">    assertThat(passRate).isGreaterThan(<span class="number">0.8</span>);  <span class="comment">// 期望 80% 以上通过率</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="可观测性"><a href="#可观测性" class="headerlink" title="可观测性"></a>可观测性</h2><h3 id="Micrometer-集成"><a href="#Micrometer-集成" class="headerlink" title="Micrometer 集成"></a>Micrometer 集成</h3><p>Spring AI 自动将关键指标注册到 Micrometer：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-actuator<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>核心指标包括：</p>
+<ul>
+<li><code>spring.ai.chat.model.calls</code> — 模型调用次数</li>
+<li><code>spring.ai.chat.model.tokens</code> — Token 使用量</li>
+<li><code>spring.ai.chat.model.latency</code> — 模型响应延迟</li>
+</ul>
+<h3 id="自定义指标"><a href="#自定义指标" class="headerlink" title="自定义指标"></a>自定义指标</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ObservabilityConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> MeterRegistryCustomizer&lt;MeterRegistry&gt; <span class="title function_">aiMetrics</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> registry -&gt; &#123;</span><br><span class="line">            Counter.builder(<span class="string">&quot;ai.chat.requests&quot;</span>)</span><br><span class="line">                .description(<span class="string">&quot;AI 对话请求总数&quot;</span>)</span><br><span class="line">                .tag(<span class="string">&quot;application&quot;</span>, <span class="string">&quot;my-ai-app&quot;</span>)</span><br><span class="line">                .register(registry);</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="链路追踪"><a href="#链路追踪" class="headerlink" title="链路追踪"></a>链路追踪</h3><p>结合 Spring Cloud Sleuth 或 Micrometer Tracing 实现分布式追踪：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">management:</span></span><br><span class="line">  <span class="attr">tracing:</span></span><br><span class="line">    <span class="attr">sampling:</span></span><br><span class="line">      <span class="attr">probability:</span> <span class="number">1.0</span></span><br><span class="line">  <span class="attr">endpoints:</span></span><br><span class="line">    <span class="attr">web:</span></span><br><span class="line">      <span class="attr">exposure:</span></span><br><span class="line">        <span class="attr">include:</span> <span class="string">health,info,prometheus,metrics</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Prometheus-集成"><a href="#Prometheus-集成" class="headerlink" title="Prometheus 集成"></a>Prometheus 集成</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">management:</span></span><br><span class="line">  <span class="attr">endpoints:</span></span><br><span class="line">    <span class="attr">web:</span></span><br><span class="line">      <span class="attr">exposure:</span></span><br><span class="line">        <span class="attr">include:</span> <span class="string">prometheus</span></span><br><span class="line">  <span class="attr">metrics:</span></span><br><span class="line">    <span class="attr">export:</span></span><br><span class="line">      <span class="attr">prometheus:</span></span><br><span class="line">        <span class="attr">enabled:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+
+<p>在 Prometheus 中配置抓取任务后，即可在 Grafana 中可视化监控 AI 模型的调用情况。</p>
+<h2 id="流式响应处理"><a href="#流式响应处理" class="headerlink" title="流式响应处理"></a>流式响应处理</h2><h3 id="Flux-基础"><a href="#Flux-基础" class="headerlink" title="Flux 基础"></a>Flux<ChatResponse> 基础</h3><p>流式调用返回完整的 ChatResponse 流，包含元数据信息：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping(value = &quot;/stream&quot;, produces = MediaType.TEXT_EVENT_STREAM_VALUE)</span></span><br><span class="line"><span class="keyword">public</span> Flux&lt;ChatResponse&gt; <span class="title function_">chatStream</span><span class="params">(<span class="meta">@RequestParam</span> String message)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> chatClient.prompt()</span><br><span class="line">        .user(message)</span><br><span class="line">        .stream()</span><br><span class="line">        .chatResponse();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="SSE（Server-Sent-Events）"><a href="#SSE（Server-Sent-Events）" class="headerlink" title="SSE（Server-Sent Events）"></a>SSE（Server-Sent Events）</h3><p>通过 SSE 将流式响应推送到前端：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping(value = &quot;/sse&quot;, produces = MediaType.TEXT_EVENT_STREAM_VALUE)</span></span><br><span class="line"><span class="keyword">public</span> Flux&lt;ServerSentEvent&lt;String&gt;&gt; <span class="title function_">sseChat</span><span class="params">(<span class="meta">@RequestParam</span> String message)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> chatClient.prompt()</span><br><span class="line">        .user(message)</span><br><span class="line">        .stream()</span><br><span class="line">        .content()</span><br><span class="line">        .map(chunk -&gt; ServerSentEvent.&lt;String&gt;builder()</span><br><span class="line">            .data(chunk)</span><br><span class="line">            .build());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>前端通过 EventSource API 接收：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> eventSource = <span class="keyword">new</span> <span class="title class_">EventSource</span>(<span class="string">&#x27;/api/chat/sse?message=你好&#x27;</span>);</span><br><span class="line">eventSource.<span class="property">onmessage</span> = <span class="keyword">function</span>(<span class="params">event</span>) &#123;</span><br><span class="line">    <span class="variable language_">document</span>.<span class="title function_">getElementById</span>(<span class="string">&#x27;response&#x27;</span>).<span class="property">textContent</span> += event.<span class="property">data</span>;</span><br><span class="line">&#125;;</span><br><span class="line">eventSource.<span class="property">onerror</span> = <span class="keyword">function</span>(<span class="params"></span>) &#123;</span><br><span class="line">    eventSource.<span class="title function_">close</span>();</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h3 id="流式响应中的工具调用"><a href="#流式响应中的工具调用" class="headerlink" title="流式响应中的工具调用"></a>流式响应中的工具调用</h3><p>Spring AI 支持在流式模式下处理 Function Calling，使用 <code>publish()</code> 操作符实现并行流处理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> Flux&lt;ChatClientResponse&gt; <span class="title function_">streamWithToolCallResponses</span><span class="params">(</span></span><br><span class="line"><span class="params">        Flux&lt;ChatClientResponse&gt; responseFlux)</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> responseFlux.publish(shared -&gt; &#123;</span><br><span class="line">        <span class="comment">// 分支1：流式输出给用户</span></span><br><span class="line">        Flux&lt;ChatClientResponse&gt; streamingBranch =</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">ChatClientMessageAggregator</span>()</span><br><span class="line">                .aggregateChatClientResponse(shared, aggregated::set);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 分支2：流结束后检查是否需要工具调用</span></span><br><span class="line">        Flux&lt;ChatClientResponse&gt; toolCallBranch = Flux</span><br><span class="line">            .defer(() -&gt; handleToolCall(aggregated.get()));</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> streamingBranch.concatWith(toolCallBranch);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种模式确保了用户体验的实时性，同时在流结束后自动处理工具调用并递归执行。</p>
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>本文深入探讨了 Spring AI 的高级特性：</p>
+<ol>
+<li><strong>Function Calling</strong>：通过注册 Java 函数让 LLM 与外部世界交互</li>
+<li><strong>RAG 集成</strong>：DocumentReader → DocumentTransformer → VectorStore 完整管道</li>
+<li><strong>向量存储</strong>：PgVector、Milvus、SimpleVector、Chroma 等多种选择</li>
+<li><strong>Advisor 链</strong>：请求/响应拦截机制，支持日志、安全、记忆等横切关注点</li>
+<li><strong>结构化输出</strong>：MapOutputConverter 和自定义格式转换器</li>
+<li><strong>多轮对话管理</strong>：ChatMemory 架构和会话隔离</li>
+<li><strong>模型评估</strong>：RelevancyEvaluator 评估回答质量</li>
+<li><strong>可观测性</strong>：Micrometer 指标监控与 Prometheus 集成</li>
+<li><strong>流式响应</strong>：Flux<ChatResponse>、SSE 和流式工具调用处理</li>
+</ol>
+<p>下一篇文章将聚焦 Spring AI Alibaba，介绍如何使用国产大模型构建 AI 应用。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AE%9E%E6%88%98/" rel="tag"># 实战</a>
+              <a href="/tags/Spring-AI/" rel="tag"># Spring AI</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/06/15/AI%20Agent%E5%BC%80%E5%8F%91/" rel="prev" title="AI Agent开发指南">
+      <i class="fa fa-chevron-left"></i> AI Agent开发指南
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/06/20/LangChain%E5%AE%9E%E6%88%98/" rel="next" title="LangChain框架实战">
+      LangChain框架实战 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Function-Calling"><span class="nav-number">1.</span> <span class="nav-text">Function Calling</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.</span> <span class="nav-text">自定义工具函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%AE%9A%E4%B9%89%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0"><span class="nav-number">1.1.1.</span> <span class="nav-text">1. 定义工具函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%9C%A8-ChatClient-%E4%B8%AD%E5%BC%95%E7%94%A8%E5%B7%A5%E5%85%B7"><span class="nav-number">1.1.2.</span> <span class="nav-text">2. 在 ChatClient 中引用工具</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0%E7%9A%84%E5%AE%8C%E6%95%B4%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-number">1.1.3.</span> <span class="nav-text">3. 工具函数的完整执行流程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E5%B7%A5%E5%85%B7%E7%BC%96%E6%8E%92"><span class="nav-number">1.2.</span> <span class="nav-text">多工具编排</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8%E5%9B%9E%E8%B0%83"><span class="nav-number">1.3.</span> <span class="nav-text">工具调用回调</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RAG-%E9%9B%86%E6%88%90"><span class="nav-number">2.</span> <span class="nav-text">RAG 集成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#RAG-%E7%9A%84%E6%A0%B8%E5%BF%83%E6%B5%81%E7%A8%8B"><span class="nav-number">2.1.</span> <span class="nav-text">RAG 的核心流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DocumentReader%EF%BC%9A%E6%96%87%E6%A1%A3%E5%8A%A0%E8%BD%BD"><span class="nav-number">2.2.</span> <span class="nav-text">DocumentReader：文档加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DocumentTransformer%EF%BC%9A%E6%96%87%E6%A1%A3%E5%A4%84%E7%90%86"><span class="nav-number">2.3.</span> <span class="nav-text">DocumentTransformer：文档处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#VectorStore%EF%BC%9A%E5%90%91%E9%87%8F%E5%AD%98%E5%82%A8%E4%B8%8E%E6%A3%80%E7%B4%A2"><span class="nav-number">2.4.</span> <span class="nav-text">VectorStore：向量存储与检索</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#QuestionAnswerAdvisor%EF%BC%9A%E5%BC%80%E7%AE%B1%E5%8D%B3%E7%94%A8%E7%9A%84-RAG"><span class="nav-number">2.5.</span> <span class="nav-text">QuestionAnswerAdvisor：开箱即用的 RAG</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-RAG-Prompt-%E6%A8%A1%E6%9D%BF"><span class="nav-number">2.5.1.</span> <span class="nav-text">自定义 RAG Prompt 模板</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%BF%87%E6%BB%A4%E6%9D%A1%E4%BB%B6"><span class="nav-number">2.5.2.</span> <span class="nav-text">动态过滤条件</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%8E%B7%E5%8F%96%E6%A3%80%E7%B4%A2%E5%88%B0%E7%9A%84%E5%8E%9F%E5%A7%8B%E6%96%87%E6%A1%A3"><span class="nav-number">2.5.3.</span> <span class="nav-text">获取检索到的原始文档</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%91%E9%87%8F%E5%AD%98%E5%82%A8"><span class="nav-number">3.</span> <span class="nav-text">向量存储</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PgVectorStore"><span class="nav-number">3.1.</span> <span class="nav-text">PgVectorStore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MilvusVectorStore"><span class="nav-number">3.2.</span> <span class="nav-text">MilvusVectorStore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SimpleVectorStore"><span class="nav-number">3.3.</span> <span class="nav-text">SimpleVectorStore</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ChromaVectorStore"><span class="nav-number">3.4.</span> <span class="nav-text">ChromaVectorStore</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Advisor-%E9%93%BE"><span class="nav-number">4.</span> <span class="nav-text">Advisor 链</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Advisor-%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">Advisor 的工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E7%BD%AE-Advisor"><span class="nav-number">4.2.</span> <span class="nav-text">内置 Advisor</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MessageChatMemoryAdvisor"><span class="nav-number">4.2.1.</span> <span class="nav-text">MessageChatMemoryAdvisor</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#QuestionAnswerAdvisor"><span class="nav-number">4.2.2.</span> <span class="nav-text">QuestionAnswerAdvisor</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-Advisor"><span class="nav-number">4.3.</span> <span class="nav-text">自定义 Advisor</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%B7%E6%B1%82%E6%97%A5%E5%BF%97-Advisor"><span class="nav-number">4.3.1.</span> <span class="nav-text">请求日志 Advisor</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E5%AE%B9%E5%AE%89%E5%85%A8%E8%BF%87%E6%BB%A4-Advisor"><span class="nav-number">4.3.2.</span> <span class="nav-text">内容安全过滤 Advisor</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Advisor-%E9%93%BE%E7%BB%84%E5%90%88"><span class="nav-number">4.4.</span> <span class="nav-text">Advisor 链组合</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E5%8C%96%E8%BE%93%E5%87%BA"><span class="nav-number">5.</span> <span class="nav-text">结构化输出</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MapOutputConverter"><span class="nav-number">5.1.</span> <span class="nav-text">MapOutputConverter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-OutputConverter"><span class="nav-number">5.2.</span> <span class="nav-text">自定义 OutputConverter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8-entity-%E7%9A%84%E9%93%BE%E5%BC%8F%E6%98%A0%E5%B0%84"><span class="nav-number">5.3.</span> <span class="nav-text">使用 entity() 的链式映射</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E8%BD%AE%E5%AF%B9%E8%AF%9D%E7%AE%A1%E7%90%86"><span class="nav-number">6.</span> <span class="nav-text">多轮对话管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ChatMemory-%E6%9E%B6%E6%9E%84"><span class="nav-number">6.1.</span> <span class="nav-text">ChatMemory 架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%9A%E8%AF%9D%E9%9A%94%E7%A6%BB"><span class="nav-number">6.2.</span> <span class="nav-text">会话隔离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E8%AF%9D%E5%8E%86%E5%8F%B2%E7%AA%97%E5%8F%A3%E7%AD%96%E7%95%A5"><span class="nav-number">6.3.</span> <span class="nav-text">对话历史窗口策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E8%AF%84%E4%BC%B0"><span class="nav-number">7.</span> <span class="nav-text">模型评估</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Evaluator-%E6%8E%A5%E5%8F%A3"><span class="nav-number">7.1.</span> <span class="nav-text">Evaluator 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#RelevancyEvaluator"><span class="nav-number">7.2.</span> <span class="nav-text">RelevancyEvaluator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%B9%E9%87%8F%E8%AF%84%E4%BC%B0"><span class="nav-number">7.3.</span> <span class="nav-text">批量评估</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%AF%E8%A7%82%E6%B5%8B%E6%80%A7"><span class="nav-number">8.</span> <span class="nav-text">可观测性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Micrometer-%E9%9B%86%E6%88%90"><span class="nav-number">8.1.</span> <span class="nav-text">Micrometer 集成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E6%8C%87%E6%A0%87"><span class="nav-number">8.2.</span> <span class="nav-text">自定义指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%93%BE%E8%B7%AF%E8%BF%BD%E8%B8%AA"><span class="nav-number">8.3.</span> <span class="nav-text">链路追踪</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Prometheus-%E9%9B%86%E6%88%90"><span class="nav-number">8.4.</span> <span class="nav-text">Prometheus 集成</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%81%E5%BC%8F%E5%93%8D%E5%BA%94%E5%A4%84%E7%90%86"><span class="nav-number">9.</span> <span class="nav-text">流式响应处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Flux-%E5%9F%BA%E7%A1%80"><span class="nav-number">9.1.</span> <span class="nav-text">Flux 基础</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SSE%EF%BC%88Server-Sent-Events%EF%BC%89"><span class="nav-number">9.2.</span> <span class="nav-text">SSE（Server-Sent Events）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E5%BC%8F%E5%93%8D%E5%BA%94%E4%B8%AD%E7%9A%84%E5%B7%A5%E5%85%B7%E8%B0%83%E7%94%A8"><span class="nav-number">9.3.</span> <span class="nav-text">流式响应中的工具调用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">10.</span> <span class="nav-text">小结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John-1010-cmd</p>
+  <div class="site-description" itemprop="description">Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John-1010-cmd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

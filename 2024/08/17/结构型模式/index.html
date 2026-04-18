@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"john-1010-cmd.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Java 结构型设计模式的实战应用，重点解析代理模式在 AOP 与 RPC 中的应用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="结构型设计模式实战">
+<meta property="og:url" content="https://john-1010-cmd.github.io/2024/08/17/%E7%BB%93%E6%9E%84%E5%9E%8B%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="John&#39;s Blog">
+<meta property="og:description" content="Java 结构型设计模式的实战应用，重点解析代理模式在 AOP 与 RPC 中的应用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-16T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-08-16T16:00:00.000Z">
+<meta property="article:author" content="John-1010-cmd">
+<meta property="article:tag" content="实战">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://john-1010-cmd.github.io/2024/08/17/%E7%BB%93%E6%9E%84%E5%9E%8B%E6%A8%A1%E5%BC%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>结构型设计模式实战 | John's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">John's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-系列导航">
+
+    <a href="/%E7%B3%BB%E5%88%97%E5%AF%BC%E8%88%AA/" rel="section"><i class="fa fa-fw fa-book"></i>系列导航</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://john-1010-cmd.github.io/2024/08/17/%E7%BB%93%E6%9E%84%E5%9E%8B%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John-1010-cmd">
+      <meta itemprop="description" content="Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="John's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          结构型设计模式实战
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-08-17 00:00:00" itemprop="dateCreated datePublished" datetime="2024-08-17T00:00:00+08:00">2024-08-17</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">Java 结构型设计模式的实战应用，重点解析代理模式在 AOP 与 RPC 中的应用。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>结构型设计模式关注类和对象的组合方式，通过继承和组合机制实现更灵活的结构。本文深入分析七种结构型模式，重点解析代理模式在 Spring AOP 和 RPC 框架中的核心应用。</p>
+<h2 id="代理模式"><a href="#代理模式" class="headerlink" title="代理模式"></a>代理模式</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>代理模式为另一个对象提供替身或占位符，以控制对这个对象的访问。代理对象在客户端和目标对象之间起到中介作用，可以在不修改目标对象的前提下增强功能。</p>
+<h3 id="UML-类图"><a href="#UML-类图" class="headerlink" title="UML 类图"></a>UML 类图</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">+------------------+        +------------------+</span><br><span class="line">|   Subject        |        |   RealSubject    |</span><br><span class="line">+------------------+        +------------------+</span><br><span class="line">| + request()      |&lt;-------| + request()      |</span><br><span class="line">+------------------+        +------------------+</span><br><span class="line">        ^</span><br><span class="line">        |</span><br><span class="line">+------------------+</span><br><span class="line">|   Proxy          |</span><br><span class="line">+------------------+</span><br><span class="line">| - realSubject    |</span><br><span class="line">+------------------+</span><br><span class="line">| + request()      |</span><br><span class="line">+------------------+</span><br></pre></td></tr></table></figure>
+
+<h3 id="静态代理"><a href="#静态代理" class="headerlink" title="静态代理"></a>静态代理</h3><p>静态代理在编译时确定代理类，代理类和目标类实现相同接口。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">UserDao</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">save</span><span class="params">(User user)</span>;</span><br><span class="line">    User <span class="title function_">findById</span><span class="params">(Long id)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserDaoImpl</span> <span class="keyword">implements</span> <span class="title class_">UserDao</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">save</span><span class="params">(User user)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;保存用户: &quot;</span> + user.getName());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">findById</span><span class="params">(Long id)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;查询用户: &quot;</span> + id);</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">User</span>(id, <span class="string">&quot;张三&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 静态代理类</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserDaoProxy</span> <span class="keyword">implements</span> <span class="title class_">UserDao</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> UserDao target;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">UserDaoProxy</span><span class="params">(UserDao target)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.target = target;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">save</span><span class="params">(User user)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;[LOG] 开始保存用户&quot;</span>);</span><br><span class="line">        <span class="type">long</span> <span class="variable">start</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line">        target.save(user);</span><br><span class="line">        <span class="type">long</span> <span class="variable">cost</span> <span class="operator">=</span> System.currentTimeMillis() - start;</span><br><span class="line">        System.out.println(<span class="string">&quot;[LOG] 保存完成，耗时: &quot;</span> + cost + <span class="string">&quot;ms&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">findById</span><span class="params">(Long id)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;[LOG] 开始查询用户&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> target.findById(id);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>缺点</strong>：每个目标类都需要一个代理类，接口方法增加时代理类也要同步修改。</p>
+<h3 id="JDK-动态代理"><a href="#JDK-动态代理" class="headerlink" title="JDK 动态代理"></a>JDK 动态代理</h3><p>JDK 动态代理通过反射在运行时生成代理类，要求目标类必须实现接口。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">JdkProxyHandler</span> <span class="keyword">implements</span> <span class="title class_">InvocationHandler</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Object target;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">JdkProxyHandler</span><span class="params">(Object target)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.target = target;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> &lt;T&gt; T <span class="title function_">getProxy</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> (T) Proxy.newProxyInstance(</span><br><span class="line">            target.getClass().getClassLoader(),</span><br><span class="line">            target.getClass().getInterfaces(),</span><br><span class="line">            <span class="built_in">this</span></span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;[JDK Proxy] 前置通知: &quot;</span> + method.getName());</span><br><span class="line">        <span class="type">long</span> <span class="variable">start</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="type">Object</span> <span class="variable">result</span> <span class="operator">=</span> method.invoke(target, args);</span><br><span class="line">            System.out.println(<span class="string">&quot;[JDK Proxy] 返回通知，耗时: &quot;</span></span><br><span class="line">                + (System.currentTimeMillis() - start) + <span class="string">&quot;ms&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;[JDK Proxy] 异常通知: &quot;</span> + e.getMessage());</span><br><span class="line">            <span class="keyword">throw</span> e;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;[JDK Proxy] 后置通知&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用方式</span></span><br><span class="line"><span class="type">UserDao</span> <span class="variable">original</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">UserDaoImpl</span>();</span><br><span class="line"><span class="type">UserDao</span> <span class="variable">proxy</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">JdkProxyHandler</span>(original).getProxy();</span><br><span class="line">proxy.save(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="number">1L</span>, <span class="string">&quot;李四&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<p><strong>原理</strong>：<code>Proxy.newProxyInstance()</code> 在运行时生成一个实现了指定接口的代理类字节码，并加载到 JVM 中。代理类将方法调用转发给 <code>InvocationHandler.invoke()</code> 方法。</p>
+<h3 id="CGLIB-动态代理"><a href="#CGLIB-动态代理" class="headerlink" title="CGLIB 动态代理"></a>CGLIB 动态代理</h3><p>CGLIB 通过字节码技术生成目标类的子类来实现代理，不要求目标类实现接口。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CglibProxyInterceptor</span> <span class="keyword">implements</span> <span class="title class_">MethodInterceptor</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">intercept</span><span class="params">(Object obj, Method method, Object[] args, MethodProxy proxy)</span> <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;[CGLIB] 前置增强: &quot;</span> + method.getName());</span><br><span class="line">        <span class="type">long</span> <span class="variable">start</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 通过 FastClass 机制调用父类方法（比反射高效）</span></span><br><span class="line">            <span class="type">Object</span> <span class="variable">result</span> <span class="operator">=</span> proxy.invokeSuper(obj, args);</span><br><span class="line">            System.out.println(<span class="string">&quot;[CGLIB] 返回增强，耗时: &quot;</span></span><br><span class="line">                + (System.currentTimeMillis() - start) + <span class="string">&quot;ms&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> result;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;[CGLIB] 异常增强: &quot;</span> + e.getMessage());</span><br><span class="line">            <span class="keyword">throw</span> e;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用方式</span></span><br><span class="line"><span class="type">Enhancer</span> <span class="variable">enhancer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Enhancer</span>();</span><br><span class="line">enhancer.setSuperclass(UserDaoImpl.class);</span><br><span class="line">enhancer.setCallback(<span class="keyword">new</span> <span class="title class_">CglibProxyInterceptor</span>());</span><br><span class="line"><span class="type">UserDaoImpl</span> <span class="variable">proxy</span> <span class="operator">=</span> (UserDaoImpl) enhancer.create();</span><br><span class="line">proxy.save(<span class="keyword">new</span> <span class="title class_">User</span>(<span class="number">1L</span>, <span class="string">&quot;王五&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<p><strong>CGLIB vs JDK 动态代理对比</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>JDK 动态代理</th>
+<th>CGLIB</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>要求</td>
+<td>目标类实现接口</td>
+<td>目标类可被继承</td>
+</tr>
+<tr>
+<td>原理</td>
+<td>反射调用</td>
+<td>生成子类 + FastClass</td>
+</tr>
+<tr>
+<td>性能</td>
+<td>生成快，调用稍慢</td>
+<td>生成慢，调用更快</td>
+</tr>
+<tr>
+<td>限制</td>
+<td>无法代理 final 方法</td>
+<td>无法代理 final 类/方法</td>
+</tr>
+</tbody></table>
+<h3 id="Spring-AOP-中的应用"><a href="#Spring-AOP-中的应用" class="headerlink" title="Spring AOP 中的应用"></a>Spring AOP 中的应用</h3><p>Spring AOP 默认使用 JDK 动态代理（当 Bean 实现了接口时），否则使用 CGLIB。从 Spring Boot 2.x 开始，默认使用 CGLIB。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 自定义切面</span></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LoggingAspect</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 切点：匹配 Service 层所有方法</span></span><br><span class="line">    <span class="meta">@Pointcut(&quot;execution(* com.example.service..*.*(..))&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">serviceLayer</span><span class="params">()</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Before(&quot;serviceLayer()&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">beforeAdvice</span><span class="params">(JoinPoint joinPoint)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">methodName</span> <span class="operator">=</span> joinPoint.getSignature().getName();</span><br><span class="line">        Object[] args = joinPoint.getArgs();</span><br><span class="line">        System.out.println(<span class="string">&quot;[AOP] 调用方法: &quot;</span> + methodName + <span class="string">&quot;, 参数: &quot;</span> + Arrays.toString(args));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@AfterReturning(pointcut = &quot;serviceLayer()&quot;, returning = &quot;result&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">afterReturningAdvice</span><span class="params">(JoinPoint joinPoint, Object result)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;[AOP] 方法返回: &quot;</span> + result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Around(&quot;serviceLayer()&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">aroundAdvice</span><span class="params">(ProceedingJoinPoint pjp)</span> <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line">        <span class="type">long</span> <span class="variable">start</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line">        <span class="type">Object</span> <span class="variable">result</span> <span class="operator">=</span> pjp.proceed();</span><br><span class="line">        <span class="type">long</span> <span class="variable">cost</span> <span class="operator">=</span> System.currentTimeMillis() - start;</span><br><span class="line">        System.out.println(<span class="string">&quot;[AOP] &quot;</span> + pjp.getSignature().getName() + <span class="string">&quot; 耗时: &quot;</span> + cost + <span class="string">&quot;ms&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Spring AOP 代理创建流程</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">AbstractAutoProxyCreator.postProcessAfterInitialization()</span><br><span class="line">    -&gt; wrapIfNecessary()</span><br><span class="line">        -&gt; getAdvicesAndAdvisorsForInterface() // 获取切面</span><br><span class="line">        -&gt; createProxy()                       // 创建代理</span><br><span class="line">            -&gt; 如果目标类实现接口且配置为 JDK 代理</span><br><span class="line">                -&gt; JdkDynamicAopProxy</span><br><span class="line">            -&gt; 否则</span><br><span class="line">                -&gt; CglibAopProxy</span><br></pre></td></tr></table></figure>
+
+<p>在 RPC 框架（如 Dubbo、Feign）中，消费者端的接口实际上就是代理对象。调用远程方法就像调用本地方法一样，代理对象负责序列化请求、网络传输、反序列化响应。</p>
+<hr>
+<h2 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h2><h3 id="概念-1"><a href="#概念-1" class="headerlink" title="概念"></a>概念</h3><p>适配器模式将一个类的接口转换成客户端期望的另一种接口，使原本不兼容的类可以协同工作。分为类适配器（继承）和对象适配器（组合）两种。</p>
+<h3 id="代码示例"><a href="#代码示例" class="headerlink" title="代码示例"></a>代码示例</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 旧系统的日志接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">LegacyLogger</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">logMessage</span><span class="params">(String level, String message)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 新系统的日志接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">NewLogger</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">info</span><span class="params">(String message)</span>;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">error</span><span class="params">(String message)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 对象适配器：让旧的日志接口适配新接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LoggerAdapter</span> <span class="keyword">implements</span> <span class="title class_">NewLogger</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> LegacyLogger legacyLogger;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">LoggerAdapter</span><span class="params">(LegacyLogger legacyLogger)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.legacyLogger = legacyLogger;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">info</span><span class="params">(String message)</span> &#123;</span><br><span class="line">        legacyLogger.logMessage(<span class="string">&quot;INFO&quot;</span>, message);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">error</span><span class="params">(String message)</span> &#123;</span><br><span class="line">        legacyLogger.logMessage(<span class="string">&quot;ERROR&quot;</span>, message);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="SpringMVC-HandlerAdapter"><a href="#SpringMVC-HandlerAdapter" class="headerlink" title="SpringMVC HandlerAdapter"></a>SpringMVC HandlerAdapter</h3><p>SpringMVC 的 <code>HandlerAdapter</code> 是适配器模式的经典应用。不同类型的 Handler（Controller、Servlet、HttpRequestHandler）具有不同的调用方式，<code>HandlerAdapter</code> 统一了调用接口。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// DispatcherServlet 核心分发逻辑</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DispatcherServlet</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> List&lt;HandlerAdapter&gt; handlerAdapters;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">doDispatch</span><span class="params">(HttpServletRequest request, HttpServletResponse response)</span> &#123;</span><br><span class="line">        <span class="type">Object</span> <span class="variable">handler</span> <span class="operator">=</span> getHandler(request);</span><br><span class="line">        <span class="comment">// 根据 handler 找到对应的适配器</span></span><br><span class="line">        <span class="type">HandlerAdapter</span> <span class="variable">adapter</span> <span class="operator">=</span> getHandlerAdapter(handler);</span><br><span class="line">        <span class="comment">// 统一调用</span></span><br><span class="line">        <span class="type">ModelAndView</span> <span class="variable">mv</span> <span class="operator">=</span> adapter.handle(request, response, handler);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> HandlerAdapter <span class="title function_">getHandlerAdapter</span><span class="params">(Object handler)</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (HandlerAdapter adapter : handlerAdapters) &#123;</span><br><span class="line">            <span class="keyword">if</span> (adapter.supports(handler)) &#123;</span><br><span class="line">                <span class="keyword">return</span> adapter;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ServletException</span>(<span class="string">&quot;No adapter for handler: &quot;</span> + handler);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 三种适配器实现</span></span><br><span class="line"><span class="comment">// 1. RequestMappingHandlerAdapter -&gt; @RequestMapping 方法</span></span><br><span class="line"><span class="comment">// 2. HttpRequestHandlerAdapter -&gt; HttpRequestHandler 接口</span></span><br><span class="line"><span class="comment">// 3. SimpleControllerHandlerAdapter -&gt; Controller 接口</span></span><br></pre></td></tr></table></figure>
+
+<p>这种设计使得 <code>DispatcherServlet</code> 无需关心具体 Handler 的类型，只通过 <code>HandlerAdapter</code> 统一调用，新增 Handler 类型时只需添加对应的 Adapter 即可。</p>
+<hr>
+<h2 id="装饰器模式"><a href="#装饰器模式" class="headerlink" title="装饰器模式"></a>装饰器模式</h2><h3 id="概念-2"><a href="#概念-2" class="headerlink" title="概念"></a>概念</h3><p>装饰器模式动态地给对象增加功能，是继承的一种替代方案。装饰器和被装饰者实现相同接口，通过层层包装来扩展功能。</p>
+<h3 id="UML-类图-1"><a href="#UML-类图-1" class="headerlink" title="UML 类图"></a>UML 类图</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">+------------------+        +------------------+</span><br><span class="line">|   Component      |        |   Decorator      |</span><br><span class="line">+------------------+        +------------------+</span><br><span class="line">| + operation()    |&lt;-------| - component      |</span><br><span class="line">+------------------+        | + operation()    |</span><br><span class="line">        ^                   +------------------+</span><br><span class="line">        |                           ^</span><br><span class="line">        |                           |</span><br><span class="line">+------------------+        +------------------+</span><br><span class="line">| ConcreteComponent|        | ConcreteDecorator|</span><br><span class="line">+------------------+        +------------------+</span><br><span class="line">| + operation()    |        | + operation()    |</span><br><span class="line">+------------------+        | + addedBehavior()|</span><br><span class="line">                            +------------------+</span><br></pre></td></tr></table></figure>
+
+<h3 id="Java-IO-流体系"><a href="#Java-IO-流体系" class="headerlink" title="Java IO 流体系"></a>Java IO 流体系</h3><p>Java IO 是装饰器模式最经典的体现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 装饰器层层包装</span></span><br><span class="line"><span class="type">InputStream</span> <span class="variable">input</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BufferedInputStream</span>(             <span class="comment">// 缓冲装饰器</span></span><br><span class="line">                        <span class="keyword">new</span> <span class="title class_">GZIPInputStream</span>(             <span class="comment">// 解压缩装饰器</span></span><br><span class="line">                            <span class="keyword">new</span> <span class="title class_">FileInputStream</span>(<span class="string">&quot;data.gz&quot;</span>) <span class="comment">// 基础节点流</span></span><br><span class="line">                        )</span><br><span class="line">                    );</span><br><span class="line"></span><br><span class="line"><span class="comment">// 读取过程：BufferedInputStream -&gt; GZIPInputStream -&gt; FileInputStream</span></span><br><span class="line"><span class="comment">// 每一层都增加了额外功能（缓冲 / 解压 / 文件读取）</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>IO 流中的角色映射</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>角色</th>
+<th>对应的类</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Component</td>
+<td><code>InputStream</code> / <code>OutputStream</code></td>
+</tr>
+<tr>
+<td>ConcreteComponent</td>
+<td><code>FileInputStream</code> / <code>ByteArrayInputStream</code></td>
+</tr>
+<tr>
+<td>Decorator</td>
+<td><code>FilterInputStream</code> / <code>FilterOutputStream</code></td>
+</tr>
+<tr>
+<td>ConcreteDecorator</td>
+<td><code>BufferedInputStream</code> / <code>GZIPInputStream</code></td>
+</tr>
+</tbody></table>
+<p>核心源码分析：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// FilterInputStream 是所有装饰器的基类</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">FilterInputStream</span> <span class="keyword">extends</span> <span class="title class_">InputStream</span> &#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">volatile</span> InputStream in; <span class="comment">// 持有被装饰对象</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="keyword">return</span> in.read(); <span class="comment">// 默认直接委托，子类覆写以增加功能</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// BufferedInputStream 增加缓冲功能</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BufferedInputStream</span> <span class="keyword">extends</span> <span class="title class_">FilterInputStream</span> &#123;</span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">volatile</span> <span class="type">byte</span>[] buf; <span class="comment">// 内部缓冲区</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">()</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">        <span class="comment">// 如果缓冲区为空，批量读取数据到缓冲区</span></span><br><span class="line">        <span class="comment">// 然后从缓冲区返回单个字节</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="桥接模式"><a href="#桥接模式" class="headerlink" title="桥接模式"></a>桥接模式</h2><h3 id="概念-3"><a href="#概念-3" class="headerlink" title="概念"></a>概念</h3><p>桥接模式将抽象部分与实现部分分离，使它们都可以独立变化。通过组合而非继承来连接两个维度。</p>
+<h3 id="JDBC-Driver-中的桥接"><a href="#JDBC-Driver-中的桥接" class="headerlink" title="JDBC Driver 中的桥接"></a>JDBC Driver 中的桥接</h3><p>JDBC 是桥接模式的经典应用。Java 应用通过 JDBC API（抽象部分）操作数据库，具体的数据库驱动（实现部分）可以独立切换。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 抽象部分：JDBC API</span></span><br><span class="line"><span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> DriverManager.getConnection(url, user, password);</span><br><span class="line"><span class="type">Statement</span> <span class="variable">stmt</span> <span class="operator">=</span> conn.createStatement();</span><br><span class="line"><span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> stmt.executeQuery(<span class="string">&quot;SELECT * FROM users&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 切换实现部分只需更改驱动和 URL</span></span><br><span class="line"><span class="comment">// MySQL</span></span><br><span class="line">Class.forName(<span class="string">&quot;com.mysql.cj.jdbc.Driver&quot;</span>);</span><br><span class="line"><span class="type">Connection</span> <span class="variable">mysqlConn</span> <span class="operator">=</span> DriverManager.getConnection(<span class="string">&quot;jdbc:mysql://localhost/db&quot;</span>, ...);</span><br><span class="line"></span><br><span class="line"><span class="comment">// PostgreSQL</span></span><br><span class="line">Class.forName(<span class="string">&quot;org.postgresql.Driver&quot;</span>);</span><br><span class="line"><span class="type">Connection</span> <span class="variable">pgConn</span> <span class="operator">=</span> DriverManager.getConnection(<span class="string">&quot;jdbc:postgresql://localhost/db&quot;</span>, ...);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 应用代码完全不变</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>桥接结构</strong>：</p>
+<ul>
+<li>抽象层：<code>java.sql.Connection</code>、<code>java.sql.Statement</code>、<code>java.sql.ResultSet</code></li>
+<li>实现层：<code>com.mysql.cj.jdbc.ConnectionImpl</code>、<code>org.postgresql.jdbc.PgConnection</code></li>
+<li>桥接点：<code>DriverManager</code> 通过驱动接口连接两者</li>
+</ul>
+<hr>
+<h2 id="组合模式"><a href="#组合模式" class="headerlink" title="组合模式"></a>组合模式</h2><h3 id="概念-4"><a href="#概念-4" class="headerlink" title="概念"></a>概念</h3><p>组合模式将对象组合成树形结构，使客户端对单个对象和组合对象的使用具有一致性。适用于部分-整体的层次结构。</p>
+<h3 id="Spring-Cache-缓存层级"><a href="#Spring-Cache-缓存层级" class="headerlink" title="Spring Cache 缓存层级"></a>Spring Cache 缓存层级</h3><p>Spring Cache 的 <code>CompositeCacheManager</code> 组合多个 CacheManager，形成缓存层级：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// CompositeCacheManager 持有多个 CacheManager</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CompositeCacheManager</span> <span class="keyword">implements</span> <span class="title class_">CacheManager</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> List&lt;CacheManager&gt; cacheManagers;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Cache <span class="title function_">getCache</span><span class="params">(String name)</span> &#123;</span><br><span class="line">        <span class="comment">// 按顺序从每个 CacheManager 中查找</span></span><br><span class="line">        <span class="keyword">for</span> (CacheManager cacheManager : cacheManagers) &#123;</span><br><span class="line">            <span class="type">Cache</span> <span class="variable">cache</span> <span class="operator">=</span> cacheManager.getCache(name);</span><br><span class="line">            <span class="keyword">if</span> (cache != <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">return</span> cache;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 配置多级缓存</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@EnableCaching</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CacheConfig</span> &#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> CompositeCacheManager <span class="title function_">cacheManager</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="type">CompositeCacheManager</span> <span class="variable">composite</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CompositeCacheManager</span>();</span><br><span class="line">        composite.setCacheManagers(</span><br><span class="line">            Arrays.asList(</span><br><span class="line">                caffeineCacheManager(),   <span class="comment">// 本地缓存（L1）</span></span><br><span class="line">                redisCacheManager()       <span class="comment">// 分布式缓存（L2）</span></span><br><span class="line">            )</span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">return</span> composite;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="外观模式"><a href="#外观模式" class="headerlink" title="外观模式"></a>外观模式</h2><h3 id="概念-5"><a href="#概念-5" class="headerlink" title="概念"></a>概念</h3><p>外观模式为子系统中的一组接口提供一个统一的高层接口，简化子系统的使用难度。客户端不需要了解子系统的复杂内部结构。</p>
+<h3 id="Spring-JdbcTemplate"><a href="#Spring-JdbcTemplate" class="headerlink" title="Spring JdbcTemplate"></a>Spring JdbcTemplate</h3><p><code>JdbcTemplate</code> 是外观模式的典型应用，封装了 JDBC 的复杂操作流程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不使用 JdbcTemplate 的原始 JDBC 操作</span></span><br><span class="line"><span class="keyword">public</span> User <span class="title function_">findById_raw</span><span class="params">(Long id)</span> &#123;</span><br><span class="line">    <span class="type">Connection</span> <span class="variable">conn</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="type">PreparedStatement</span> <span class="variable">ps</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="type">ResultSet</span> <span class="variable">rs</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        conn = dataSource.getConnection();</span><br><span class="line">        ps = conn.prepareStatement(<span class="string">&quot;SELECT * FROM users WHERE id = ?&quot;</span>);</span><br><span class="line">        ps.setLong(<span class="number">1</span>, id);</span><br><span class="line">        rs = ps.executeQuery();</span><br><span class="line">        <span class="keyword">if</span> (rs.next()) &#123;</span><br><span class="line">            <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">            user.setId(rs.getLong(<span class="string">&quot;id&quot;</span>));</span><br><span class="line">            user.setName(rs.getString(<span class="string">&quot;name&quot;</span>));</span><br><span class="line">            <span class="keyword">return</span> user;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (SQLException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="comment">// 关闭 rs、ps、conn（每个都要 try-catch）</span></span><br><span class="line">        <span class="keyword">if</span> (rs != <span class="literal">null</span>) <span class="keyword">try</span> &#123; rs.close(); &#125; <span class="keyword">catch</span> (SQLException e) &#123;&#125;</span><br><span class="line">        <span class="keyword">if</span> (ps != <span class="literal">null</span>) <span class="keyword">try</span> &#123; ps.close(); &#125; <span class="keyword">catch</span> (SQLException e) &#123;&#125;</span><br><span class="line">        <span class="keyword">if</span> (conn != <span class="literal">null</span>) <span class="keyword">try</span> &#123; conn.close(); &#125; <span class="keyword">catch</span> (SQLException e) &#123;&#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用 JdbcTemplate（外观模式）</span></span><br><span class="line"><span class="keyword">public</span> User <span class="title function_">findById</span><span class="params">(Long id)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> jdbcTemplate.queryForObject(</span><br><span class="line">        <span class="string">&quot;SELECT * FROM users WHERE id = ?&quot;</span>,</span><br><span class="line">        (rs, rowNum) -&gt; &#123;</span><br><span class="line">            <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">            user.setId(rs.getLong(<span class="string">&quot;id&quot;</span>));</span><br><span class="line">            user.setName(rs.getString(<span class="string">&quot;name&quot;</span>));</span><br><span class="line">            <span class="keyword">return</span> user;</span><br><span class="line">        &#125;,</span><br><span class="line">        id</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>JdbcTemplate</code> 内部封装了连接获取、Statement 创建、异常转换（<code>SQLException</code> -&gt; <code>DataAccessException</code>）、资源关闭等所有样板代码。</p>
+<hr>
+<h2 id="享元模式"><a href="#享元模式" class="headerlink" title="享元模式"></a>享元模式</h2><h3 id="概念-6"><a href="#概念-6" class="headerlink" title="概念"></a>概念</h3><p>享元模式通过共享对象来最小化内存使用，适合大量相似对象的场景。分离内部状态（可共享）和外部状态（不可共享）。</p>
+<h3 id="Integer-Cache"><a href="#Integer-Cache" class="headerlink" title="Integer Cache"></a>Integer Cache</h3><p>Java <code>Integer</code> 对 -128 到 127 的整数使用了享元模式缓存：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">Integer</span> <span class="keyword">extends</span> <span class="title class_">Number</span> <span class="keyword">implements</span> <span class="title class_">Comparable</span>&lt;Integer&gt; &#123;</span><br><span class="line">    <span class="comment">// 缓存 -128 到 127 的 Integer 对象</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">IntegerCache</span> &#123;</span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">low</span> <span class="operator">=</span> -<span class="number">128</span>;</span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> high; <span class="comment">// 默认 127，可通过 -XX:AutoBoxCacheMax 调整</span></span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">final</span> Integer[] cache;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">static</span> &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">h</span> <span class="operator">=</span> <span class="number">127</span>;</span><br><span class="line">            cache = <span class="keyword">new</span> <span class="title class_">Integer</span>[(high = h) - (low) + <span class="number">1</span>];</span><br><span class="line">            <span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> low;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; cache.length; i++) &#123;</span><br><span class="line">                cache[i] = <span class="keyword">new</span> <span class="title class_">Integer</span>(j++);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Integer <span class="title function_">valueOf</span><span class="params">(<span class="type">int</span> i)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (i &gt;= IntegerCache.low &amp;&amp; i &lt;= IntegerCache.high) &#123;</span><br><span class="line">            <span class="keyword">return</span> IntegerCache.cache[i + (-IntegerCache.low)];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Integer</span>(i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这解释了一个常见的面试题：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">Integer</span> <span class="variable">a</span> <span class="operator">=</span> <span class="number">127</span>;</span><br><span class="line"><span class="type">Integer</span> <span class="variable">b</span> <span class="operator">=</span> <span class="number">127</span>;</span><br><span class="line">System.out.println(a == b);  <span class="comment">// true，共享同一个缓存对象</span></span><br><span class="line"></span><br><span class="line"><span class="type">Integer</span> <span class="variable">c</span> <span class="operator">=</span> <span class="number">128</span>;</span><br><span class="line"><span class="type">Integer</span> <span class="variable">d</span> <span class="operator">=</span> <span class="number">128</span>;</span><br><span class="line">System.out.println(c == d);  <span class="comment">// false，超出缓存范围，各自 new</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="String-常量池"><a href="#String-常量池" class="headerlink" title="String 常量池"></a>String 常量池</h3><p>String 常量池也是享元模式的体现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> <span class="string">&quot;hello&quot;</span>;         <span class="comment">// 放入常量池</span></span><br><span class="line"><span class="type">String</span> <span class="variable">s2</span> <span class="operator">=</span> <span class="string">&quot;hello&quot;</span>;         <span class="comment">// 复用常量池中的对象</span></span><br><span class="line">System.out.println(s1 == s2); <span class="comment">// true</span></span><br><span class="line"></span><br><span class="line"><span class="type">String</span> <span class="variable">s3</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">String</span>(<span class="string">&quot;hello&quot;</span>); <span class="comment">// 堆上创建新对象</span></span><br><span class="line">System.out.println(s1 == s3);    <span class="comment">// false</span></span><br><span class="line"></span><br><span class="line"><span class="type">String</span> <span class="variable">s4</span> <span class="operator">=</span> s3.intern();         <span class="comment">// 尝试放入常量池</span></span><br><span class="line">System.out.println(s1 == s4);    <span class="comment">// true</span></span><br></pre></td></tr></table></figure>
+
+<p>JDK 7 之后，String 常量池从永久代移到了堆中，<code>intern()</code> 方法如果常量池中已有等值字符串则返回引用，否则将堆中字符串的引用存入常量池（而非复制字符串本身）。</p>
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>核心意图</th>
+<th>典型场景</th>
+<th>Spring/Java 应用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>代理</td>
+<td>控制访问，增强功能</td>
+<td>AOP、RPC、懒加载</td>
+<td>Spring AOP、Feign</td>
+</tr>
+<tr>
+<td>适配器</td>
+<td>接口转换</td>
+<td>系统集成、兼容旧接口</td>
+<td>HandlerAdapter</td>
+</tr>
+<tr>
+<td>装饰器</td>
+<td>动态增强</td>
+<td>IO 流、功能叠加</td>
+<td>Java IO</td>
+</tr>
+<tr>
+<td>桥接</td>
+<td>抽象与实现分离</td>
+<td>多维度变化</td>
+<td>JDBC Driver</td>
+</tr>
+<tr>
+<td>组合</td>
+<td>树形结构统一处理</td>
+<td>层级结构、多级缓存</td>
+<td>CompositeCacheManager</td>
+</tr>
+<tr>
+<td>外观</td>
+<td>简化接口</td>
+<td>封装复杂子系统</td>
+<td>JdbcTemplate</td>
+</tr>
+<tr>
+<td>享元</td>
+<td>共享对象减少内存</td>
+<td>大量相似对象</td>
+<td>Integer Cache、String Pool</td>
+</tr>
+</tbody></table>
+<p>结构型模式的共同目标是<strong>通过合理的结构设计减少系统的复杂度</strong>。代理模式在 Spring 生态中应用最为广泛，理解 JDK 动态代理和 CGLIB 的原理对于排查 AOP 相关问题至关重要。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AE%9E%E6%88%98/" rel="tag"># 实战</a>
+              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/08/03/%E5%88%9B%E5%BB%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F/" rel="prev" title="创建型设计模式实战">
+      <i class="fa fa-chevron-left"></i> 创建型设计模式实战
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/09/01/%E8%A1%8C%E4%B8%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F/" rel="next" title="行为型设计模式实战">
+      行为型设计模式实战 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">代理模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UML-%E7%B1%BB%E5%9B%BE"><span class="nav-number">1.2.</span> <span class="nav-text">UML 类图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E4%BB%A3%E7%90%86"><span class="nav-number">1.3.</span> <span class="nav-text">静态代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JDK-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86"><span class="nav-number">1.4.</span> <span class="nav-text">JDK 动态代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CGLIB-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86"><span class="nav-number">1.5.</span> <span class="nav-text">CGLIB 动态代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-AOP-%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-number">1.6.</span> <span class="nav-text">Spring AOP 中的应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">适配器模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-1"><span class="nav-number">2.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E7%A4%BA%E4%BE%8B"><span class="nav-number">2.2.</span> <span class="nav-text">代码示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SpringMVC-HandlerAdapter"><span class="nav-number">2.3.</span> <span class="nav-text">SpringMVC HandlerAdapter</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A3%85%E9%A5%B0%E5%99%A8%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">装饰器模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-2"><span class="nav-number">3.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UML-%E7%B1%BB%E5%9B%BE-1"><span class="nav-number">3.2.</span> <span class="nav-text">UML 类图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java-IO-%E6%B5%81%E4%BD%93%E7%B3%BB"><span class="nav-number">3.3.</span> <span class="nav-text">Java IO 流体系</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A1%A5%E6%8E%A5%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">桥接模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-3"><span class="nav-number">4.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#JDBC-Driver-%E4%B8%AD%E7%9A%84%E6%A1%A5%E6%8E%A5"><span class="nav-number">4.2.</span> <span class="nav-text">JDBC Driver 中的桥接</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%84%E5%90%88%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.</span> <span class="nav-text">组合模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-4"><span class="nav-number">5.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-Cache-%E7%BC%93%E5%AD%98%E5%B1%82%E7%BA%A7"><span class="nav-number">5.2.</span> <span class="nav-text">Spring Cache 缓存层级</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%96%E8%A7%82%E6%A8%A1%E5%BC%8F"><span class="nav-number">6.</span> <span class="nav-text">外观模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-5"><span class="nav-number">6.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-JdbcTemplate"><span class="nav-number">6.2.</span> <span class="nav-text">Spring JdbcTemplate</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F"><span class="nav-number">7.</span> <span class="nav-text">享元模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-6"><span class="nav-number">7.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Integer-Cache"><span class="nav-number">7.2.</span> <span class="nav-text">Integer Cache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#String-%E5%B8%B8%E9%87%8F%E6%B1%A0"><span class="nav-number">7.3.</span> <span class="nav-text">String 常量池</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John-1010-cmd</p>
+  <div class="site-description" itemprop="description">Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John-1010-cmd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"john-1010-cmd.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="从动态代理到字节码织入，全面解析 Spring AOP 的实现原理与高级用法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring AOP原理剖析">
+<meta property="og:url" content="https://john-1010-cmd.github.io/2024/05/20/Spring%20AOP%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="John&#39;s Blog">
+<meta property="og:description" content="从动态代理到字节码织入，全面解析 Spring AOP 的实现原理与高级用法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-05-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-05-19T16:00:00.000Z">
+<meta property="article:author" content="John-1010-cmd">
+<meta property="article:tag" content="原理">
+<meta property="article:tag" content="Spring">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://john-1010-cmd.github.io/2024/05/20/Spring%20AOP%E5%8E%9F%E7%90%86/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Spring AOP原理剖析 | John's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">John's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-系列导航">
+
+    <a href="/%E7%B3%BB%E5%88%97%E5%AF%BC%E8%88%AA/" rel="section"><i class="fa fa-fw fa-book"></i>系列导航</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://john-1010-cmd.github.io/2024/05/20/Spring%20AOP%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John-1010-cmd">
+      <meta itemprop="description" content="Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="John's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring AOP原理剖析
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-05-20 00:00:00" itemprop="dateCreated datePublished" datetime="2024-05-20T00:00:00+08:00">2024-05-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index"><span itemprop="name">Spring</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">从动态代理到字节码织入，全面解析 Spring AOP 的实现原理与高级用法。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="AOP-核心概念"><a href="#AOP-核心概念" class="headerlink" title="AOP 核心概念"></a>AOP 核心概念</h2><p>面向切面编程（AOP）将横切关注点（如日志、事务、安全）从业务逻辑中分离出来，通过预编译或运行时动态代理实现功能增强。</p>
+<p>核心术语：</p>
+<table>
+<thead>
+<tr>
+<th>术语</th>
+<th>说明</th>
+<th>示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Aspect（切面）</td>
+<td>横切关注点的模块化</td>
+<td>日志切面、事务切面</td>
+</tr>
+<tr>
+<td>Join Point（连接点）</td>
+<td>程序执行的某个点</td>
+<td>方法调用、异常抛出</td>
+</tr>
+<tr>
+<td>Pointcut（切点）</td>
+<td>匹配连接点的表达式</td>
+<td><code>execution(* com.example.service.*.*(..))</code></td>
+</tr>
+<tr>
+<td>Advice（通知）</td>
+<td>在切点执行的动作</td>
+<td>@Before、@After、@Around</td>
+</tr>
+<tr>
+<td>Target（目标对象）</td>
+<td>被代理的原始对象</td>
+<td>UserServiceImpl</td>
+</tr>
+<tr>
+<td>Weaving（织入）</td>
+<td>将切面应用到目标对象</td>
+<td>运行时动态代理</td>
+</tr>
+</tbody></table>
+<h2 id="JDK-动态代理-vs-CGLIB-代理"><a href="#JDK-动态代理-vs-CGLIB-代理" class="headerlink" title="JDK 动态代理 vs CGLIB 代理"></a>JDK 动态代理 vs CGLIB 代理</h2><p>Spring 根据目标类是否实现接口来选择代理策略：</p>
+<p><strong>JDK 动态代理</strong>：目标类实现了接口时使用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// JDK 动态代理核心：InvocationHandler</span></span><br><span class="line"><span class="type">Object</span> <span class="variable">proxy</span> <span class="operator">=</span> Proxy.newProxyInstance(</span><br><span class="line">    target.getClass().getClassLoader(),</span><br><span class="line">    target.getClass().getInterfaces(),</span><br><span class="line">    (proxyObj, method, args) -&gt; &#123;</span><br><span class="line">        <span class="comment">// 前置增强</span></span><br><span class="line">        System.out.println(<span class="string">&quot;Before: &quot;</span> + method.getName());</span><br><span class="line">        <span class="type">Object</span> <span class="variable">result</span> <span class="operator">=</span> method.invoke(target, args);</span><br><span class="line">        <span class="comment">// 后置增强</span></span><br><span class="line">        System.out.println(<span class="string">&quot;After: &quot;</span> + method.getName());</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>限制：只能代理接口方法，无法代理类方法。</p>
+<p><strong>CGLIB 代理</strong>：目标类未实现接口时使用，通过生成子类实现代理</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// CGLIB 通过生成子类实现代理</span></span><br><span class="line"><span class="type">Enhancer</span> <span class="variable">enhancer</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Enhancer</span>();</span><br><span class="line">enhancer.setSuperclass(TargetClass.class);</span><br><span class="line">enhancer.setCallback((MethodInterceptor) (obj, method, args, proxy) -&gt; &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;Before: &quot;</span> + method.getName());</span><br><span class="line">    <span class="type">Object</span> <span class="variable">result</span> <span class="operator">=</span> proxy.invokeSuper(obj, args);</span><br><span class="line">    System.out.println(<span class="string">&quot;After: &quot;</span> + method.getName());</span><br><span class="line">    <span class="keyword">return</span> result;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="type">TargetClass</span> <span class="variable">proxy</span> <span class="operator">=</span> (TargetClass) enhancer.create();</span><br></pre></td></tr></table></figure>
+
+<p>Spring 默认策略（<code>spring.aop.proxy-target-class</code>）：</p>
+<ul>
+<li>SpringBoot 2.x 起默认使用 CGLIB（<code>proxy-target-class=true</code>）</li>
+<li>如果目标类实现了接口且 <code>proxy-target-class=false</code>，则使用 JDK 动态代理</li>
+</ul>
+<h2 id="ProxyFactoryBean-与代理创建"><a href="#ProxyFactoryBean-与代理创建" class="headerlink" title="ProxyFactoryBean 与代理创建"></a>ProxyFactoryBean 与代理创建</h2><p><code>ProxyFactory</code> 是 Spring AOP 创建代理的核心类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ProxyFactory</span> <span class="variable">factory</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ProxyFactory</span>(targetObject);</span><br><span class="line">factory.addInterface(UserService.class);</span><br><span class="line">factory.addAdvice(<span class="keyword">new</span> <span class="title class_">MethodBeforeAdvice</span>() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">before</span><span class="params">(Method method, Object[] args, Object target)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;Before: &quot;</span> + method.getName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="type">UserService</span> <span class="variable">proxy</span> <span class="operator">=</span> (UserService) factory.getProxy();</span><br></pre></td></tr></table></figure>
+
+<p><code>ProxyFactory.getProxy()</code> 的执行流程：</p>
+<ol>
+<li>创建 <code>AdvisedSupport</code> 对象，保存切面配置</li>
+<li>调用 <code>AopProxyFactory.createAopProxy()</code></li>
+<li>根据条件选择 <code>JdkDynamicAopProxy</code> 或 <code>ObjenesisCglibAopProxy</code></li>
+<li>返回代理对象</li>
+</ol>
+<h2 id="通知类型"><a href="#通知类型" class="headerlink" title="通知类型"></a>通知类型</h2><h3 id="Before（前置通知）"><a href="#Before（前置通知）" class="headerlink" title="@Before（前置通知）"></a>@Before（前置通知）</h3><p>在目标方法执行前运行：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Before(&quot;execution(* com.example.service.*.*(..))&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">logBefore</span><span class="params">(JoinPoint jp)</span> &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;调用: &quot;</span> + jp.getSignature().getName());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="AfterReturning（返回通知）"><a href="#AfterReturning（返回通知）" class="headerlink" title="@AfterReturning（返回通知）"></a>@AfterReturning（返回通知）</h3><p>方法正常返回后执行：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@AfterReturning(pointcut = &quot;execution(* com.example.service.*.*(..))&quot;, returning = &quot;result&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">logAfterReturning</span><span class="params">(JoinPoint jp, Object result)</span> &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;返回值: &quot;</span> + result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="AfterThrowing（异常通知）"><a href="#AfterThrowing（异常通知）" class="headerlink" title="@AfterThrowing（异常通知）"></a>@AfterThrowing（异常通知）</h3><p>方法抛出异常时执行：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@AfterThrowing(pointcut = &quot;execution(* com.example.service.*.*(..))&quot;, throwing = &quot;ex&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">logAfterThrowing</span><span class="params">(JoinPoint jp, Exception ex)</span> &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;异常: &quot;</span> + ex.getMessage());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="After（后置通知）"><a href="#After（后置通知）" class="headerlink" title="@After（后置通知）"></a>@After（后置通知）</h3><p>无论方法是否异常都会执行（类似 finally）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@After(&quot;execution(* com.example.service.*.*(..))&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">logAfter</span><span class="params">(JoinPoint jp)</span> &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;方法执行完毕: &quot;</span> + jp.getSignature().getName());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Around（环绕通知）"><a href="#Around（环绕通知）" class="headerlink" title="@Around（环绕通知）"></a>@Around（环绕通知）</h3><p>最强大的通知类型，可控制是否执行目标方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Around(&quot;execution(* com.example.service.*.*(..))&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Object <span class="title function_">logAround</span><span class="params">(ProceedingJoinPoint pjp)</span> <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line">    <span class="type">long</span> <span class="variable">start</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="type">Object</span> <span class="variable">result</span> <span class="operator">=</span> pjp.proceed();  <span class="comment">// 执行目标方法</span></span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="type">long</span> <span class="variable">cost</span> <span class="operator">=</span> System.currentTimeMillis() - start;</span><br><span class="line">        System.out.println(pjp.getSignature().getName() + <span class="string">&quot; 耗时: &quot;</span> + cost + <span class="string">&quot;ms&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="切点表达式"><a href="#切点表达式" class="headerlink" title="切点表达式"></a>切点表达式</h2><h3 id="execution（最常用）"><a href="#execution（最常用）" class="headerlink" title="execution（最常用）"></a>execution（最常用）</h3><p>匹配方法执行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">execution(修饰符? 返回值 包名.类名.方法名(参数) 异常?)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 匹配 service 包下所有类的所有方法</span></span><br><span class="line"><span class="meta">@Pointcut(&quot;execution(* com.example.service.*.*(..))&quot;)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 匹配所有 public 方法</span></span><br><span class="line"><span class="meta">@Pointcut(&quot;execution(public * *(..))&quot;)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 匹配以 save 开头的方法</span></span><br><span class="line"><span class="meta">@Pointcut(&quot;execution(* save*(..))&quot;)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="annotation"><a href="#annotation" class="headerlink" title="@annotation"></a>@annotation</h3><p>匹配带有指定注解的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Pointcut(&quot;@annotation(com.example.annotation.Loggable)&quot;)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="within"><a href="#within" class="headerlink" title="within"></a>within</h3><p>匹配指定类型内的所有方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Pointcut(&quot;within(com.example.service.*)&quot;)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="args"><a href="#args" class="headerlink" title="args"></a>args</h3><p>匹配参数类型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Pointcut(&quot;args(java.lang.String, ..)&quot;)</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="组合切点"><a href="#组合切点" class="headerlink" title="组合切点"></a>组合切点</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Pointcut(&quot;execution(* com.example.service.*.*(..)) &amp;&amp; !execution(* com.example.service.Internal*.*(..))&quot;)</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Advised-接口与拦截器链"><a href="#Advised-接口与拦截器链" class="headerlink" title="Advised 接口与拦截器链"></a>Advised 接口与拦截器链</h2><p>代理对象实现了 <code>Advised</code> 接口，持有所有通知的列表。方法调用时，通知按拦截器链模式执行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">MethodInvocation</span><br><span class="line">    → AfterAdvice</span><br><span class="line">        → AroundAdvice</span><br><span class="line">            → BeforeAdvice</span><br><span class="line">                → 目标方法</span><br><span class="line">            → AfterReturningAdvice</span><br><span class="line">        → AroundAdvice (返回后部分)</span><br><span class="line">    → AfterAdvice (finally)</span><br></pre></td></tr></table></figure>
+
+<p>拦截器链的核心实现是 <code>ReflectiveMethodInvocation</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Object <span class="title function_">proceed</span><span class="params">()</span> <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line">    <span class="comment">// 拦截器链已执行完毕，调用目标方法</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">this</span>.currentInterceptorIndex == <span class="built_in">this</span>.interceptorsAndDynamicMethodMatchers.size() - <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> invokeJoinpoint();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 获取下一个拦截器并执行</span></span><br><span class="line">    <span class="type">Object</span> <span class="variable">interceptorOrInterceptionAdvice</span> <span class="operator">=</span> <span class="built_in">this</span>.interceptorsAndDynamicMethodMatchers.get(++<span class="built_in">this</span>.currentInterceptorIndex);</span><br><span class="line">    <span class="keyword">return</span> ((MethodInterceptor) interceptorOrInterceptionAdvice).invoke(<span class="built_in">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="EnableAspectJAutoProxy-与自动代理创建器"><a href="#EnableAspectJAutoProxy-与自动代理创建器" class="headerlink" title="@EnableAspectJAutoProxy 与自动代理创建器"></a>@EnableAspectJAutoProxy 与自动代理创建器</h2><p><code>@EnableAspectJAutoProxy</code> 注解向容器注册 <code>AnnotationAwareAspectJAutoProxyCreator</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Import(AspectJAutoProxyRegistrar.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> EnableAspectJAutoProxy &#123;</span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">proxyTargetClass</span><span class="params">()</span> <span class="keyword">default</span> <span class="literal">false</span>;</span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">exposeProxy</span><span class="params">()</span> <span class="keyword">default</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>AnnotationAwareAspectJAutoProxyCreator</code> 是一个 <code>BeanPostProcessor</code>，在 Bean 初始化后检查是否需要创建代理：</p>
+<ol>
+<li>查找所有 <code>@Aspect</code> 注解的 Bean</li>
+<li>解析切面中的通知方法</li>
+<li>判断当前 Bean 是否匹配任何切点</li>
+<li>如果匹配，创建代理对象并替换原始 Bean</li>
+</ol>
+<h2 id="多个切面的执行顺序"><a href="#多个切面的执行顺序" class="headerlink" title="多个切面的执行顺序"></a>多个切面的执行顺序</h2><p>通过 <code>@Order</code> 或实现 <code>Ordered</code> 接口控制切面执行顺序：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Order(1)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LoggingAspect</span> &#123;</span><br><span class="line">    <span class="meta">@Before(&quot;execution(* com.example.service.*.*(..))&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">logBefore</span><span class="params">()</span> &#123; <span class="comment">/* ... */</span> &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Aspect</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="meta">@Order(2)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TransactionAspect</span> &#123;</span><br><span class="line">    <span class="meta">@Before(&quot;execution(* com.example.service.*.*(..))&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">txBefore</span><span class="params">()</span> &#123; <span class="comment">/* ... */</span> &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>执行顺序（Order 值越小越先执行）：</p>
+<ul>
+<li>前置通知：Order 1 → Order 2</li>
+<li>目标方法执行</li>
+<li>后置通知：Order 2 → Order 1</li>
+</ul>
+<p>即”洋葱模型”：外层切面先进入后退出，内层切面后进入先退出。</p>
+<h2 id="AOP-与事务的协作原理"><a href="#AOP-与事务的协作原理" class="headerlink" title="AOP 与事务的协作原理"></a>AOP 与事务的协作原理</h2><p><code>@Transactional</code> 注解通过 <code>TransactionInterceptor</code> 实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 简化的调用链</span></span><br><span class="line"><span class="meta">@Around</span></span><br><span class="line"><span class="keyword">public</span> Object <span class="title function_">invoke</span><span class="params">(MethodInvocation invocation)</span> <span class="keyword">throws</span> Throwable &#123;</span><br><span class="line">    <span class="comment">// 1. 获取事务属性</span></span><br><span class="line">    <span class="type">TransactionAttribute</span> <span class="variable">attr</span> <span class="operator">=</span> <span class="built_in">this</span>.transactionAttributeSource.getTransactionAttribute(method, targetClass);</span><br><span class="line">    <span class="comment">// 2. 开启事务</span></span><br><span class="line">    <span class="type">TransactionStatus</span> <span class="variable">status</span> <span class="operator">=</span> transactionManager.getTransaction(attr);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 3. 执行目标方法</span></span><br><span class="line">        <span class="type">Object</span> <span class="variable">result</span> <span class="operator">=</span> invocation.proceed();</span><br><span class="line">        <span class="comment">// 4. 提交事务</span></span><br><span class="line">        transactionManager.commit(status);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">        <span class="comment">// 5. 回滚事务</span></span><br><span class="line">        transactionManager.rollback(status);</span><br><span class="line">        <span class="keyword">throw</span> ex;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>事务切面通常设置最高优先级（<code>@Order(Ordered.LOWEST_PRECEDENCE)</code>），确保事务包裹在其他切面之外，这样其他切面的异常也能触发回滚。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8E%9F%E7%90%86/" rel="tag"># 原理</a>
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/05/05/Spring%20IoC%E5%8E%9F%E7%90%86/" rel="prev" title="Spring IoC容器原理">
+      <i class="fa fa-chevron-left"></i> Spring IoC容器原理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/06/08/Spring%20Bean%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F/" rel="next" title="Spring Bean生命周期">
+      Spring Bean生命周期 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#AOP-%E6%A0%B8%E5%BF%83%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">AOP 核心概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JDK-%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86-vs-CGLIB-%E4%BB%A3%E7%90%86"><span class="nav-number">2.</span> <span class="nav-text">JDK 动态代理 vs CGLIB 代理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ProxyFactoryBean-%E4%B8%8E%E4%BB%A3%E7%90%86%E5%88%9B%E5%BB%BA"><span class="nav-number">3.</span> <span class="nav-text">ProxyFactoryBean 与代理创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E7%9F%A5%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.</span> <span class="nav-text">通知类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Before%EF%BC%88%E5%89%8D%E7%BD%AE%E9%80%9A%E7%9F%A5%EF%BC%89"><span class="nav-number">4.1.</span> <span class="nav-text">@Before（前置通知）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AfterReturning%EF%BC%88%E8%BF%94%E5%9B%9E%E9%80%9A%E7%9F%A5%EF%BC%89"><span class="nav-number">4.2.</span> <span class="nav-text">@AfterReturning（返回通知）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AfterThrowing%EF%BC%88%E5%BC%82%E5%B8%B8%E9%80%9A%E7%9F%A5%EF%BC%89"><span class="nav-number">4.3.</span> <span class="nav-text">@AfterThrowing（异常通知）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#After%EF%BC%88%E5%90%8E%E7%BD%AE%E9%80%9A%E7%9F%A5%EF%BC%89"><span class="nav-number">4.4.</span> <span class="nav-text">@After（后置通知）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Around%EF%BC%88%E7%8E%AF%E7%BB%95%E9%80%9A%E7%9F%A5%EF%BC%89"><span class="nav-number">4.5.</span> <span class="nav-text">@Around（环绕通知）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%87%E7%82%B9%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="nav-number">5.</span> <span class="nav-text">切点表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#execution%EF%BC%88%E6%9C%80%E5%B8%B8%E7%94%A8%EF%BC%89"><span class="nav-number">5.1.</span> <span class="nav-text">execution（最常用）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#annotation"><span class="nav-number">5.2.</span> <span class="nav-text">@annotation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#within"><span class="nav-number">5.3.</span> <span class="nav-text">within</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#args"><span class="nav-number">5.4.</span> <span class="nav-text">args</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%84%E5%90%88%E5%88%87%E7%82%B9"><span class="nav-number">5.5.</span> <span class="nav-text">组合切点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Advised-%E6%8E%A5%E5%8F%A3%E4%B8%8E%E6%8B%A6%E6%88%AA%E5%99%A8%E9%93%BE"><span class="nav-number">6.</span> <span class="nav-text">Advised 接口与拦截器链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EnableAspectJAutoProxy-%E4%B8%8E%E8%87%AA%E5%8A%A8%E4%BB%A3%E7%90%86%E5%88%9B%E5%BB%BA%E5%99%A8"><span class="nav-number">7.</span> <span class="nav-text">@EnableAspectJAutoProxy 与自动代理创建器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E4%B8%AA%E5%88%87%E9%9D%A2%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F"><span class="nav-number">8.</span> <span class="nav-text">多个切面的执行顺序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AOP-%E4%B8%8E%E4%BA%8B%E5%8A%A1%E7%9A%84%E5%8D%8F%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">9.</span> <span class="nav-text">AOP 与事务的协作原理</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John-1010-cmd</p>
+  <div class="site-description" itemprop="description">Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John-1010-cmd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

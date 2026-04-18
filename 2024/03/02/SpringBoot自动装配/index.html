@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"john-1010-cmd.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="深入解析 SpringBoot 自动装配原理，从 @SpringBootApplication 到 spring.factories 的完整链路。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot自动装配原理">
+<meta property="og:url" content="https://john-1010-cmd.github.io/2024/03/02/SpringBoot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/index.html">
+<meta property="og:site_name" content="John&#39;s Blog">
+<meta property="og:description" content="深入解析 SpringBoot 自动装配原理，从 @SpringBootApplication 到 spring.factories 的完整链路。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-03-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-03-01T16:00:00.000Z">
+<meta property="article:author" content="John-1010-cmd">
+<meta property="article:tag" content="原理">
+<meta property="article:tag" content="SpringBoot">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://john-1010-cmd.github.io/2024/03/02/SpringBoot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>SpringBoot自动装配原理 | John's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">John's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-系列导航">
+
+    <a href="/%E7%B3%BB%E5%88%97%E5%AF%BC%E8%88%AA/" rel="section"><i class="fa fa-fw fa-book"></i>系列导航</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://john-1010-cmd.github.io/2024/03/02/SpringBoot%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John-1010-cmd">
+      <meta itemprop="description" content="Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="John's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SpringBoot自动装配原理
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-03-02 00:00:00" itemprop="dateCreated datePublished" datetime="2024-03-02T00:00:00+08:00">2024-03-02</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SpringBoot/" itemprop="url" rel="index"><span itemprop="name">SpringBoot</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">深入解析 SpringBoot 自动装配原理，从 @SpringBootApplication 到 spring.factories 的完整链路。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="从-SpringBootApplication-说起"><a href="#从-SpringBootApplication-说起" class="headerlink" title="从 @SpringBootApplication 说起"></a>从 @SpringBootApplication 说起</h2><p>每一个 SpringBoot 应用的入口都离不开如下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Application</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(Application.class, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>@SpringBootApplication</code> 看似简单，实际上是一个<strong>组合注解</strong>。打开其源码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="meta">@SpringBootConfiguration</span></span><br><span class="line"><span class="meta">@EnableAutoConfiguration</span></span><br><span class="line"><span class="meta">@ComponentScan(</span></span><br><span class="line"><span class="meta">    excludeFilters = &#123;</span></span><br><span class="line"><span class="meta">        @Filter(type = FilterType.CUSTOM, classes = TypeExcludeFilter.class),</span></span><br><span class="line"><span class="meta">        @Filter(type = FilterType.CUSTOM, classes = AutoConfigurationExcludeFilter.class)</span></span><br><span class="line"><span class="meta">    &#125;</span></span><br><span class="line"><span class="meta">)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> SpringBootApplication &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它由三个核心注解组成：</p>
+<ol>
+<li><strong>@SpringBootConfiguration</strong> — 本质上是 <code>@Configuration</code>，表明当前类是配置类，Spring 容器会识别并处理其中定义的 <code>@Bean</code> 方法。</li>
+<li><strong>@EnableAutoConfiguration</strong> — 自动装配的核心入口，负责触发自动配置类的加载与过滤。</li>
+<li><strong>@ComponentScan</strong> — 组件扫描，默认扫描当前包及其子包下的 <code>@Component</code>、<code>@Service</code>、<code>@Repository</code> 等注解标记的类。同时通过 <code>excludeFilters</code> 排除了 <code>TypeExcludeFilter</code> 和 <code>AutoConfigurationExcludeFilter</code>。</li>
+</ol>
+<p>理解这三个注解的分工，就理解了 SpringBoot 启动的第一步：<strong>先扫描用户自定义的 Bean，再触发自动配置的加载</strong>。</p>
+<h2 id="EnableAutoConfiguration-工作流程"><a href="#EnableAutoConfiguration-工作流程" class="headerlink" title="@EnableAutoConfiguration 工作流程"></a>@EnableAutoConfiguration 工作流程</h2><p><code>@EnableAutoConfiguration</code> 是自动装配的触发器，其源码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="meta">@AutoConfigurationPackage</span></span><br><span class="line"><span class="meta">@Import(AutoConfigurationImportSelector.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> EnableAutoConfiguration &#123;</span><br><span class="line"></span><br><span class="line">    <span class="type">String</span> <span class="variable">ENABLED_OVERRIDE_PROPERTY</span> <span class="operator">=</span> <span class="string">&quot;spring.boot.enableautoconfiguration&quot;</span>;</span><br><span class="line"></span><br><span class="line">    Class&lt;?&gt;[] exclude() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line"></span><br><span class="line">    String[] excludeName() <span class="keyword">default</span> &#123;&#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关键点：</p>
+<ul>
+<li><strong>@AutoConfigurationPackage</strong> — 将主配置类所在的包作为自动配置的根包注册到 <code>AutoConfigurationPackages</code> 中。</li>
+<li><strong>@Import(AutoConfigurationImportSelector.class)</strong> — 通过 <code>@Import</code> 导入 <code>AutoConfigurationImportSelector</code>，这是自动装配的核心执行者。</li>
+</ul>
+<h3 id="执行时序"><a href="#执行时序" class="headerlink" title="执行时序"></a>执行时序</h3><ol>
+<li>Spring 在解析 <code>@EnableAutoConfiguration</code> 注解时，触发 <code>AutoConfigurationImportSelector</code> 的加载。</li>
+<li><code>AutoConfigurationImportSelector</code> 实现 <code>DeferredImportSelector</code> 接口，这意味着它的执行时机晚于普通的 <code>ImportSelector</code>，确保所有用户自定义的配置先被处理。</li>
+<li>在 <code>selectImports()</code> 方法中，通过 SpringFactoriesLoader 加载所有候选自动配置类。</li>
+<li>经过条件过滤后，将符合条件的自动配置类返回给 Spring 容器进行注册。</li>
+</ol>
+<h2 id="AutoConfigurationImportSelector-源码分析"><a href="#AutoConfigurationImportSelector-源码分析" class="headerlink" title="AutoConfigurationImportSelector 源码分析"></a>AutoConfigurationImportSelector 源码分析</h2><p><code>AutoConfigurationImportSelector</code> 是整个自动装配流程的核心调度器。下面逐步分析其关键方法。</p>
+<h3 id="selectImports-方法"><a href="#selectImports-方法" class="headerlink" title="selectImports 方法"></a>selectImports 方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> String[] selectImports(AnnotationMetadata annotationMetadata) &#123;</span><br><span class="line">    <span class="keyword">if</span> (!isEnabled(annotationMetadata)) &#123;</span><br><span class="line">        <span class="keyword">return</span> NO_IMPORTS;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">AutoConfigurationEntry</span> <span class="variable">autoConfigurationEntry</span> <span class="operator">=</span></span><br><span class="line">        getAutoConfigurationEntry(annotationMetadata);</span><br><span class="line">    <span class="keyword">return</span> StringUtils.toStringArray(</span><br><span class="line">        autoConfigurationEntry.getConfigurations());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>isEnabled()</code> 方法会检查 <code>spring.boot.enableautoconfiguration</code> 配置项，默认为 <code>true</code>。可以通过设置该属性为 <code>false</code> 来关闭自动装配。</p>
+<h3 id="getAutoConfigurationEntry-方法"><a href="#getAutoConfigurationEntry-方法" class="headerlink" title="getAutoConfigurationEntry 方法"></a>getAutoConfigurationEntry 方法</h3><p>这是核心入口方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> AutoConfigurationEntry <span class="title function_">getAutoConfigurationEntry</span><span class="params">(</span></span><br><span class="line"><span class="params">        AnnotationMetadata annotationMetadata)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!isEnabled(annotationMetadata)) &#123;</span><br><span class="line">        <span class="keyword">return</span> EMPTY_ENTRY;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 1. 获取注解属性（exclude、excludeName）</span></span><br><span class="line">    <span class="type">AnnotationAttributes</span> <span class="variable">attributes</span> <span class="operator">=</span> getAttributes(annotationMetadata);</span><br><span class="line">    <span class="comment">// 2. 从 spring.factories 加载候选配置类</span></span><br><span class="line">    List&lt;String&gt; configurations = getCandidateConfigurations(</span><br><span class="line">        annotationMetadata, attributes);</span><br><span class="line">    <span class="comment">// 3. 去重</span></span><br><span class="line">    configurations = removeDuplicates(configurations);</span><br><span class="line">    <span class="comment">// 4. 获取需要排除的配置类</span></span><br><span class="line">    Set&lt;String&gt; exclusions = getExclusions(</span><br><span class="line">        annotationMetadata, attributes);</span><br><span class="line">    <span class="comment">// 5. 校验排除类</span></span><br><span class="line">    checkExcludedClasses(configurations, exclusions);</span><br><span class="line">    <span class="comment">// 6. 移除排除类</span></span><br><span class="line">    configurations.removeAll(exclusions);</span><br><span class="line">    <span class="comment">// 7. 条件过滤</span></span><br><span class="line">    configurations = getConfigurationClassFilter().filter(configurations);</span><br><span class="line">    <span class="comment">// 8. 触发自动配置导入事件</span></span><br><span class="line">    fireAutoConfigurationImportEvents(configurations, exclusions);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">AutoConfigurationEntry</span>(configurations, exclusions);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="getCandidateConfigurations-方法"><a href="#getCandidateConfigurations-方法" class="headerlink" title="getCandidateConfigurations 方法"></a>getCandidateConfigurations 方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> List&lt;String&gt; <span class="title function_">getCandidateConfigurations</span><span class="params">(</span></span><br><span class="line"><span class="params">        AnnotationMetadata metadata, AnnotationAttributes attributes)</span> &#123;</span><br><span class="line">    List&lt;String&gt; configurations = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;(</span><br><span class="line">        SpringFactoriesLoader.loadFactoryNames(</span><br><span class="line">            getSpringFactoriesLoaderFactoryClass(), getBeanClassLoader()));</span><br><span class="line">    ImportCandidates.load(AutoConfiguration.class, getBeanClassLoader())</span><br><span class="line">        .forEach(configurations::add);</span><br><span class="line">    Assert.notEmpty(configurations,</span><br><span class="line">        <span class="string">&quot;No auto configuration classes found in META-INF/spring.factories &quot;</span></span><br><span class="line">        + <span class="string">&quot;nor in META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports.&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> configurations;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>从这里可以看到，SpringBoot 2.7+ 同时支持两种加载方式：</p>
+<ol>
+<li><strong>SpringFactoriesLoader</strong> — 从 <code>META-INF/spring.factories</code> 中加载。</li>
+<li><strong>ImportCandidates</strong> — 从 <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code> 中加载（SpringBoot 2.7 新增，SpringBoot 3.0 成为主要方式）。</li>
+</ol>
+<h2 id="spring-factories-与-AutoConfiguration-Imports"><a href="#spring-factories-与-AutoConfiguration-Imports" class="headerlink" title="spring.factories 与 AutoConfiguration Imports"></a>spring.factories 与 AutoConfiguration Imports</h2><h3 id="传统方式：spring-factories"><a href="#传统方式：spring-factories" class="headerlink" title="传统方式：spring.factories"></a>传统方式：spring.factories</h3><p>在 SpringBoot 2.7 之前，自动配置类的声明统一放在 jar 包的 <code>META-INF/spring.factories</code> 文件中：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># META-INF/spring.factories</span></span><br><span class="line"><span class="attr">org.springframework.boot.autoconfigure.EnableAutoConfiguration</span>=<span class="string">\</span></span><br><span class="line"><span class="string">  com.example.autoconfigure.MyServiceAutoConfiguration,\</span></span><br><span class="line"><span class="string">  com.example.autoconfigure.MyRepositoryAutoConfiguration</span></span><br></pre></td></tr></table></figure>
+
+<p>这个机制基于 Java 的 <strong>SPI（Service Provider Interface）</strong> 思想，通过 <code>SpringFactoriesLoader</code> 工具类读取所有 jar 包下的 <code>spring.factories</code> 文件，合并为完整列表。</p>
+<h3 id="新方式：AutoConfiguration-imports"><a href="#新方式：AutoConfiguration-imports" class="headerlink" title="新方式：AutoConfiguration.imports"></a>新方式：AutoConfiguration.imports</h3><p>从 SpringBoot 2.7 开始，引入了新的配置文件路径：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</span><br></pre></td></tr></table></figure>
+
+<p>每行一个全限定类名：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">com.example.autoconfigure.MyServiceAutoConfiguration</span><br><span class="line">com.example.autoconfigure.MyRepositoryAutoConfiguration</span><br></pre></td></tr></table></figure>
+
+<p>SpringBoot 3.0 中，<code>spring.factories</code> 中的自动配置声明已被<strong>完全废弃</strong>，仅保留 <code>AutoConfiguration.imports</code> 方式。</p>
+<h3 id="spring-autoconfigure-metadata"><a href="#spring-autoconfigure-metadata" class="headerlink" title="spring-autoconfigure-metadata"></a>spring-autoconfigure-metadata</h3><p>除了配置类列表，SpringBoot 还使用 <code>spring-autoconfigure-metadata.properties</code> 文件来优化自动配置的加载效率：</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">com.example.autoconfigure.MyServiceAutoConfiguration.ConditionalOnClass</span>=<span class="string">com.example.MyService</span></span><br><span class="line"><span class="attr">com.example.autoconfigure.MyServiceAutoConfiguration.AutoConfigureAfter</span>=<span class="string">com.example.autoconfigure.CoreAutoConfiguration</span></span><br></pre></td></tr></table></figure>
+
+<p>这些元数据允许 SpringBoot 在<strong>不实际加载配置类</strong>的情况下进行条件预筛选，显著提升启动性能。</p>
+<h2 id="AutoConfigurationPackages-机制"><a href="#AutoConfigurationPackages-机制" class="headerlink" title="AutoConfigurationPackages 机制"></a>AutoConfigurationPackages 机制</h2><p><code>@AutoConfigurationPackage</code> 注解的作用是将主配置类所在的包注册到一个静态 holder 中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(ElementType.TYPE)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Inherited</span></span><br><span class="line"><span class="meta">@Import(AutoConfigurationPackages.Registrar.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> AutoConfigurationPackage &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>Registrar</code> 实现了 <code>ImportBeanDefinitionRegistrar</code>，在容器启动时将主类所在的包名注册为一个 Bean：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Registrar</span> <span class="keyword">implements</span> <span class="title class_">ImportBeanDefinitionRegistrar</span>, DeterminableImports &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">registerBeanDefinitions</span><span class="params">(AnnotationMetadata metadata,</span></span><br><span class="line"><span class="params">            BeanDefinitionRegistry registry)</span> &#123;</span><br><span class="line">        register(registry, <span class="keyword">new</span> <span class="title class_">PackageImports</span>(metadata)</span><br><span class="line">            .getPackageNames().toArray(<span class="keyword">new</span> <span class="title class_">String</span>[<span class="number">0</span>]));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个机制让其他自动配置类可以通过 <code>AutoConfigurationPackages.get()</code> 获取到应用的基础包路径，用于 JPA Entity 扫描、MyBatis Mapper 扫描等场景。</p>
+<h2 id="条件过滤链"><a href="#条件过滤链" class="headerlink" title="条件过滤链"></a>条件过滤链</h2><p>从 <code>spring.factories</code> 加载到的候选配置类通常有上百个，但并非所有都会生效。SpringBoot 通过一套<strong>条件过滤机制</strong>进行筛选。</p>
+<h3 id="过滤流程"><a href="#过滤流程" class="headerlink" title="过滤流程"></a>过滤流程</h3><p><code>getConfigurationClassFilter().filter(configurations)</code> 方法触发的过滤链如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> ConfigurationClassFilter <span class="title function_">getConfigurationClassFilter</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">this</span>.configurationClassFilter == <span class="literal">null</span>) &#123;</span><br><span class="line">        List&lt;AutoConfigurationImportFilter&gt; filters =</span><br><span class="line">            SpringFactoriesLoader.loadFactories(</span><br><span class="line">                AutoConfigurationImportFilter.class, <span class="built_in">this</span>.beanClassLoader);</span><br><span class="line">        <span class="built_in">this</span>.configurationClassFilter =</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">ConfigurationClassFilter</span>(<span class="built_in">this</span>.beanClassLoader, filters);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.configurationClassFilter;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="核心过滤器"><a href="#核心过滤器" class="headerlink" title="核心过滤器"></a>核心过滤器</h3><p>SpringBoot 内置了三个关键的 <code>AutoConfigurationImportFilter</code> 实现：</p>
+<h4 id="1-OnClassCondition"><a href="#1-OnClassCondition" class="headerlink" title="1. OnClassCondition"></a>1. OnClassCondition</h4><p>对应 <code>@ConditionalOnClass</code> 和 <code>@ConditionalOnMissingClass</code>。</p>
+<p>检查目标类是否存在于 classpath 中。这是<strong>最常用的过滤条件</strong>，因为大多数自动配置都依赖于特定的第三方库。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ConditionalOnClass(DataSource.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DataSourceAutoConfiguration</span> &#123;</span><br><span class="line">    <span class="comment">// 只有 classpath 中存在 DataSource 类时才会加载</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>SpringBoot 通过 <code>spring-autoconfigure-metadata.properties</code> 中的元数据预判 <code>OnClassCondition</code>，避免提前实例化配置类。</p>
+<h4 id="2-OnBeanCondition"><a href="#2-OnBeanCondition" class="headerlink" title="2. OnBeanCondition"></a>2. OnBeanCondition</h4><p>对应 <code>@ConditionalOnBean</code>、<code>@ConditionalOnMissingBean</code> 和 <code>@ConditionalOnSingleCandidate</code>。</p>
+<p>检查 Spring 容器中是否已存在特定类型的 Bean。<code>@ConditionalOnMissingBean</code> 是<strong>用户覆盖默认配置</strong>的核心机制——当用户自定义了某个 Bean 后，自动配置中的默认实现就不会再创建。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="meta">@ConditionalOnMissingBean</span></span><br><span class="line"><span class="keyword">public</span> MyService <span class="title function_">myService</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">DefaultMyService</span>();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-OnWebApplicationCondition"><a href="#3-OnWebApplicationCondition" class="headerlink" title="3. OnWebApplicationCondition"></a>3. OnWebApplicationCondition</h4><p>对应 <code>@ConditionalOnWebApplication</code> 和 <code>@ConditionalOnNotWebApplication</code>。</p>
+<p>检查当前应用是否为 Web 应用，以及使用的是哪种 Web 容器（Servlet 或 Reactive）。</p>
+<h3 id="过滤的执行顺序"><a href="#过滤的执行顺序" class="headerlink" title="过滤的执行顺序"></a>过滤的执行顺序</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">候选配置类（约 130+）</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  OnClassCondition 过滤</span><br><span class="line">  （剔除 classpath 缺少依赖的配置类）</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  OnBeanCondition 过滤</span><br><span class="line">  （剔除容器中已存在对应 Bean 的配置类）</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  OnWebApplicationCondition 过滤</span><br><span class="line">  （剔除不匹配当前应用类型的配置类）</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  最终生效的配置类（约 20-30 个）</span><br></pre></td></tr></table></figure>
+
+<h2 id="自动装配的加载时序"><a href="#自动装配的加载时序" class="headerlink" title="自动装配的加载时序"></a>自动装配的加载时序</h2><p>自动配置类之间可能存在依赖关系，SpringBoot 提供了三种排序注解来控制加载顺序：</p>
+<h3 id="AutoConfigureBefore-AutoConfigureAfter"><a href="#AutoConfigureBefore-AutoConfigureAfter" class="headerlink" title="@AutoConfigureBefore / @AutoConfigureAfter"></a>@AutoConfigureBefore / @AutoConfigureAfter</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@AutoConfigureAfter(DataSourceAutoConfiguration.class)</span></span><br><span class="line"><span class="meta">@AutoConfigureBefore(HibernateJpaAutoConfiguration.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyJpaAutoConfiguration</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="AutoConfigureOrder"><a href="#AutoConfigureOrder" class="headerlink" title="@AutoConfigureOrder"></a>@AutoConfigureOrder</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@AutoConfigureOrder(Ordered.HIGHEST_PRECEDENCE)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CoreAutoConfiguration</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="完整时序图"><a href="#完整时序图" class="headerlink" title="完整时序图"></a>完整时序图</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">SpringApplication.run()</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  createApplicationContext()</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  prepareContext()</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  refreshContext()</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  invokeBeanFactoryPostProcessors()</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  处理 @Configuration 类</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  解析 @EnableAutoConfiguration</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  AutoConfigurationImportSelector.selectImports()</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  getCandidateConfigurations()</span><br><span class="line">  （从 spring.factories / AutoConfiguration.imports 加载）</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  去重 + 排除</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  条件过滤（OnClass -&gt; OnBean -&gt; OnWebApplication）</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  排序（@AutoConfigureOrder / Before / After）</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  注册到 BeanDefinitionRegistry</span><br><span class="line">       |</span><br><span class="line">       v</span><br><span class="line">  实例化 Bean（lazy / eager 取决于作用域）</span><br></pre></td></tr></table></figure>
+
+<h2 id="如何自定义自动装配"><a href="#如何自定义自动装配" class="headerlink" title="如何自定义自动装配"></a>如何自定义自动装配</h2><h3 id="创建自定义自动配置类"><a href="#创建自定义自动配置类" class="headerlink" title="创建自定义自动配置类"></a>创建自定义自动配置类</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@AutoConfiguration</span></span><br><span class="line"><span class="meta">@ConditionalOnClass(MyFeature.class)</span></span><br><span class="line"><span class="meta">@EnableConfigurationProperties(MyFeatureProperties.class)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyFeatureAutoConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@ConditionalOnMissingBean</span></span><br><span class="line">    <span class="keyword">public</span> MyFeatureService <span class="title function_">myFeatureService</span><span class="params">(MyFeatureProperties properties)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">MyFeatureService</span>(properties);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="注册自动配置"><a href="#注册自动配置" class="headerlink" title="注册自动配置"></a>注册自动配置</h3><p><strong>方式一：spring.factories（SpringBoot 2.x）</strong></p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># META-INF/spring.factories</span></span><br><span class="line"><span class="attr">org.springframework.boot.autoconfigure.EnableAutoConfiguration</span>=<span class="string">\</span></span><br><span class="line"><span class="string">  com.example.MyFeatureAutoConfiguration</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>方式二：AutoConfiguration.imports（SpringBoot 2.7+ / 3.x）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</span><br><span class="line">com.example.MyFeatureAutoConfiguration</span><br></pre></td></tr></table></figure>
+
+<h3 id="添加条件元数据（可选但推荐）"><a href="#添加条件元数据（可选但推荐）" class="headerlink" title="添加条件元数据（可选但推荐）"></a>添加条件元数据（可选但推荐）</h3><figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># META-INF/spring-autoconfigure-metadata.properties</span></span><br><span class="line"><span class="attr">com.example.MyFeatureAutoConfiguration.ConditionalOnClass</span>=<span class="string">com.example.MyFeature</span></span><br><span class="line"><span class="attr">com.example.MyFeatureAutoConfiguration.AutoConfigureAfter</span>=<span class="string">org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="通过-application-yml-控制"><a href="#通过-application-yml-控制" class="headerlink" title="通过 application.yml 控制"></a>通过 application.yml 控制</h3><p>用户可以通过配置文件禁用特定的自动配置：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">autoconfigure:</span></span><br><span class="line">    <span class="attr">exclude:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">com.example.MyFeatureAutoConfiguration</span></span><br></pre></td></tr></table></figure>
+
+<p>或在主类上通过注解排除：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication(exclude = &#123;MyFeatureAutoConfiguration.class&#125;)</span></span><br></pre></td></tr></table></figure>
+
+<p>也可以使用 <code>@ConditionalOnProperty</code> 让用户通过配置开关控制：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@AutoConfiguration</span></span><br><span class="line"><span class="meta">@ConditionalOnProperty(</span></span><br><span class="line"><span class="meta">    prefix = &quot;my.feature&quot;,</span></span><br><span class="line"><span class="meta">    name = &quot;enabled&quot;,</span></span><br><span class="line"><span class="meta">    havingValue = &quot;true&quot;,</span></span><br><span class="line"><span class="meta">    matchIfMissing = true</span></span><br><span class="line"><span class="meta">)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyFeatureAutoConfiguration</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>SpringBoot 自动装配的核心链路可以概括为：</p>
+<ol>
+<li><code>@SpringBootApplication</code> 包含 <code>@EnableAutoConfiguration</code>。</li>
+<li><code>@EnableAutoConfiguration</code> 通过 <code>@Import</code> 导入 <code>AutoConfigurationImportSelector</code>。</li>
+<li><code>AutoConfigurationImportSelector</code> 从 <code>spring.factories</code> 或 <code>AutoConfiguration.imports</code> 加载所有候选配置类。</li>
+<li>经过去重、排除、条件过滤、排序后，将最终符合条件的配置类注册到容器。</li>
+<li>容器在 refresh 阶段实例化这些 Bean，完成自动装配。</li>
+</ol>
+<p>理解这条链路，就掌握了 SpringBoot”约定优于配置”的底层实现。在实际开发中，无论是排查自动配置问题，还是开发自定义 Starter，都需要回到这条链路上定位关键节点。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%8E%9F%E7%90%86/" rel="tag"># 原理</a>
+              <a href="/tags/SpringBoot/" rel="tag"># SpringBoot</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/06/07/Elasticsearch/" rel="prev" title="Elasticsearch-入门篇">
+      <i class="fa fa-chevron-left"></i> Elasticsearch-入门篇
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/03/15/SpringBoot%E6%9D%A1%E4%BB%B6%E6%B3%A8%E8%A7%A3/" rel="next" title="SpringBoot条件注解详解">
+      SpringBoot条件注解详解 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E-SpringBootApplication-%E8%AF%B4%E8%B5%B7"><span class="nav-number">1.</span> <span class="nav-text">从 @SpringBootApplication 说起</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EnableAutoConfiguration-%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">@EnableAutoConfiguration 工作流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C%E6%97%B6%E5%BA%8F"><span class="nav-number">2.1.</span> <span class="nav-text">执行时序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AutoConfigurationImportSelector-%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">3.</span> <span class="nav-text">AutoConfigurationImportSelector 源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#selectImports-%E6%96%B9%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">selectImports 方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#getAutoConfigurationEntry-%E6%96%B9%E6%B3%95"><span class="nav-number">3.2.</span> <span class="nav-text">getAutoConfigurationEntry 方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#getCandidateConfigurations-%E6%96%B9%E6%B3%95"><span class="nav-number">3.3.</span> <span class="nav-text">getCandidateConfigurations 方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#spring-factories-%E4%B8%8E-AutoConfiguration-Imports"><span class="nav-number">4.</span> <span class="nav-text">spring.factories 与 AutoConfiguration Imports</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%A0%E7%BB%9F%E6%96%B9%E5%BC%8F%EF%BC%9Aspring-factories"><span class="nav-number">4.1.</span> <span class="nav-text">传统方式：spring.factories</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B0%E6%96%B9%E5%BC%8F%EF%BC%9AAutoConfiguration-imports"><span class="nav-number">4.2.</span> <span class="nav-text">新方式：AutoConfiguration.imports</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#spring-autoconfigure-metadata"><span class="nav-number">4.3.</span> <span class="nav-text">spring-autoconfigure-metadata</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AutoConfigurationPackages-%E6%9C%BA%E5%88%B6"><span class="nav-number">5.</span> <span class="nav-text">AutoConfigurationPackages 机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6%E8%BF%87%E6%BB%A4%E9%93%BE"><span class="nav-number">6.</span> <span class="nav-text">条件过滤链</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E6%B5%81%E7%A8%8B"><span class="nav-number">6.1.</span> <span class="nav-text">过滤流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="nav-number">6.2.</span> <span class="nav-text">核心过滤器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-OnClassCondition"><span class="nav-number">6.2.1.</span> <span class="nav-text">1. OnClassCondition</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-OnBeanCondition"><span class="nav-number">6.2.2.</span> <span class="nav-text">2. OnBeanCondition</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-OnWebApplicationCondition"><span class="nav-number">6.2.3.</span> <span class="nav-text">3. OnWebApplicationCondition</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%BB%A4%E7%9A%84%E6%89%A7%E8%A1%8C%E9%A1%BA%E5%BA%8F"><span class="nav-number">6.3.</span> <span class="nav-text">过滤的执行顺序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E7%9A%84%E5%8A%A0%E8%BD%BD%E6%97%B6%E5%BA%8F"><span class="nav-number">7.</span> <span class="nav-text">自动装配的加载时序</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#AutoConfigureBefore-AutoConfigureAfter"><span class="nav-number">7.1.</span> <span class="nav-text">@AutoConfigureBefore &#x2F; @AutoConfigureAfter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AutoConfigureOrder"><span class="nav-number">7.2.</span> <span class="nav-text">@AutoConfigureOrder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E6%97%B6%E5%BA%8F%E5%9B%BE"><span class="nav-number">7.3.</span> <span class="nav-text">完整时序图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%87%AA%E5%AE%9A%E4%B9%89%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D"><span class="nav-number">8.</span> <span class="nav-text">如何自定义自动装配</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%87%AA%E5%AE%9A%E4%B9%89%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE%E7%B1%BB"><span class="nav-number">8.1.</span> <span class="nav-text">创建自定义自动配置类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C%E8%87%AA%E5%8A%A8%E9%85%8D%E7%BD%AE"><span class="nav-number">8.2.</span> <span class="nav-text">注册自动配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E6%9D%A1%E4%BB%B6%E5%85%83%E6%95%B0%E6%8D%AE%EF%BC%88%E5%8F%AF%E9%80%89%E4%BD%86%E6%8E%A8%E8%8D%90%EF%BC%89"><span class="nav-number">8.3.</span> <span class="nav-text">添加条件元数据（可选但推荐）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E8%BF%87-application-yml-%E6%8E%A7%E5%88%B6"><span class="nav-number">8.4.</span> <span class="nav-text">通过 application.yml 控制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">9.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John-1010-cmd</p>
+  <div class="site-description" itemprop="description">Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John-1010-cmd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

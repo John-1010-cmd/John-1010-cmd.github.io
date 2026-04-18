@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"john-1010-cmd.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="大语言模型基础概念全解，从 Transformer 架构到主流模型的技术演进。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="大语言模型基础">
+<meta property="og:url" content="https://john-1010-cmd.github.io/2025/06/01/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="John&#39;s Blog">
+<meta property="og:description" content="大语言模型基础概念全解，从 Transformer 架构到主流模型的技术演进。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-05-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-05-31T16:00:00.000Z">
+<meta property="article:author" content="John-1010-cmd">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="原理">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://john-1010-cmd.github.io/2025/06/01/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>大语言模型基础 | John's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">John's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-系列导航">
+
+    <a href="/%E7%B3%BB%E5%88%97%E5%AF%BC%E8%88%AA/" rel="section"><i class="fa fa-fw fa-book"></i>系列导航</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://john-1010-cmd.github.io/2025/06/01/%E5%A4%A7%E6%A8%A1%E5%9E%8B%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John-1010-cmd">
+      <meta itemprop="description" content="Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="John's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          大语言模型基础
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-06-01 00:00:00" itemprop="dateCreated datePublished" datetime="2025-06-01T00:00:00+08:00">2025-06-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI/" itemprop="url" rel="index"><span itemprop="name">AI</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">大语言模型基础概念全解，从 Transformer 架构到主流模型的技术演进。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="AI-发展简史"><a href="#AI-发展简史" class="headerlink" title="AI 发展简史"></a>AI 发展简史</h2><p>人工智能的发展经历了几个重要阶段，每个阶段都有其核心范式的转变。</p>
+<h3 id="从规则到统计学习"><a href="#从规则到统计学习" class="headerlink" title="从规则到统计学习"></a>从规则到统计学习</h3><p>早期 AI 系统（1950s-1980s）主要依赖<strong>符号主义</strong>方法，通过人工编写规则来模拟智能行为。这类系统的代表包括专家系统（如 MYCIN），它们将领域知识编码为 if-then 规则。然而，规则系统面临着知识获取瓶颈——真实世界的复杂性使得手工编码所有规则变得不可能。</p>
+<p>1980s-2000s，<strong>统计学习</strong>方法开始兴起。机器学习算法（如 SVM、决策树、朴素贝叶斯）能够从数据中自动学习模式，不再需要显式编码规则。这一阶段的突破包括：</p>
+<ul>
+<li><strong>HMM（隐马尔可夫模型）</strong>：在语音识别领域取得重大进展</li>
+<li><strong>CRF（条件随机场）</strong>：在序列标注任务中广泛应用</li>
+<li><strong>TF-IDF + 朴素贝叶斯</strong>：成为文本分类的标准方案</li>
+</ul>
+<h3 id="深度学习的崛起"><a href="#深度学习的崛起" class="headerlink" title="深度学习的崛起"></a>深度学习的崛起</h3><p>2012 年，AlexNet 在 ImageNet 竞赛中大幅领先传统方法，标志着<strong>深度学习</strong>时代的到来。在 NLP 领域，关键里程碑包括：</p>
+<table>
+<thead>
+<tr>
+<th>年份</th>
+<th>事件</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>2013</td>
+<td>Word2Vec 提出</td>
+<td>分布式词表示成为标准</td>
+</tr>
+<tr>
+<td>2014</td>
+<td>Seq2Seq 模型</td>
+<td>端到端序列建模</td>
+</tr>
+<tr>
+<td>2015</td>
+<td>Attention 机制</td>
+<td>解决长序列信息丢失</td>
+</tr>
+<tr>
+<td>2017</td>
+<td>Transformer 提出</td>
+<td>自注意力范式革命</td>
+</tr>
+<tr>
+<td>2018</td>
+<td>BERT / GPT 发布</td>
+<td>预训练语言模型时代</td>
+</tr>
+<tr>
+<td>2020</td>
+<td>GPT-3 发布</td>
+<td>大语言模型展现出涌现能力</td>
+</tr>
+<tr>
+<td>2023</td>
+<td>GPT-4 发布</td>
+<td>多模态大模型</td>
+</tr>
+</tbody></table>
+<p>深度学习之所以能够超越传统方法，核心在于三点：<strong>大规模数据</strong>的可用性、<strong>GPU 算力</strong>的指数级增长、以及<strong>更优的网络架构</strong>设计。</p>
+<h2 id="Transformer-架构核心"><a href="#Transformer-架构核心" class="headerlink" title="Transformer 架构核心"></a>Transformer 架构核心</h2><p>Transformer 是现代大语言模型的基石。2017 年 Google 在论文《Attention Is All You Need》中提出，彻底改变了 NLP 的技术范式。</p>
+<h3 id="Self-Attention-机制"><a href="#Self-Attention-机制" class="headerlink" title="Self-Attention 机制"></a>Self-Attention 机制</h3><p>Self-Attention 是 Transformer 的核心创新。其基本思想是：让序列中的每个位置都能直接关注到序列中的所有其他位置，从而捕获长距离依赖关系。</p>
+<h4 id="计算过程"><a href="#计算过程" class="headerlink" title="计算过程"></a>计算过程</h4><p>Self-Attention 的计算分为以下步骤：</p>
+<ol>
+<li><strong>线性变换</strong>：将输入向量通过三个权重矩阵变换为 Query（Q）、Key（K）、Value（V）</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.nn <span class="keyword">as</span> nn</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">SelfAttention</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, d_model, n_heads</span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        <span class="variable language_">self</span>.d_k = d_model // n_heads</span><br><span class="line">        <span class="variable language_">self</span>.n_heads = n_heads</span><br><span class="line">        <span class="variable language_">self</span>.W_q = nn.Linear(d_model, d_model)</span><br><span class="line">        <span class="variable language_">self</span>.W_k = nn.Linear(d_model, d_model)</span><br><span class="line">        <span class="variable language_">self</span>.W_v = nn.Linear(d_model, d_model)</span><br><span class="line">        <span class="variable language_">self</span>.W_o = nn.Linear(d_model, d_model)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x, mask=<span class="literal">None</span></span>):</span><br><span class="line">        B, T, C = x.shape</span><br><span class="line">        <span class="comment"># 线性变换得到 Q, K, V</span></span><br><span class="line">        Q = <span class="variable language_">self</span>.W_q(x).view(B, T, <span class="variable language_">self</span>.n_heads, <span class="variable language_">self</span>.d_k).transpose(<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">        K = <span class="variable language_">self</span>.W_k(x).view(B, T, <span class="variable language_">self</span>.n_heads, <span class="variable language_">self</span>.d_k).transpose(<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line">        V = <span class="variable language_">self</span>.W_v(x).view(B, T, <span class="variable language_">self</span>.n_heads, <span class="variable language_">self</span>.d_k).transpose(<span class="number">1</span>, <span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 计算注意力分数</span></span><br><span class="line">        scores = torch.matmul(Q, K.transpose(-<span class="number">2</span>, -<span class="number">1</span>)) / math.sqrt(<span class="variable language_">self</span>.d_k)</span><br><span class="line">        <span class="keyword">if</span> mask <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            scores = scores.masked_fill(mask == <span class="number">0</span>, <span class="built_in">float</span>(<span class="string">&#x27;-inf&#x27;</span>))</span><br><span class="line">        attn = torch.softmax(scores, dim=-<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 加权求和</span></span><br><span class="line">        out = torch.matmul(attn, V)</span><br><span class="line">        out = out.transpose(<span class="number">1</span>, <span class="number">2</span>).contiguous().view(B, T, -<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="variable language_">self</span>.W_o(out)</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><strong>计算注意力分数</strong>：Q 和 K 的点积除以缩放因子</li>
+<li><strong>Softmax 归一化</strong>：得到注意力权重分布</li>
+<li><strong>加权求和</strong>：用注意力权重对 V 进行加权求和</li>
+</ol>
+<p>Self-Attention 的时间复杂度为 O(n^2)，其中 n 是序列长度。这是 Transformer 处理超长序列时的主要瓶颈。</p>
+<h3 id="Multi-Head-Attention"><a href="#Multi-Head-Attention" class="headerlink" title="Multi-Head Attention"></a>Multi-Head Attention</h3><p>Multi-Head Attention 将 Self-Attention 扩展为多个并行的”头”，每个头学习关注不同的子空间信息：</p>
+<ul>
+<li>不同的头可以关注<strong>不同的语义层面</strong>（如语法关系、语义关系、共指关系）</li>
+<li>将 d_model 维度拆分为 h 个头，每个头维度为 d_model / h</li>
+<li>多头的输出拼接后再经过线性变换</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MultiHead(Q, K, V) = Concat(head_1, ..., head_h) * W_O</span><br><span class="line">其中 head_i = Attention(Q * W_Q_i, K * W_K_i, V * W_V_i)</span><br></pre></td></tr></table></figure>
+
+<h3 id="位置编码"><a href="#位置编码" class="headerlink" title="位置编码"></a>位置编码</h3><p>由于 Self-Attention 本身是<strong>置换不变</strong>的（即不感知位置信息），Transformer 需要显式注入位置信息。原始论文使用正弦/余弦位置编码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">PositionalEncoding</span>(nn.Module):</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">__init__</span>(<span class="params">self, d_model, max_len=<span class="number">5000</span></span>):</span><br><span class="line">        <span class="built_in">super</span>().__init__()</span><br><span class="line">        pe = torch.zeros(max_len, d_model)</span><br><span class="line">        position = torch.arange(<span class="number">0</span>, max_len).unsqueeze(<span class="number">1</span>).<span class="built_in">float</span>()</span><br><span class="line">        div_term = torch.exp(</span><br><span class="line">            torch.arange(<span class="number">0</span>, d_model, <span class="number">2</span>).<span class="built_in">float</span>() * (-math.log(<span class="number">10000.0</span>) / d_model)</span><br><span class="line">        )</span><br><span class="line">        pe[:, <span class="number">0</span>::<span class="number">2</span>] = torch.sin(position * div_term)  <span class="comment"># 偶数维度</span></span><br><span class="line">        pe[:, <span class="number">1</span>::<span class="number">2</span>] = torch.cos(position * div_term)  <span class="comment"># 奇数维度</span></span><br><span class="line">        <span class="variable language_">self</span>.register_buffer(<span class="string">&#x27;pe&#x27;</span>, pe.unsqueeze(<span class="number">0</span>))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">forward</span>(<span class="params">self, x</span>):</span><br><span class="line">        <span class="keyword">return</span> x + <span class="variable language_">self</span>.pe[:, :x.size(<span class="number">1</span>)]</span><br></pre></td></tr></table></figure>
+
+<p>后续发展出的位置编码方案包括：</p>
+<ul>
+<li><strong>可学习位置编码</strong>：将位置编码作为可训练参数（BERT 使用）</li>
+<li><strong>RoPE（旋转位置编码）</strong>：通过旋转矩阵编码相对位置（LLaMA 使用）</li>
+<li><strong>ALiBi</strong>：在注意力分数上添加距离相关的线性偏置</li>
+</ul>
+<h2 id="GPT-系列演进"><a href="#GPT-系列演进" class="headerlink" title="GPT 系列演进"></a>GPT 系列演进</h2><p>GPT（Generative Pre-trained Transformer）系列是 OpenAI 推出的自回归语言模型，其演进历程体现了大模型的核心技术趋势。</p>
+<h3 id="GPT-1：开创性验证"><a href="#GPT-1：开创性验证" class="headerlink" title="GPT-1：开创性验证"></a>GPT-1：开创性验证</h3><p>2018 年发布的 GPT-1 验证了”<strong>生成式预训练 + 判别式微调</strong>“范式的有效性：</p>
+<ul>
+<li>参数量：1.17 亿</li>
+<li>架构：12 层 Transformer Decoder</li>
+<li>预训练：在大规模无标注文本上进行语言建模</li>
+<li>微调：在下游任务的有标注数据上微调</li>
+</ul>
+<h3 id="GPT-2：规模扩展与-Zero-shot"><a href="#GPT-2：规模扩展与-Zero-shot" class="headerlink" title="GPT-2：规模扩展与 Zero-shot"></a>GPT-2：规模扩展与 Zero-shot</h3><p>2019 年的 GPT-2 展示了<strong>规模扩展</strong>带来的能力提升：</p>
+<ul>
+<li>参数量：15 亿（最大版本）</li>
+<li>核心改进：更大的模型、更多的数据、去掉了微调阶段</li>
+<li>关键发现：模型规模增大后展现出 Zero-shot 学习能力</li>
+</ul>
+<h3 id="GPT-3：涌现能力"><a href="#GPT-3：涌现能力" class="headerlink" title="GPT-3：涌现能力"></a>GPT-3：涌现能力</h3><p>2020 年的 GPT-3 是一个里程碑，参数量达到 <strong>1750 亿</strong>：</p>
+<ul>
+<li>核心突破：展现出<strong>涌现能力</strong>（Emergent Abilities），即小模型不具备但大模型突然展现的能力</li>
+<li>少样本学习：通过 In-context Learning，无需梯度更新即可完成新任务</li>
+<li>技术细节：使用了稀疏注意力（Sparse Attention）来处理更长序列</li>
+</ul>
+<h3 id="GPT-4：多模态与推理"><a href="#GPT-4：多模态与推理" class="headerlink" title="GPT-4：多模态与推理"></a>GPT-4：多模态与推理</h3><p>2023 年发布的 GPT-4 进一步扩展了能力边界：</p>
+<ul>
+<li>支持多模态输入（图像 + 文本）</li>
+<li>推理能力大幅提升，在专业考试中达到人类水平</li>
+<li>引入 RLHF（基于人类反馈的强化学习）对齐技术</li>
+<li>架构细节未公开，但推测采用了 MoE（Mixture of Experts）结构</li>
+</ul>
+<h2 id="主流开源模型"><a href="#主流开源模型" class="headerlink" title="主流开源模型"></a>主流开源模型</h2><p>开源大模型生态在近年来迅速发展，涌现出一批高质量模型。</p>
+<h3 id="LLaMA-系列"><a href="#LLaMA-系列" class="headerlink" title="LLaMA 系列"></a>LLaMA 系列</h3><p>Meta 推出的 LLaMA 系列是开源模型的标杆：</p>
+<ul>
+<li><strong>LLaMA 1</strong>（2023.2）：7B 到 65B 参数，训练数据更优</li>
+<li><strong>LLaMA 2</strong>（2023.7）：7B/13B/70B，训练数据量增加 40%，上下文长度扩展到 4096</li>
+<li><strong>LLaMA 3</strong>（2024.4）：8B/70B，采用新 tokenizer（128K 词表），支持 8K 上下文</li>
+<li><strong>LLaMA 3.1</strong>（2024.7）：405B 参数版本，支持 128K 上下文</li>
+</ul>
+<h3 id="Qwen-系列"><a href="#Qwen-系列" class="headerlink" title="Qwen 系列"></a>Qwen 系列</h3><p>阿里云推出的 Qwen 系列在中文能力上表现突出：</p>
+<ul>
+<li>覆盖 0.5B 到 72B 多种规模</li>
+<li>多语言能力强，中英文表现均衡</li>
+<li>Qwen 2.5 系列在代码和数学推理上有显著提升</li>
+</ul>
+<h3 id="DeepSeek"><a href="#DeepSeek" class="headerlink" title="DeepSeek"></a>DeepSeek</h3><p>DeepSeek 系列模型以高性价比著称：</p>
+<ul>
+<li><strong>DeepSeek-V2</strong>：采用 MLA（Multi-head Latent Attention）和 MoE 架构，推理成本极低</li>
+<li><strong>DeepSeek-V3</strong>：671B 总参数，37B 激活参数，训练成本仅 557 万美元</li>
+<li><strong>DeepSeek-R1</strong>：通过强化学习激发推理能力，性能媲美 o1</li>
+</ul>
+<h3 id="ChatGLM"><a href="#ChatGLM" class="headerlink" title="ChatGLM"></a>ChatGLM</h3><p>智谱 AI 推出的 ChatGLM 系列：</p>
+<ul>
+<li>基于 GLM（General Language Model）架构</li>
+<li>中英双语优化，适合国内应用场景</li>
+<li>ChatGLM-6B 可在单张消费级 GPU 上运行</li>
+</ul>
+<h2 id="Tokenization"><a href="#Tokenization" class="headerlink" title="Tokenization"></a>Tokenization</h2><p>Tokenization 是将原始文本转换为模型输入的第一步，直接影响模型的词汇量和处理效率。</p>
+<h3 id="BPE（Byte-Pair-Encoding）"><a href="#BPE（Byte-Pair-Encoding）" class="headerlink" title="BPE（Byte-Pair Encoding）"></a>BPE（Byte-Pair Encoding）</h3><p>BPE 是目前最常用的 Tokenization 方法，GPT 系列均使用此方案：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># BPE 算法流程</span><br><span class="line">初始词汇表 = 所有单个字符</span><br><span class="line">重复以下步骤直到达到目标词汇量：</span><br><span class="line">    1. 统计当前语料中所有相邻 token 对的频率</span><br><span class="line">    2. 合并频率最高的 token 对，生成新 token</span><br><span class="line">    3. 更新词汇表和语料中的 token 表示</span><br></pre></td></tr></table></figure>
+
+<p>BPE 的优势在于：</p>
+<ul>
+<li>能自动平衡词级和字符级表示</li>
+<li>可以处理未登录词（OOV）</li>
+<li>常见词有较短的编码，罕见词自动拆分为子词</li>
+</ul>
+<h3 id="WordPiece"><a href="#WordPiece" class="headerlink" title="WordPiece"></a>WordPiece</h3><p>WordPiece 与 BPE 类似，但选择合并对的标准不同：</p>
+<ul>
+<li>BPE 选择<strong>频率最高</strong>的相邻对</li>
+<li>WordPiece 选择使<strong>语言模型似然增益最大</strong>的相邻对</li>
+<li>BERT 使用 WordPiece 作为 Tokenizer</li>
+</ul>
+<h3 id="SentencePiece"><a href="#SentencePiece" class="headerlink" title="SentencePiece"></a>SentencePiece</h3><p>SentencePiece 是一个语言无关的 Tokenization 框架：</p>
+<ul>
+<li>将文本视为原始字节流，不依赖预分词</li>
+<li>同时支持 BPE 和 Unigram 两种算法</li>
+<li>LLaMA、T5 等模型使用 SentencePiece</li>
+</ul>
+<h2 id="上下文窗口与上下文学习"><a href="#上下文窗口与上下文学习" class="headerlink" title="上下文窗口与上下文学习"></a>上下文窗口与上下文学习</h2><h3 id="上下文窗口"><a href="#上下文窗口" class="headerlink" title="上下文窗口"></a>上下文窗口</h3><p>上下文窗口（Context Window）是模型一次能处理的最大 token 数量：</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>上下文长度</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GPT-3</td>
+<td>4K</td>
+</tr>
+<tr>
+<td>GPT-4 Turbo</td>
+<td>128K</td>
+</tr>
+<tr>
+<td>Claude 3</td>
+<td>200K</td>
+</tr>
+<tr>
+<td>Gemini 1.5 Pro</td>
+<td>1M</td>
+</tr>
+<tr>
+<td>LLaMA 3.1</td>
+<td>128K</td>
+</tr>
+</tbody></table>
+<p>扩展上下文窗口面临的技术挑战：</p>
+<ul>
+<li>注意力计算的二次复杂度</li>
+<li>位置编码的外推能力</li>
+<li>长文本中的信息遗忘问题</li>
+</ul>
+<h3 id="上下文学习（In-Context-Learning-ICL）"><a href="#上下文学习（In-Context-Learning-ICL）" class="headerlink" title="上下文学习（In-Context Learning, ICL）"></a>上下文学习（In-Context Learning, ICL）</h3><p>ICL 是大模型的核心能力之一，指模型通过 Prompt 中的示例来学习新任务，<strong>无需更新模型参数</strong>：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ICL 示例：Few-shot 情感分类</span></span><br><span class="line">prompt = <span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">判断以下评论的情感倾向（正面/负面）：</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">评论：这个产品质量很好，非常满意！</span></span><br><span class="line"><span class="string">情感：正面</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">评论：物流太慢了，等了一周才到。</span></span><br><span class="line"><span class="string">情感：负面</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">评论：性价比很高，推荐购买。</span></span><br><span class="line"><span class="string">情感：</span></span><br><span class="line"><span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="comment"># 模型输出：正面</span></span><br></pre></td></tr></table></figure>
+
+<p>ICL 的工作原理尚在研究中，但主流假说认为：</p>
+<ul>
+<li>预训练数据中包含大量相似的任务模式</li>
+<li>Transformer 的注意力机制隐式实现了梯度下降</li>
+<li>ICL 的效果随模型规模增大而提升</li>
+</ul>
+<h2 id="微调技术"><a href="#微调技术" class="headerlink" title="微调技术"></a>微调技术</h2><p>微调是将预训练模型适配到特定任务的关键步骤。</p>
+<h3 id="Full-Fine-tuning"><a href="#Full-Fine-tuning" class="headerlink" title="Full Fine-tuning"></a>Full Fine-tuning</h3><p>全量微调更新模型的所有参数：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> AutoModelForCausalLM, Trainer, TrainingArguments</span><br><span class="line"></span><br><span class="line">model = AutoModelForCausalLM.from_pretrained(<span class="string">&quot;meta-llama/Llama-2-7b&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 全量微调：所有参数都参与梯度更新</span></span><br><span class="line">training_args = TrainingArguments(</span><br><span class="line">    output_dir=<span class="string">&quot;./output&quot;</span>,</span><br><span class="line">    num_train_epochs=<span class="number">3</span>,</span><br><span class="line">    per_device_train_batch_size=<span class="number">4</span>,</span><br><span class="line">    learning_rate=<span class="number">2e-5</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">trainer = Trainer(</span><br><span class="line">    model=model,</span><br><span class="line">    args=training_args,</span><br><span class="line">    train_dataset=train_dataset,</span><br><span class="line">)</span><br><span class="line">trainer.train()</span><br></pre></td></tr></table></figure>
+
+<p>缺点：需要大量 GPU 显存（7B 模型全量微调约需 60GB+），容易过拟合。</p>
+<h3 id="LoRA（Low-Rank-Adaptation）"><a href="#LoRA（Low-Rank-Adaptation）" class="headerlink" title="LoRA（Low-Rank Adaptation）"></a>LoRA（Low-Rank Adaptation）</h3><p>LoRA 通过在权重矩阵旁添加低秩分解矩阵来实现参数高效的微调：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">原始权重更新：W = W_0 + delta_W</span><br><span class="line">LoRA 分解：  delta_W = A * B</span><br><span class="line">其中 A in R^&#123;d x r&#125;, B in R^&#123;r x d&#125;, r &lt;&lt; d</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> peft <span class="keyword">import</span> LoraConfig, get_peft_model</span><br><span class="line"></span><br><span class="line">config = LoraConfig(</span><br><span class="line">    r=<span class="number">16</span>,                    <span class="comment"># 低秩维度</span></span><br><span class="line">    lora_alpha=<span class="number">32</span>,           <span class="comment"># 缩放因子</span></span><br><span class="line">    target_modules=[<span class="string">&quot;q_proj&quot;</span>, <span class="string">&quot;v_proj&quot;</span>],  <span class="comment"># 应用 LoRA 的模块</span></span><br><span class="line">    lora_dropout=<span class="number">0.05</span>,</span><br><span class="line">    task_type=<span class="string">&quot;CAUSAL_LM&quot;</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">model = AutoModelForCausalLM.from_pretrained(<span class="string">&quot;meta-llama/Llama-2-7b&quot;</span>)</span><br><span class="line">model = get_peft_model(model, config)</span><br><span class="line"><span class="comment"># 可训练参数仅占总参数的 0.1%~1%</span></span><br><span class="line">model.print_trainable_parameters()</span><br></pre></td></tr></table></figure>
+
+<h3 id="QLoRA"><a href="#QLoRA" class="headerlink" title="QLoRA"></a>QLoRA</h3><p>QLoRA 在 LoRA 基础上引入量化技术，进一步降低显存需求：</p>
+<ul>
+<li><strong>4-bit NormalFloat 量化</strong>：一种针对正态分布优化的数据类型</li>
+<li><strong>双重量化</strong>：对量化常数本身再量化，进一步节省显存</li>
+<li><strong>分页优化器</strong>：利用 CPU 内存处理显存峰值</li>
+</ul>
+<p>QLoRA 使得在单张 48GB GPU 上微调 65B 参数模型成为可能。</p>
+<h2 id="推理优化"><a href="#推理优化" class="headerlink" title="推理优化"></a>推理优化</h2><p>大模型的推理成本是生产部署的核心挑战。</p>
+<h3 id="KV-Cache"><a href="#KV-Cache" class="headerlink" title="KV Cache"></a>KV Cache</h3><p>KV Cache 是自回归推理的关键优化：</p>
+<ul>
+<li><strong>原理</strong>：缓存已计算 token 的 Key 和 Value 矩阵，避免重复计算</li>
+<li><strong>代价</strong>：显存占用随序列长度线性增长</li>
+<li><strong>优化方向</strong>：PagedAttention（vLLM）、GQA（Grouped Query Attention）、MQA（Multi-Query Attention）</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 无 KV Cache：每步需要重新计算所有 token 的注意力</span><br><span class="line"># 有 KV Cache：每步只计算新 token，复用之前的 K、V</span><br><span class="line">Step 1: compute K1, V1 -&gt; output</span><br><span class="line">Step 2: reuse K1, V1; compute K2, V2 -&gt; output</span><br><span class="line">Step 3: reuse K1-2, V1-2; compute K3, V3 -&gt; output</span><br></pre></td></tr></table></figure>
+
+<h3 id="量化"><a href="#量化" class="headerlink" title="量化"></a>量化</h3><p>量化将模型权重从高精度表示压缩为低精度表示：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>精度</th>
+<th>显存节省</th>
+<th>质量损失</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>FP16</td>
+<td>16-bit</td>
+<td>基线</td>
+<td>无</td>
+</tr>
+<tr>
+<td>INT8</td>
+<td>8-bit</td>
+<td>~50%</td>
+<td>极小</td>
+</tr>
+<tr>
+<td>INT4 (GPTQ)</td>
+<td>4-bit</td>
+<td>~75%</td>
+<td>小</td>
+</tr>
+<tr>
+<td>INT4 (GGUF)</td>
+<td>4-bit</td>
+<td>~75%</td>
+<td>小</td>
+</tr>
+</tbody></table>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 使用 bitsandbytes 进行量化</span></span><br><span class="line"><span class="keyword">from</span> transformers <span class="keyword">import</span> BitsAndBytesConfig</span><br><span class="line"></span><br><span class="line">quantization_config = BitsAndBytesConfig(</span><br><span class="line">    load_in_4bit=<span class="literal">True</span>,</span><br><span class="line">    bnb_4bit_compute_dtype=torch.float16,</span><br><span class="line">    bnb_4bit_quant_type=<span class="string">&quot;nf4&quot;</span>,</span><br><span class="line">    bnb_4bit_use_double_quant=<span class="literal">True</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">model = AutoModelForCausalLM.from_pretrained(</span><br><span class="line">    <span class="string">&quot;meta-llama/Llama-2-7b&quot;</span>,</span><br><span class="line">    quantization_config=quantization_config,</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+<h3 id="投机采样"><a href="#投机采样" class="headerlink" title="投机采样"></a>投机采样</h3><p>投机采样（Speculative Decoding）通过”小模型猜测 + 大模型验证”来加速推理：</p>
+<ol>
+<li>小模型（Draft Model）快速生成 k 个候选 token</li>
+<li>大模型（Target Model）并行验证这些 token</li>
+<li>接受正确的 token，拒绝错误的 token 后重新生成</li>
+</ol>
+<p>这种方法可以在不损失输出质量的前提下实现 2-3 倍的推理加速。</p>
+<h2 id="如何评估大模型"><a href="#如何评估大模型" class="headerlink" title="如何评估大模型"></a>如何评估大模型</h2><h3 id="基准测试"><a href="#基准测试" class="headerlink" title="基准测试"></a>基准测试</h3><p>常用的自动评估基准：</p>
+<ul>
+<li><strong>MMLU</strong>（Massive Multitask Language Understanding）：涵盖 57 个学科的知识问答</li>
+<li><strong>HumanEval</strong>：代码生成能力评估</li>
+<li><strong>GSM8K</strong>：小学数学推理</li>
+<li><strong>C-Eval</strong>：中文多学科评估</li>
+<li><strong>HELM</strong>（Holistic Evaluation of Language Models）：全方位评估框架</li>
+</ul>
+<h3 id="人工评估"><a href="#人工评估" class="headerlink" title="人工评估"></a>人工评估</h3><p>自动基准存在局限性（数据污染、与实际需求脱节），人工评估仍然不可替代：</p>
+<ul>
+<li><strong>对齐评估</strong>：模型输出是否符合人类期望（有用性、诚实性、无害性）</li>
+<li><strong>偏好评估</strong>：人类标注员对模型输出进行排序</li>
+<li><strong>红队测试</strong>：专门寻找模型的安全漏洞和边界情况</li>
+</ul>
+<h3 id="评估最佳实践"><a href="#评估最佳实践" class="headerlink" title="评估最佳实践"></a>评估最佳实践</h3><ol>
+<li>使用多个基准测试，避免单一指标片面性</li>
+<li>关注任务相关的领域评估，而非通用排名</li>
+<li>定期检查基准数据是否被污染</li>
+<li>结合自动评估和人工评估</li>
+<li>在真实业务场景中建立 A/B 测试管道</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>大语言模型的技术栈正在快速迭代。理解 Transformer 架构的原理有助于更好地使用和优化模型。从 Tokenization 到推理优化，每个环节都有工程优化的空间。选择合适的模型和工具链，需要在性能、成本、延迟之间做出权衡。后续文章将深入探讨 Prompt 工程、RAG、Agent 开发和 LangChain 框架等应用层技术。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/%E5%8E%9F%E7%90%86/" rel="tag"># 原理</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/11/24/Kubernetes%E5%85%A5%E9%97%A8/" rel="prev" title="Kubernetes入门与实践">
+      <i class="fa fa-chevron-left"></i> Kubernetes入门与实践
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/06/05/Spring%20AI%E5%85%A5%E9%97%A8/" rel="next" title="Spring AI入门">
+      Spring AI入门 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#AI-%E5%8F%91%E5%B1%95%E7%AE%80%E5%8F%B2"><span class="nav-number">1.</span> <span class="nav-text">AI 发展简史</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E8%A7%84%E5%88%99%E5%88%B0%E7%BB%9F%E8%AE%A1%E5%AD%A6%E4%B9%A0"><span class="nav-number">1.1.</span> <span class="nav-text">从规则到统计学习</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0%E7%9A%84%E5%B4%9B%E8%B5%B7"><span class="nav-number">1.2.</span> <span class="nav-text">深度学习的崛起</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Transformer-%E6%9E%B6%E6%9E%84%E6%A0%B8%E5%BF%83"><span class="nav-number">2.</span> <span class="nav-text">Transformer 架构核心</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Self-Attention-%E6%9C%BA%E5%88%B6"><span class="nav-number">2.1.</span> <span class="nav-text">Self-Attention 机制</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E8%BF%87%E7%A8%8B"><span class="nav-number">2.1.1.</span> <span class="nav-text">计算过程</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Multi-Head-Attention"><span class="nav-number">2.2.</span> <span class="nav-text">Multi-Head Attention</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81"><span class="nav-number">2.3.</span> <span class="nav-text">位置编码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GPT-%E7%B3%BB%E5%88%97%E6%BC%94%E8%BF%9B"><span class="nav-number">3.</span> <span class="nav-text">GPT 系列演进</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#GPT-1%EF%BC%9A%E5%BC%80%E5%88%9B%E6%80%A7%E9%AA%8C%E8%AF%81"><span class="nav-number">3.1.</span> <span class="nav-text">GPT-1：开创性验证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GPT-2%EF%BC%9A%E8%A7%84%E6%A8%A1%E6%89%A9%E5%B1%95%E4%B8%8E-Zero-shot"><span class="nav-number">3.2.</span> <span class="nav-text">GPT-2：规模扩展与 Zero-shot</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GPT-3%EF%BC%9A%E6%B6%8C%E7%8E%B0%E8%83%BD%E5%8A%9B"><span class="nav-number">3.3.</span> <span class="nav-text">GPT-3：涌现能力</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GPT-4%EF%BC%9A%E5%A4%9A%E6%A8%A1%E6%80%81%E4%B8%8E%E6%8E%A8%E7%90%86"><span class="nav-number">3.4.</span> <span class="nav-text">GPT-4：多模态与推理</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E6%B5%81%E5%BC%80%E6%BA%90%E6%A8%A1%E5%9E%8B"><span class="nav-number">4.</span> <span class="nav-text">主流开源模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#LLaMA-%E7%B3%BB%E5%88%97"><span class="nav-number">4.1.</span> <span class="nav-text">LLaMA 系列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Qwen-%E7%B3%BB%E5%88%97"><span class="nav-number">4.2.</span> <span class="nav-text">Qwen 系列</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DeepSeek"><span class="nav-number">4.3.</span> <span class="nav-text">DeepSeek</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ChatGLM"><span class="nav-number">4.4.</span> <span class="nav-text">ChatGLM</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Tokenization"><span class="nav-number">5.</span> <span class="nav-text">Tokenization</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#BPE%EF%BC%88Byte-Pair-Encoding%EF%BC%89"><span class="nav-number">5.1.</span> <span class="nav-text">BPE（Byte-Pair Encoding）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#WordPiece"><span class="nav-number">5.2.</span> <span class="nav-text">WordPiece</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SentencePiece"><span class="nav-number">5.3.</span> <span class="nav-text">SentencePiece</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AA%97%E5%8F%A3%E4%B8%8E%E4%B8%8A%E4%B8%8B%E6%96%87%E5%AD%A6%E4%B9%A0"><span class="nav-number">6.</span> <span class="nav-text">上下文窗口与上下文学习</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AA%97%E5%8F%A3"><span class="nav-number">6.1.</span> <span class="nav-text">上下文窗口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E5%AD%A6%E4%B9%A0%EF%BC%88In-Context-Learning-ICL%EF%BC%89"><span class="nav-number">6.2.</span> <span class="nav-text">上下文学习（In-Context Learning, ICL）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E8%B0%83%E6%8A%80%E6%9C%AF"><span class="nav-number">7.</span> <span class="nav-text">微调技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Full-Fine-tuning"><span class="nav-number">7.1.</span> <span class="nav-text">Full Fine-tuning</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LoRA%EF%BC%88Low-Rank-Adaptation%EF%BC%89"><span class="nav-number">7.2.</span> <span class="nav-text">LoRA（Low-Rank Adaptation）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#QLoRA"><span class="nav-number">7.3.</span> <span class="nav-text">QLoRA</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96"><span class="nav-number">8.</span> <span class="nav-text">推理优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#KV-Cache"><span class="nav-number">8.1.</span> <span class="nav-text">KV Cache</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8F%E5%8C%96"><span class="nav-number">8.2.</span> <span class="nav-text">量化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8A%95%E6%9C%BA%E9%87%87%E6%A0%B7"><span class="nav-number">8.3.</span> <span class="nav-text">投机采样</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%AF%84%E4%BC%B0%E5%A4%A7%E6%A8%A1%E5%9E%8B"><span class="nav-number">9.</span> <span class="nav-text">如何评估大模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E5%87%86%E6%B5%8B%E8%AF%95"><span class="nav-number">9.1.</span> <span class="nav-text">基准测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%BA%E5%B7%A5%E8%AF%84%E4%BC%B0"><span class="nav-number">9.2.</span> <span class="nav-text">人工评估</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%84%E4%BC%B0%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="nav-number">9.3.</span> <span class="nav-text">评估最佳实践</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">10.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John-1010-cmd</p>
+  <div class="site-description" itemprop="description">Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John-1010-cmd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

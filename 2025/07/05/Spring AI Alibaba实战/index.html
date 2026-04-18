@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"john-1010-cmd.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Spring AI Alibaba 实战开发，使用通义千问等国产模型构建 AI 应用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Spring AI Alibaba实战">
+<meta property="og:url" content="https://john-1010-cmd.github.io/2025/07/05/Spring%20AI%20Alibaba%E5%AE%9E%E6%88%98/index.html">
+<meta property="og:site_name" content="John&#39;s Blog">
+<meta property="og:description" content="Spring AI Alibaba 实战开发，使用通义千问等国产模型构建 AI 应用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2025-07-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2025-07-04T16:00:00.000Z">
+<meta property="article:author" content="John-1010-cmd">
+<meta property="article:tag" content="实战">
+<meta property="article:tag" content="Spring AI">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://john-1010-cmd.github.io/2025/07/05/Spring%20AI%20Alibaba%E5%AE%9E%E6%88%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Spring AI Alibaba实战 | John's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">John's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-系列导航">
+
+    <a href="/%E7%B3%BB%E5%88%97%E5%AF%BC%E8%88%AA/" rel="section"><i class="fa fa-fw fa-book"></i>系列导航</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://john-1010-cmd.github.io/2025/07/05/Spring%20AI%20Alibaba%E5%AE%9E%E6%88%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John-1010-cmd">
+      <meta itemprop="description" content="Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="John's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Spring AI Alibaba实战
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2025-07-05 00:00:00" itemprop="dateCreated datePublished" datetime="2025-07-05T00:00:00+08:00">2025-07-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring-AI/" itemprop="url" rel="index"><span itemprop="name">Spring AI</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">Spring AI Alibaba 实战开发，使用通义千问等国产模型构建 AI 应用。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Spring-AI-Alibaba-简介"><a href="#Spring-AI-Alibaba-简介" class="headerlink" title="Spring AI Alibaba 简介"></a>Spring AI Alibaba 简介</h2><p>Spring AI Alibaba 是基于 Spring AI 构建的开源扩展项目，专门为阿里云 AI 生态提供 Spring 风格的集成方案。它将通义千问（Qwen）、通义万相（Wanx）、Paraformer、CosyVoice 等国产模型通过 DashScope API 统一接入 Spring 应用，为 Java 开发者提供了一条使用国产大模型的低门槛路径。</p>
+<h3 id="核心定位"><a href="#核心定位" class="headerlink" title="核心定位"></a>核心定位</h3><ul>
+<li><strong>Spring AI 的阿里云实现</strong>：完全遵循 Spring AI 的标准接口，无缝切换</li>
+<li><strong>DashScope API 封装</strong>：统一对接阿里云 DashScope 平台的全部模型能力</li>
+<li><strong>云原生集成</strong>：与 Spring Cloud Alibaba 深度整合，支持微服务架构</li>
+<li><strong>多模态覆盖</strong>：文本、图像、音频全覆盖的 AI 能力矩阵</li>
+</ul>
+<h3 id="架构概览"><a href="#架构概览" class="headerlink" title="架构概览"></a>架构概览</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Spring AI 标准 API（ChatModel / EmbeddingModel / ImageModel / AudioModel）</span><br><span class="line">        ↑</span><br><span class="line">Spring AI Alibaba（DashScope 实现）</span><br><span class="line">        ↑</span><br><span class="line">DashScope API（阿里云模型服务统一接入点）</span><br><span class="line">        ↑</span><br><span class="line">通义千问 | 通义万相 | Paraformer | CosyVoice ...</span><br></pre></td></tr></table></figure>
+
+<h2 id="通义千问（Qwen）模型接入配置"><a href="#通义千问（Qwen）模型接入配置" class="headerlink" title="通义千问（Qwen）模型接入配置"></a>通义千问（Qwen）模型接入配置</h2><h3 id="添加依赖"><a href="#添加依赖" class="headerlink" title="添加依赖"></a>添加依赖</h3><p>在 <code>pom.xml</code> 中添加 Spring AI Alibaba 的 DashScope starter：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.cloud.ai<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-ai-alibaba-starter-dashscope<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.1.2.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="API-Key-配置"><a href="#API-Key-配置" class="headerlink" title="API Key 配置"></a>API Key 配置</h3><p>在阿里云控制台的 DashScope 服务中创建 API Key，然后在配置文件中设置：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">ai:</span></span><br><span class="line">    <span class="attr">dashscope:</span></span><br><span class="line">      <span class="attr">api-key:</span> <span class="string">$&#123;DASHSCOPE_API_KEY&#125;</span></span><br><span class="line">      <span class="attr">chat:</span></span><br><span class="line">        <span class="attr">options:</span></span><br><span class="line">          <span class="attr">model:</span> <span class="string">qwen-max</span></span><br><span class="line">          <span class="attr">temperature:</span> <span class="number">0.7</span></span><br></pre></td></tr></table></figure>
+
+<p>也可以通过环境变量设置：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> DASHSCOPE_API_KEY=sk-your-api-key-here</span><br></pre></td></tr></table></figure>
+
+<h3 id="验证连接"><a href="#验证连接" class="headerlink" title="验证连接"></a>验证连接</h3><p>创建一个简单的测试类验证模型连接是否正常：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DashScopeDemoApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(DashScopeDemoApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    CommandLineRunner <span class="title function_">runner</span><span class="params">(ChatClient.Builder chatClientBuilder)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> args -&gt; &#123;</span><br><span class="line">            <span class="type">ChatClient</span> <span class="variable">chatClient</span> <span class="operator">=</span> chatClientBuilder.build();</span><br><span class="line"></span><br><span class="line">            <span class="type">String</span> <span class="variable">response</span> <span class="operator">=</span> chatClient.prompt()</span><br><span class="line">                .user(<span class="string">&quot;你好，请用一句话介绍你自己&quot;</span>)</span><br><span class="line">                .call()</span><br><span class="line">                .content();</span><br><span class="line"></span><br><span class="line">            System.out.println(<span class="string">&quot;通义千问回复: &quot;</span> + response);</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="DashScope-API-集成"><a href="#DashScope-API-集成" class="headerlink" title="DashScope API 集成"></a>DashScope API 集成</h2><p>DashScope 是阿里云的大模型服务平台，Spring AI Alibaba 通过封装 DashScope API 实现对各种模型的统一访问。</p>
+<h3 id="API-特点"><a href="#API-特点" class="headerlink" title="API 特点"></a>API 特点</h3><ul>
+<li><strong>统一的接入点</strong>：所有模型通过同一个 API 地址访问</li>
+<li><strong>OpenAI 兼容模式</strong>：DashScope API 支持 OpenAI 格式的请求和响应</li>
+<li><strong>流式响应</strong>：支持 SSE 流式输出</li>
+<li><strong>异步调用</strong>：支持异步非阻塞调用模式</li>
+</ul>
+<h3 id="配置项说明"><a href="#配置项说明" class="headerlink" title="配置项说明"></a>配置项说明</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">ai:</span></span><br><span class="line">    <span class="attr">dashscope:</span></span><br><span class="line">      <span class="attr">api-key:</span> <span class="string">$&#123;DASHSCOPE_API_KEY&#125;</span></span><br><span class="line">      <span class="attr">base-url:</span> <span class="string">https://dashscope.aliyuncs.com/compatible-mode/v1</span></span><br><span class="line">      <span class="attr">chat:</span></span><br><span class="line">        <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line">        <span class="attr">options:</span></span><br><span class="line">          <span class="attr">model:</span> <span class="string">qwen-max</span></span><br><span class="line">          <span class="attr">temperature:</span> <span class="number">0.7</span></span><br><span class="line">          <span class="attr">top-p:</span> <span class="number">0.8</span></span><br><span class="line">          <span class="attr">max-tokens:</span> <span class="number">2048</span></span><br><span class="line">      <span class="attr">embedding:</span></span><br><span class="line">        <span class="attr">options:</span></span><br><span class="line">          <span class="attr">model:</span> <span class="string">text-embedding-v2</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="对话补全"><a href="#对话补全" class="headerlink" title="对话补全"></a>对话补全</h2><p>Spring AI Alibaba 支持通义千问全系列模型，不同模型适用于不同场景。</p>
+<h3 id="模型选择指南"><a href="#模型选择指南" class="headerlink" title="模型选择指南"></a>模型选择指南</h3><table>
+<thead>
+<tr>
+<th>模型</th>
+<th>适用场景</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>qwen-max</td>
+<td>复杂推理、长文本理解</td>
+<td>能力最强，成本最高</td>
+</tr>
+<tr>
+<td>qwen-plus</td>
+<td>日常对话、内容生成</td>
+<td>能力与成本均衡</td>
+</tr>
+<tr>
+<td>qwen-turbo</td>
+<td>简单问答、快速响应</td>
+<td>速度最快，成本最低</td>
+</tr>
+<tr>
+<td>qwen-long</td>
+<td>超长文本处理</td>
+<td>支持 1M Token 上下文</td>
+</tr>
+</tbody></table>
+<h3 id="基本对话"><a href="#基本对话" class="headerlink" title="基本对话"></a>基本对话</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ChatService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ChatClient chatClient;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ChatService</span><span class="params">(ChatClient.Builder builder)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.chatClient = builder.build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">chat</span><span class="params">(String message)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> chatClient.prompt()</span><br><span class="line">            .system(<span class="string">&quot;你是一个有帮助的AI助手，请用中文回答&quot;</span>)</span><br><span class="line">            .user(message)</span><br><span class="line">            .call()</span><br><span class="line">            .content();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="切换模型"><a href="#切换模型" class="headerlink" title="切换模型"></a>切换模型</h3><p>通过配置或代码动态切换模型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 方式1：配置文件指定模型</span></span><br><span class="line"><span class="comment">// spring.ai.dashscope.chat.options.model=qwen-plus</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 方式2：代码中动态指定</span></span><br><span class="line"><span class="type">String</span> <span class="variable">response</span> <span class="operator">=</span> chatClient.prompt()</span><br><span class="line">    .user(<span class="string">&quot;快速回答：Java 是什么？&quot;</span>)</span><br><span class="line">    .options(DashScopeChatOptions.builder()</span><br><span class="line">        .withModel(<span class="string">&quot;qwen-turbo&quot;</span>)</span><br><span class="line">        .build())</span><br><span class="line">    .call()</span><br><span class="line">    .content();</span><br></pre></td></tr></table></figure>
+
+<h3 id="流式对话"><a href="#流式对话" class="headerlink" title="流式对话"></a>流式对话</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping(value = &quot;/chat/stream&quot;, produces = MediaType.TEXT_EVENT_STREAM_VALUE)</span></span><br><span class="line"><span class="keyword">public</span> Flux&lt;String&gt; <span class="title function_">streamChat</span><span class="params">(<span class="meta">@RequestParam</span> String message)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> chatClient.prompt()</span><br><span class="line">        .user(message)</span><br><span class="line">        .stream()</span><br><span class="line">        .content();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="多轮对话"><a href="#多轮对话" class="headerlink" title="多轮对话"></a>多轮对话</h3><p>结合 ChatMemory 实现多轮对话：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MultiTurnChatService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ChatClient chatClient;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ChatMemory chatMemory;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MultiTurnChatService</span><span class="params">(ChatClient.Builder builder)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.chatMemory = <span class="keyword">new</span> <span class="title class_">InMemoryChatMemory</span>();</span><br><span class="line">        <span class="built_in">this</span>.chatClient = builder</span><br><span class="line">            .defaultAdvisors(</span><br><span class="line">                MessageChatMemoryAdvisor.builder(chatMemory)</span><br><span class="line">                    .maxSize(<span class="number">20</span>)</span><br><span class="line">                    .build()</span><br><span class="line">            )</span><br><span class="line">            .build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">chat</span><span class="params">(String sessionId, String message)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> chatClient.prompt()</span><br><span class="line">            .user(message)</span><br><span class="line">            .advisors(a -&gt; a.param(</span><br><span class="line">                ChatMemory.CONVERSATION_ID_KEY, sessionId))</span><br><span class="line">            .call()</span><br><span class="line">            .content();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="文本-Embedding"><a href="#文本-Embedding" class="headerlink" title="文本 Embedding"></a>文本 Embedding</h2><p>Spring AI Alibaba 支持通义千问的文本 Embedding 模型，用于语义搜索和 RAG 场景。</p>
+<h3 id="text-embedding-v2-接入"><a href="#text-embedding-v2-接入" class="headerlink" title="text-embedding-v2 接入"></a>text-embedding-v2 接入</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">ai:</span></span><br><span class="line">    <span class="attr">dashscope:</span></span><br><span class="line">      <span class="attr">embedding:</span></span><br><span class="line">        <span class="attr">options:</span></span><br><span class="line">          <span class="attr">model:</span> <span class="string">text-embedding-v2</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="基本使用"><a href="#基本使用" class="headerlink" title="基本使用"></a>基本使用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EmbeddingService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> EmbeddingModel embeddingModel;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">EmbeddingService</span><span class="params">(EmbeddingModel embeddingModel)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.embeddingModel = embeddingModel;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">float</span>[] getEmbedding(String text) &#123;</span><br><span class="line">        <span class="keyword">return</span> embeddingModel.embed(text);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">double</span> <span class="title function_">calculateSimilarity</span><span class="params">(String text1, String text2)</span> &#123;</span><br><span class="line">        <span class="type">float</span>[] vector1 = embeddingModel.embed(text1);</span><br><span class="line">        <span class="type">float</span>[] vector2 = embeddingModel.embed(text2);</span><br><span class="line">        <span class="keyword">return</span> cosineSimilarity(vector1, vector2);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">double</span> <span class="title function_">cosineSimilarity</span><span class="params">(<span class="type">float</span>[] a, <span class="type">float</span>[] b)</span> &#123;</span><br><span class="line">        <span class="type">double</span> <span class="variable">dotProduct</span> <span class="operator">=</span> <span class="number">0.0</span>;</span><br><span class="line">        <span class="type">double</span> <span class="variable">normA</span> <span class="operator">=</span> <span class="number">0.0</span>;</span><br><span class="line">        <span class="type">double</span> <span class="variable">normB</span> <span class="operator">=</span> <span class="number">0.0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; a.length; i++) &#123;</span><br><span class="line">            dotProduct += a[i] * b[i];</span><br><span class="line">            normA += a[i] * a[i];</span><br><span class="line">            normB += b[i] * b[i];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="结合向量存储"><a href="#结合向量存储" class="headerlink" title="结合向量存储"></a>结合向量存储</h3><p>将 DashScope Embedding 与 VectorStore 结合构建 RAG 系统：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RagConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> VectorStore <span class="title function_">vectorStore</span><span class="params">(EmbeddingModel embeddingModel)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> SimpleVectorStore.builder(embeddingModel).build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DocumentIndexService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> VectorStore vectorStore;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">DocumentIndexService</span><span class="params">(VectorStore vectorStore)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.vectorStore = vectorStore;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">indexDocument</span><span class="params">(String content, Map&lt;String, Object&gt; metadata)</span> &#123;</span><br><span class="line">        <span class="type">Document</span> <span class="variable">doc</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Document</span>(content, metadata);</span><br><span class="line">        vectorStore.add(List.of(doc));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> List&lt;Document&gt; <span class="title function_">search</span><span class="params">(String query, <span class="type">int</span> topK)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> vectorStore.similaritySearch(</span><br><span class="line">            SearchRequest.builder()</span><br><span class="line">                .query(query)</span><br><span class="line">                .topK(topK)</span><br><span class="line">                .similarityThreshold(<span class="number">0.7</span>)</span><br><span class="line">                .build()</span><br><span class="line">        );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="图像生成"><a href="#图像生成" class="headerlink" title="图像生成"></a>图像生成</h2><p>Spring AI Alibaba 支持通义万相（Wanx）图像生成模型，可以在应用中集成 AI 绘画能力。</p>
+<h3 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">ai:</span></span><br><span class="line">    <span class="attr">dashscope:</span></span><br><span class="line">      <span class="attr">image:</span></span><br><span class="line">        <span class="attr">options:</span></span><br><span class="line">          <span class="attr">model:</span> <span class="string">wanx-v1</span></span><br><span class="line">          <span class="attr">size:</span> <span class="string">1024x1024</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="图像生成-1"><a href="#图像生成-1" class="headerlink" title="图像生成"></a>图像生成</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ImageGenerationService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ImageModel imageModel;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ImageGenerationService</span><span class="params">(ImageModel imageModel)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.imageModel = imageModel;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">generateImage</span><span class="params">(String prompt)</span> &#123;</span><br><span class="line">        <span class="type">ImagePrompt</span> <span class="variable">imagePrompt</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ImagePrompt</span>(prompt);</span><br><span class="line">        <span class="type">ImageResponse</span> <span class="variable">response</span> <span class="operator">=</span> imageModel.call(imagePrompt);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> response.getResult().getOutput().getUrl();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">byte</span>[] generateImageBytes(String prompt) &#123;</span><br><span class="line">        <span class="type">ImagePrompt</span> <span class="variable">imagePrompt</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ImagePrompt</span>(prompt);</span><br><span class="line">        <span class="type">ImageResponse</span> <span class="variable">response</span> <span class="operator">=</span> imageModel.call(imagePrompt);</span><br><span class="line"></span><br><span class="line">        <span class="type">String</span> <span class="variable">imageUrl</span> <span class="operator">=</span> response.getResult().getOutput().getUrl();</span><br><span class="line">        <span class="comment">// 下载图片字节数据</span></span><br><span class="line">        <span class="keyword">return</span> downloadImage(imageUrl);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="type">byte</span>[] downloadImage(String url) &#123;</span><br><span class="line">        <span class="keyword">try</span> (<span class="type">var</span> <span class="variable">inputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">URL</span>(url).openStream()) &#123;</span><br><span class="line">            <span class="keyword">return</span> inputStream.readAllBytes();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;下载图片失败&quot;</span>, e);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="图像生成-API"><a href="#图像生成-API" class="headerlink" title="图像生成 API"></a>图像生成 API</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/api/image&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ImageController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ImageGenerationService imageService;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">ImageController</span><span class="params">(ImageGenerationService imageService)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.imageService = imageService;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/generate&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Map&lt;String, String&gt; <span class="title function_">generate</span><span class="params">(<span class="meta">@RequestBody</span> ImageRequest request)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">imageUrl</span> <span class="operator">=</span> imageService.generateImage(request.prompt());</span><br><span class="line">        <span class="keyword">return</span> Map.of(<span class="string">&quot;url&quot;</span>, imageUrl);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(value = &quot;/generate&quot;, produces = MediaType.IMAGE_PNG_VALUE)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">byte</span>[] generateAndReturn(<span class="meta">@RequestParam</span> String prompt) &#123;</span><br><span class="line">        <span class="keyword">return</span> imageService.generateImageBytes(prompt);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">ImageRequest</span><span class="params">(String prompt)</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="音频识别与合成"><a href="#音频识别与合成" class="headerlink" title="音频识别与合成"></a>音频识别与合成</h2><h3 id="Paraformer-语音识别"><a href="#Paraformer-语音识别" class="headerlink" title="Paraformer 语音识别"></a>Paraformer 语音识别</h3><p>Paraformer 是阿里达摩院开源的语音识别模型，支持中文语音转文字：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SpeechRecognitionService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AudioModel audioModel;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">SpeechRecognitionService</span><span class="params">(AudioModel audioModel)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.audioModel = audioModel;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">transcribe</span><span class="params">(Resource audioFile)</span> &#123;</span><br><span class="line">        <span class="type">AudioPrompt</span> <span class="variable">audioPrompt</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AudioPrompt</span>(audioFile);</span><br><span class="line">        <span class="type">AudioResponse</span> <span class="variable">response</span> <span class="operator">=</span> audioModel.call(audioPrompt);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> response.getResult().getOutput().getText();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="CosyVoice-语音合成"><a href="#CosyVoice-语音合成" class="headerlink" title="CosyVoice 语音合成"></a>CosyVoice 语音合成</h3><p>CosyVoice 是通义实验室的语音合成模型，支持自然语音生成：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SpeechSynthesisService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AudioModel audioModel;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">SpeechSynthesisService</span><span class="params">(AudioModel audioModel)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.audioModel = audioModel;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">byte</span>[] synthesize(String text) &#123;</span><br><span class="line">        <span class="comment">// 调用语音合成模型</span></span><br><span class="line">        <span class="type">AudioPrompt</span> <span class="variable">prompt</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">AudioPrompt</span>(text);</span><br><span class="line">        <span class="type">AudioResponse</span> <span class="variable">response</span> <span class="operator">=</span> audioModel.call(prompt);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> response.getResult().getOutput().getData();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="音频处理-API"><a href="#音频处理-API" class="headerlink" title="音频处理 API"></a>音频处理 API</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/api/audio&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AudioController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> SpeechRecognitionService recognitionService;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> SpeechSynthesisService synthesisService;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">AudioController</span><span class="params">(SpeechRecognitionService recognitionService,</span></span><br><span class="line"><span class="params">            SpeechSynthesisService synthesisService)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.recognitionService = recognitionService;</span><br><span class="line">        <span class="built_in">this</span>.synthesisService = synthesisService;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(value = &quot;/transcribe&quot;, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)</span></span><br><span class="line">    <span class="keyword">public</span> Map&lt;String, String&gt; <span class="title function_">transcribe</span><span class="params">(</span></span><br><span class="line"><span class="params">            <span class="meta">@RequestParam(&quot;file&quot;)</span> MultipartFile audioFile)</span> &#123;</span><br><span class="line">        <span class="type">Resource</span> <span class="variable">resource</span> <span class="operator">=</span> audioFile.getResource();</span><br><span class="line">        <span class="type">String</span> <span class="variable">text</span> <span class="operator">=</span> recognitionService.transcribe(resource);</span><br><span class="line">        <span class="keyword">return</span> Map.of(<span class="string">&quot;text&quot;</span>, text);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(value = &quot;/synthesize&quot;, produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">byte</span>[] synthesize(<span class="meta">@RequestBody</span> Map&lt;String, String&gt; request) &#123;</span><br><span class="line">        <span class="keyword">return</span> synthesisService.synthesize(request.get(<span class="string">&quot;text&quot;</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Function-Calling-与工具集成"><a href="#Function-Calling-与工具集成" class="headerlink" title="Function Calling 与工具集成"></a>Function Calling 与工具集成</h2><p>Spring AI Alibaba 完全支持 Spring AI 的 Function Calling 机制，并针对阿里云服务提供了开箱即用的工具。</p>
+<h3 id="自定义工具函数"><a href="#自定义工具函数" class="headerlink" title="自定义工具函数"></a>自定义工具函数</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DashScopeToolConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Description(&quot;查询指定城市的实时天气信息&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Function&lt;WeatherRequest, WeatherResponse&gt; <span class="title function_">weatherTool</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> request -&gt; &#123;</span><br><span class="line">            <span class="comment">// 调用阿里云天气 API 或其他天气服务</span></span><br><span class="line">            <span class="keyword">return</span> weatherApiClient.getWeather(request.city());</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Description(&quot;查询阿里云 RDS 数据库的运行状态&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Function&lt;DatabaseRequest, DatabaseResponse&gt; <span class="title function_">databaseStatusTool</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> request -&gt; &#123;</span><br><span class="line">            <span class="comment">// 调用阿里云 RDS API</span></span><br><span class="line">            <span class="keyword">return</span> aliyunRdsService.getStatus(request.instanceId());</span><br><span class="line">        &#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">WeatherRequest</span><span class="params">(String city)</span> &#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">WeatherResponse</span><span class="params">(</span></span><br><span class="line"><span class="params">        <span class="type">double</span> temperature, String description, <span class="type">int</span> humidity)</span> &#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">DatabaseRequest</span><span class="params">(String instanceId)</span> &#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">DatabaseResponse</span><span class="params">(</span></span><br><span class="line"><span class="params">        String status, <span class="type">double</span> cpuUsage, <span class="type">double</span> memoryUsage)</span> &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="在对话中使用工具"><a href="#在对话中使用工具" class="headerlink" title="在对话中使用工具"></a>在对话中使用工具</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">response</span> <span class="operator">=</span> chatClient.prompt()</span><br><span class="line">    .user(<span class="string">&quot;帮我查一下杭州的天气和数据库实例prod-rds-01的状态&quot;</span>)</span><br><span class="line">    .functions(<span class="string">&quot;weatherTool&quot;</span>, <span class="string">&quot;databaseStatusTool&quot;</span>)</span><br><span class="line">    .call()</span><br><span class="line">    .content();</span><br></pre></td></tr></table></figure>
+
+<p>通义千问模型会自动识别用户意图，分别调用两个工具获取数据，然后综合生成自然语言回答。</p>
+<h2 id="与-Spring-Cloud-微服务架构集成"><a href="#与-Spring-Cloud-微服务架构集成" class="headerlink" title="与 Spring Cloud 微服务架构集成"></a>与 Spring Cloud 微服务架构集成</h2><p>Spring AI Alibaba 可以与 Spring Cloud Alibaba 无缝集成，构建 AI 微服务架构。</p>
+<h3 id="依赖配置"><a href="#依赖配置" class="headerlink" title="依赖配置"></a>依赖配置</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- Spring AI Alibaba --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.cloud.ai<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-ai-alibaba-starter-dashscope<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- Spring Cloud Alibaba Nacos --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-alibaba-nacos-discovery<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">&lt;!-- Spring Cloud OpenFeign --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-openfeign<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="AI-服务注册与发现"><a href="#AI-服务注册与发现" class="headerlink" title="AI 服务注册与发现"></a>AI 服务注册与发现</h3><p>将 AI 服务注册到 Nacos，其他微服务通过 Feign 调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AI 服务提供方</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="meta">@EnableDiscoveryClient</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/api/ai&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AiServiceProvider</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ChatClient chatClient;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">AiServiceProvider</span><span class="params">(ChatClient.Builder builder)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.chatClient = builder.build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/chat&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">chat</span><span class="params">(<span class="meta">@RequestBody</span> ChatRequest request)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> chatClient.prompt()</span><br><span class="line">            .system(request.systemPrompt())</span><br><span class="line">            .user(request.userMessage())</span><br><span class="line">            .call()</span><br><span class="line">            .content();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// AI 服务消费方</span></span><br><span class="line"><span class="meta">@FeignClient(name = &quot;ai-service&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">AiServiceClient</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/api/ai/chat&quot;)</span></span><br><span class="line">    String <span class="title function_">chat</span><span class="params">(<span class="meta">@RequestBody</span> ChatRequest request)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="配置中心管理-Prompt"><a href="#配置中心管理-Prompt" class="headerlink" title="配置中心管理 Prompt"></a>配置中心管理 Prompt</h3><p>将 Prompt 模板存储在 Nacos 配置中心，实现动态更新：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Nacos 配置 dataId: ai-prompts.yaml</span></span><br><span class="line"><span class="attr">prompts:</span></span><br><span class="line">  <span class="attr">code-review:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    你是一位资深代码审查专家，请审查以下 &#123;language&#125; 代码：</span></span><br><span class="line"><span class="string">    &#123;code&#125;</span></span><br><span class="line"><span class="string">    从代码质量、安全性、性能三个维度给出评审意见。</span></span><br><span class="line"><span class="string"></span>  <span class="attr">customer-service:</span> <span class="string">|</span></span><br><span class="line"><span class="string">    你是 &#123;company&#125; 的客服代表，请以专业友好的语气回答用户问题。</span></span><br><span class="line"><span class="string">    公司名称：&#123;company&#125;</span></span><br><span class="line"><span class="string">    业务范围：&#123;business&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>在代码中动态加载：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@RefreshScope</span></span><br><span class="line"><span class="meta">@ConfigurationProperties(prefix = &quot;prompts&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PromptConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Map&lt;String, String&gt; prompts = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Map&lt;String, String&gt; <span class="title function_">getPrompts</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> prompts;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setPrompts</span><span class="params">(Map&lt;String, String&gt; prompts)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.prompts = prompts;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getPrompt</span><span class="params">(String name)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> prompts.getOrDefault(name, <span class="string">&quot;&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="AI-网关集成"><a href="#AI-网关集成" class="headerlink" title="AI 网关集成"></a>AI 网关集成</h3><p>通过 Spring Cloud Gateway 统一管理 AI 服务的访问：</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">cloud:</span></span><br><span class="line">    <span class="attr">gateway:</span></span><br><span class="line">      <span class="attr">routes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="attr">id:</span> <span class="string">ai-chat</span></span><br><span class="line">          <span class="attr">uri:</span> <span class="string">lb://ai-service</span></span><br><span class="line">          <span class="attr">predicates:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="string">Path=/api/ai/**</span></span><br><span class="line">          <span class="attr">filters:</span></span><br><span class="line">            <span class="bullet">-</span> <span class="attr">name:</span> <span class="string">RateLimiter</span></span><br><span class="line">              <span class="attr">args:</span></span><br><span class="line">                <span class="attr">redis-rate-limiter.replenishRate:</span> <span class="number">10</span></span><br><span class="line">                <span class="attr">redis-rate-limiter.burstCapacity:</span> <span class="number">20</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="完整实战：构建企业智能客服系统"><a href="#完整实战：构建企业智能客服系统" class="headerlink" title="完整实战：构建企业智能客服系统"></a>完整实战：构建企业智能客服系统</h2><p>下面通过一个完整的企业智能客服系统案例，综合运用前面介绍的各项能力。</p>
+<h3 id="系统架构"><a href="#系统架构" class="headerlink" title="系统架构"></a>系统架构</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">用户 → API 网关 → 客服服务 → ChatClient（通义千问）</span><br><span class="line">                              ├── ChatMemory（对话记忆）</span><br><span class="line">                              ├── QuestionAnswerAdvisor（RAG）</span><br><span class="line">                              ├── Function Calling（订单查询、工单创建）</span><br><span class="line">                              └── 内容安全 Advisor</span><br></pre></td></tr></table></figure>
+
+<h3 id="1-依赖配置"><a href="#1-依赖配置" class="headerlink" title="1. 依赖配置"></a>1. 依赖配置</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.alibaba.cloud.ai<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-ai-alibaba-starter-dashscope<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.ai<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-ai-advisors-vector-store<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-web<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-核心配置"><a href="#2-核心配置" class="headerlink" title="2. 核心配置"></a>2. 核心配置</h3><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">ai:</span></span><br><span class="line">    <span class="attr">dashscope:</span></span><br><span class="line">      <span class="attr">api-key:</span> <span class="string">$&#123;DASHSCOPE_API_KEY&#125;</span></span><br><span class="line">      <span class="attr">chat:</span></span><br><span class="line">        <span class="attr">options:</span></span><br><span class="line">          <span class="attr">model:</span> <span class="string">qwen-plus</span></span><br><span class="line">          <span class="attr">temperature:</span> <span class="number">0.7</span></span><br><span class="line">      <span class="attr">embedding:</span></span><br><span class="line">        <span class="attr">options:</span></span><br><span class="line">          <span class="attr">model:</span> <span class="string">text-embedding-v2</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-知识库构建"><a href="#3-知识库构建" class="headerlink" title="3. 知识库构建"></a>3. 知识库构建</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">KnowledgeBaseConfig</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> VectorStore <span class="title function_">vectorStore</span><span class="params">(EmbeddingModel embeddingModel)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> SimpleVectorStore.builder(embeddingModel).build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">KnowledgeBaseService</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> VectorStore vectorStore;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">KnowledgeBaseService</span><span class="params">(VectorStore vectorStore)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.vectorStore = vectorStore;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostConstruct</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">init</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 加载客服知识库文档</span></span><br><span class="line">        List&lt;Document&gt; documents = loadKnowledgeDocuments();</span><br><span class="line">        vectorStore.add(documents);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> List&lt;Document&gt; <span class="title function_">loadKnowledgeDocuments</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 从文件或数据库加载 FAQ、产品说明等文档</span></span><br><span class="line">        <span class="type">TextReader</span> <span class="variable">reader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TextReader</span>(</span><br><span class="line">            <span class="keyword">new</span> <span class="title class_">ClassPathResource</span>(<span class="string">&quot;knowledge/faq.txt&quot;</span>)</span><br><span class="line">        );</span><br><span class="line">        List&lt;Document&gt; docs = reader.get();</span><br><span class="line"></span><br><span class="line">        <span class="type">TokenTextSplitter</span> <span class="variable">splitter</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TokenTextSplitter</span>(<span class="number">500</span>, <span class="number">100</span>, <span class="number">5</span>, <span class="number">10000</span>, <span class="literal">true</span>);</span><br><span class="line">        <span class="keyword">return</span> splitter.apply(docs);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-工具函数定义"><a href="#4-工具函数定义" class="headerlink" title="4. 工具函数定义"></a>4. 工具函数定义</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CustomerServiceTools</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Description(&quot;根据订单号查询订单状态和物流信息&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Function&lt;OrderQueryRequest, OrderQueryResponse&gt; <span class="title function_">orderQueryTool</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> request -&gt; orderService.queryOrder(request.orderNo());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@Description(&quot;创建客服工单，记录用户反馈的问题&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Function&lt;TicketCreateRequest, TicketCreateResponse&gt; <span class="title function_">ticketCreateTool</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> request -&gt; ticketService.createTicket(</span><br><span class="line">            request.userId(), request.title(), request.description());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">OrderQueryRequest</span><span class="params">(String orderNo)</span> &#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">OrderQueryResponse</span><span class="params">(</span></span><br><span class="line"><span class="params">        String orderNo, String status, String logistics, String estimatedArrival)</span> &#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">TicketCreateRequest</span><span class="params">(</span></span><br><span class="line"><span class="params">        String userId, String title, String description)</span> &#123;&#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">TicketCreateResponse</span><span class="params">(String ticketId, String status)</span> &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-客服服务核心"><a href="#5-客服服务核心" class="headerlink" title="5. 客服服务核心"></a>5. 客服服务核心</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CustomerServiceBot</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> ChatClient chatClient;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">CustomerServiceBot</span><span class="params">(ChatClient.Builder builder,</span></span><br><span class="line"><span class="params">            ChatMemory chatMemory, VectorStore vectorStore)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.chatClient = builder</span><br><span class="line">            .defaultSystem(<span class="string">&quot;&quot;&quot;</span></span><br><span class="line"><span class="string">                你是&#123;company&#125;的智能客服代表。</span></span><br><span class="line"><span class="string">                请以专业友好的语气回答用户问题。</span></span><br><span class="line"><span class="string">                回答时遵循以下规则：</span></span><br><span class="line"><span class="string">                1. 优先使用知识库中的信息回答</span></span><br><span class="line"><span class="string">                2. 涉及订单查询时使用订单查询工具</span></span><br><span class="line"><span class="string">                3. 无法解决的问题引导创建工单</span></span><br><span class="line"><span class="string">                4. 不要编造不确定的信息</span></span><br><span class="line"><span class="string">                &quot;&quot;&quot;</span>)</span><br><span class="line">            .defaultAdvisors(</span><br><span class="line">                MessageChatMemoryAdvisor.builder(chatMemory)</span><br><span class="line">                    .maxSize(<span class="number">20</span>)</span><br><span class="line">                    .build(),</span><br><span class="line">                QuestionAnswerAdvisor.builder(vectorStore)</span><br><span class="line">                    .searchRequest(SearchRequest.builder()</span><br><span class="line">                        .topK(<span class="number">3</span>)</span><br><span class="line">                        .similarityThreshold(<span class="number">0.7</span>)</span><br><span class="line">                        .build())</span><br><span class="line">                    .build()</span><br><span class="line">            )</span><br><span class="line">            .defaultFunctions(<span class="string">&quot;orderQueryTool&quot;</span>, <span class="string">&quot;ticketCreateTool&quot;</span>)</span><br><span class="line">            .build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">chat</span><span class="params">(String sessionId, String userMessage)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> chatClient.prompt()</span><br><span class="line">            .user(userMessage)</span><br><span class="line">            .advisors(a -&gt; a.param(</span><br><span class="line">                ChatMemory.CONVERSATION_ID_KEY, sessionId))</span><br><span class="line">            .call()</span><br><span class="line">            .content();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Flux&lt;String&gt; <span class="title function_">chatStream</span><span class="params">(String sessionId, String userMessage)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> chatClient.prompt()</span><br><span class="line">            .user(userMessage)</span><br><span class="line">            .advisors(a -&gt; a.param(</span><br><span class="line">                ChatMemory.CONVERSATION_ID_KEY, sessionId))</span><br><span class="line">            .stream()</span><br><span class="line">            .content();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-API-接口"><a href="#6-API-接口" class="headerlink" title="6. API 接口"></a>6. API 接口</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/api/customer-service&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CustomerServiceController</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> CustomerServiceBot bot;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">CustomerServiceController</span><span class="params">(CustomerServiceBot bot)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.bot = bot;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PostMapping(&quot;/chat&quot;)</span></span><br><span class="line">    <span class="keyword">public</span> Map&lt;String, String&gt; <span class="title function_">chat</span><span class="params">(<span class="meta">@RequestBody</span> ChatRequest request)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">reply</span> <span class="operator">=</span> bot.chat(request.sessionId(), request.message());</span><br><span class="line">        <span class="keyword">return</span> Map.of(<span class="string">&quot;reply&quot;</span>, reply);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@GetMapping(value = &quot;/chat/stream&quot;, produces = MediaType.TEXT_EVENT_STREAM_VALUE)</span></span><br><span class="line">    <span class="keyword">public</span> Flux&lt;ServerSentEvent&lt;String&gt;&gt; <span class="title function_">streamChat</span><span class="params">(</span></span><br><span class="line"><span class="params">            <span class="meta">@RequestParam</span> String sessionId,</span></span><br><span class="line"><span class="params">            <span class="meta">@RequestParam</span> String message)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> bot.chatStream(sessionId, message)</span><br><span class="line">            .map(chunk -&gt; ServerSentEvent.&lt;String&gt;builder()</span><br><span class="line">                .data(chunk)</span><br><span class="line">                .build());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">record</span> <span class="title class_">ChatRequest</span><span class="params">(String sessionId, String message)</span> &#123;&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="7-对话效果示例"><a href="#7-对话效果示例" class="headerlink" title="7. 对话效果示例"></a>7. 对话效果示例</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">用户：我昨天下的订单到哪了？订单号是 ORD20250705001</span><br><span class="line">AI：我来帮您查询订单 ORD20250705001 的状态。</span><br><span class="line">    [调用 orderQueryTool]</span><br><span class="line">    您的订单目前正在运输中，预计明天（7月7日）到达。</span><br><span class="line">    物流公司：顺丰速运，运单号：SF1234567890。</span><br><span class="line"></span><br><span class="line">用户：太慢了，我要投诉</span><br><span class="line">AI：非常抱歉给您带来了不好的体验。我帮您创建一个工单，</span><br><span class="line">    我们的客服团队会尽快处理。</span><br><span class="line">    [调用 ticketCreateTool]</span><br><span class="line">    已为您创建工单 TK-20250705-001，</span><br><span class="line">    我们的专属客服会在2小时内联系您处理。</span><br><span class="line"></span><br><span class="line">用户：你们公司的退货政策是什么？</span><br><span class="line">AI：[通过 RAG 检索知识库]</span><br><span class="line">    根据我们的退货政策，自收到商品之日起7天内可以申请退货...</span><br></pre></td></tr></table></figure>
+
+<h2 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h2><p>本文通过 Spring AI Alibaba 实战，完整展示了国产大模型的集成方案：</p>
+<ol>
+<li><strong>Spring AI Alibaba</strong> 是 Spring AI 在阿里云生态的扩展实现</li>
+<li><strong>通义千问</strong> 提供 qwen-max/plus/turbo 多档位模型选择</li>
+<li><strong>DashScope API</strong> 统一接入阿里云全部 AI 模型能力</li>
+<li><strong>多模态能力</strong>：文本对话、Embedding、图像生成、语音识别与合成</li>
+<li><strong>Function Calling</strong>：与 Spring AI 标准完全兼容</li>
+<li><strong>Spring Cloud 集成</strong>：与 Nacos、Gateway 等组件无缝配合</li>
+<li><strong>企业实战</strong>：完整的智能客服系统案例，综合运用 RAG、记忆、工具调用</li>
+</ol>
+<p>下一篇文章将整理 Spring AI 的高频面试题，帮助巩固核心知识。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AE%9E%E6%88%98/" rel="tag"># 实战</a>
+              <a href="/tags/Spring-AI/" rel="tag"># Spring AI</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2025/06/20/LangChain%E5%AE%9E%E6%88%98/" rel="prev" title="LangChain框架实战">
+      <i class="fa fa-chevron-left"></i> LangChain框架实战
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2025/07/20/Spring%20AI%20Q&A/" rel="next" title="Spring AI Q&A">
+      Spring AI Q&A <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring-AI-Alibaba-%E7%AE%80%E4%BB%8B"><span class="nav-number">1.</span> <span class="nav-text">Spring AI Alibaba 简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E5%AE%9A%E4%BD%8D"><span class="nav-number">1.1.</span> <span class="nav-text">核心定位</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%B6%E6%9E%84%E6%A6%82%E8%A7%88"><span class="nav-number">1.2.</span> <span class="nav-text">架构概览</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%80%9A%E4%B9%89%E5%8D%83%E9%97%AE%EF%BC%88Qwen%EF%BC%89%E6%A8%A1%E5%9E%8B%E6%8E%A5%E5%85%A5%E9%85%8D%E7%BD%AE"><span class="nav-number">2.</span> <span class="nav-text">通义千问（Qwen）模型接入配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E4%BE%9D%E8%B5%96"><span class="nav-number">2.1.</span> <span class="nav-text">添加依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#API-Key-%E9%85%8D%E7%BD%AE"><span class="nav-number">2.2.</span> <span class="nav-text">API Key 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E8%BF%9E%E6%8E%A5"><span class="nav-number">2.3.</span> <span class="nav-text">验证连接</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DashScope-API-%E9%9B%86%E6%88%90"><span class="nav-number">3.</span> <span class="nav-text">DashScope API 集成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#API-%E7%89%B9%E7%82%B9"><span class="nav-number">3.1.</span> <span class="nav-text">API 特点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E9%A1%B9%E8%AF%B4%E6%98%8E"><span class="nav-number">3.2.</span> <span class="nav-text">配置项说明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E8%AF%9D%E8%A1%A5%E5%85%A8"><span class="nav-number">4.</span> <span class="nav-text">对话补全</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A8%A1%E5%9E%8B%E9%80%89%E6%8B%A9%E6%8C%87%E5%8D%97"><span class="nav-number">4.1.</span> <span class="nav-text">模型选择指南</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E5%AF%B9%E8%AF%9D"><span class="nav-number">4.2.</span> <span class="nav-text">基本对话</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%87%E6%8D%A2%E6%A8%A1%E5%9E%8B"><span class="nav-number">4.3.</span> <span class="nav-text">切换模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B5%81%E5%BC%8F%E5%AF%B9%E8%AF%9D"><span class="nav-number">4.4.</span> <span class="nav-text">流式对话</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E8%BD%AE%E5%AF%B9%E8%AF%9D"><span class="nav-number">4.5.</span> <span class="nav-text">多轮对话</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E6%9C%AC-Embedding"><span class="nav-number">5.</span> <span class="nav-text">文本 Embedding</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#text-embedding-v2-%E6%8E%A5%E5%85%A5"><span class="nav-number">5.1.</span> <span class="nav-text">text-embedding-v2 接入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="nav-number">5.2.</span> <span class="nav-text">基本使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E5%90%88%E5%90%91%E9%87%8F%E5%AD%98%E5%82%A8"><span class="nav-number">5.3.</span> <span class="nav-text">结合向量存储</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90"><span class="nav-number">6.</span> <span class="nav-text">图像生成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE"><span class="nav-number">6.1.</span> <span class="nav-text">配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90-1"><span class="nav-number">6.2.</span> <span class="nav-text">图像生成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E7%94%9F%E6%88%90-API"><span class="nav-number">6.3.</span> <span class="nav-text">图像生成 API</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E8%AF%86%E5%88%AB%E4%B8%8E%E5%90%88%E6%88%90"><span class="nav-number">7.</span> <span class="nav-text">音频识别与合成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Paraformer-%E8%AF%AD%E9%9F%B3%E8%AF%86%E5%88%AB"><span class="nav-number">7.1.</span> <span class="nav-text">Paraformer 语音识别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CosyVoice-%E8%AF%AD%E9%9F%B3%E5%90%88%E6%88%90"><span class="nav-number">7.2.</span> <span class="nav-text">CosyVoice 语音合成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9F%B3%E9%A2%91%E5%A4%84%E7%90%86-API"><span class="nav-number">7.3.</span> <span class="nav-text">音频处理 API</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Function-Calling-%E4%B8%8E%E5%B7%A5%E5%85%B7%E9%9B%86%E6%88%90"><span class="nav-number">8.</span> <span class="nav-text">Function Calling 与工具集成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0"><span class="nav-number">8.1.</span> <span class="nav-text">自定义工具函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8%E5%AF%B9%E8%AF%9D%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%B7%A5%E5%85%B7"><span class="nav-number">8.2.</span> <span class="nav-text">在对话中使用工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8E-Spring-Cloud-%E5%BE%AE%E6%9C%8D%E5%8A%A1%E6%9E%B6%E6%9E%84%E9%9B%86%E6%88%90"><span class="nav-number">9.</span> <span class="nav-text">与 Spring Cloud 微服务架构集成</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BE%9D%E8%B5%96%E9%85%8D%E7%BD%AE"><span class="nav-number">9.1.</span> <span class="nav-text">依赖配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AI-%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%8E%E5%8F%91%E7%8E%B0"><span class="nav-number">9.2.</span> <span class="nav-text">AI 服务注册与发现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E4%B8%AD%E5%BF%83%E7%AE%A1%E7%90%86-Prompt"><span class="nav-number">9.3.</span> <span class="nav-text">配置中心管理 Prompt</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AI-%E7%BD%91%E5%85%B3%E9%9B%86%E6%88%90"><span class="nav-number">9.4.</span> <span class="nav-text">AI 网关集成</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%8C%E6%95%B4%E5%AE%9E%E6%88%98%EF%BC%9A%E6%9E%84%E5%BB%BA%E4%BC%81%E4%B8%9A%E6%99%BA%E8%83%BD%E5%AE%A2%E6%9C%8D%E7%B3%BB%E7%BB%9F"><span class="nav-number">10.</span> <span class="nav-text">完整实战：构建企业智能客服系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84"><span class="nav-number">10.1.</span> <span class="nav-text">系统架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BE%9D%E8%B5%96%E9%85%8D%E7%BD%AE"><span class="nav-number">10.2.</span> <span class="nav-text">1. 依赖配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%A0%B8%E5%BF%83%E9%85%8D%E7%BD%AE"><span class="nav-number">10.3.</span> <span class="nav-text">2. 核心配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%9F%A5%E8%AF%86%E5%BA%93%E6%9E%84%E5%BB%BA"><span class="nav-number">10.4.</span> <span class="nav-text">3. 知识库构建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0%E5%AE%9A%E4%B9%89"><span class="nav-number">10.5.</span> <span class="nav-text">4. 工具函数定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E5%AE%A2%E6%9C%8D%E6%9C%8D%E5%8A%A1%E6%A0%B8%E5%BF%83"><span class="nav-number">10.6.</span> <span class="nav-text">5. 客服服务核心</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-API-%E6%8E%A5%E5%8F%A3"><span class="nav-number">10.7.</span> <span class="nav-text">6. API 接口</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E5%AF%B9%E8%AF%9D%E6%95%88%E6%9E%9C%E7%A4%BA%E4%BE%8B"><span class="nav-number">10.8.</span> <span class="nav-text">7. 对话效果示例</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-number">11.</span> <span class="nav-text">小结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John-1010-cmd</p>
+  <div class="site-description" itemprop="description">Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John-1010-cmd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

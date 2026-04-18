@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"john-1010-cmd.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Cursor 与 Claude Code 深度实战对比，掌握 Agent 模式下的高效编程工作流。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Cursor与Claude Code实战">
+<meta property="og:url" content="https://john-1010-cmd.github.io/2026/02/05/Cursor%E4%B8%8EClaude%20Code%E5%AE%9E%E6%88%98/index.html">
+<meta property="og:site_name" content="John&#39;s Blog">
+<meta property="og:description" content="Cursor 与 Claude Code 深度实战对比，掌握 Agent 模式下的高效编程工作流。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-02-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2026-02-04T16:00:00.000Z">
+<meta property="article:author" content="John-1010-cmd">
+<meta property="article:tag" content="AI">
+<meta property="article:tag" content="实战">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://john-1010-cmd.github.io/2026/02/05/Cursor%E4%B8%8EClaude%20Code%E5%AE%9E%E6%88%98/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Cursor与Claude Code实战 | John's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">John's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-系列导航">
+
+    <a href="/%E7%B3%BB%E5%88%97%E5%AF%BC%E8%88%AA/" rel="section"><i class="fa fa-fw fa-book"></i>系列导航</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://john-1010-cmd.github.io/2026/02/05/Cursor%E4%B8%8EClaude%20Code%E5%AE%9E%E6%88%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John-1010-cmd">
+      <meta itemprop="description" content="Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="John's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Cursor与Claude Code实战
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2026-02-05 00:00:00" itemprop="dateCreated datePublished" datetime="2026-02-05T00:00:00+08:00">2026-02-05</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/AI-Coding/" itemprop="url" rel="index"><span itemprop="name">AI Coding</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">Cursor 与 Claude Code 深度实战对比，掌握 Agent 模式下的高效编程工作流。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="Cursor-核心功能解析"><a href="#Cursor-核心功能解析" class="headerlink" title="Cursor 核心功能解析"></a>Cursor 核心功能解析</h2><h3 id="Composer"><a href="#Composer" class="headerlink" title="Composer"></a>Composer</h3><p>Composer 是 Cursor 最强大的功能之一，允许开发者通过自然语言描述来同时修改多个文件。</p>
+<p><strong>使用方式：</strong></p>
+<p>按下 <code>Ctrl+I</code>（或 <code>Cmd+I</code>）打开 Composer 面板，用自然语言描述你想要的改动。Cursor 会分析项目上下文，自动定位需要修改的文件，并生成差异化的修改建议。</p>
+<p><strong>核心优势：</strong></p>
+<ul>
+<li>支持多文件同时编辑，保持跨文件的逻辑一致性</li>
+<li>提供差异化的预览视图，方便审查每一处改动</li>
+<li>支持 Normal 和 Agent 两种模式切换</li>
+</ul>
+<p><strong>Composer Normal vs Agent Mode：</strong></p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th align="center">Normal Mode</th>
+<th align="center">Agent Mode</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>多文件编辑</td>
+<td align="center">是</td>
+<td align="center">是</td>
+</tr>
+<tr>
+<td>自动搜索代码库</td>
+<td align="center">否</td>
+<td align="center">是</td>
+</tr>
+<tr>
+<td>自动运行命令</td>
+<td align="center">否</td>
+<td align="center">是</td>
+</tr>
+<tr>
+<td>自动修复错误</td>
+<td align="center">否</td>
+<td align="center">是</td>
+</tr>
+<tr>
+<td>适合场景</td>
+<td align="center">明确的局部修改</td>
+<td align="center">复杂的全局重构</td>
+</tr>
+</tbody></table>
+<h3 id="Chat"><a href="#Chat" class="headerlink" title="Chat"></a>Chat</h3><p>Cursor Chat 提供了 IDE 内的 AI 对话能力，比 Copilot Chat 更强大。</p>
+<p><strong>上下文引用语法：</strong></p>
+<ul>
+<li><code>@file</code>：引用特定文件的内容</li>
+<li><code>@folder</code>：引用整个目录结构</li>
+<li><code>@web</code>：联网搜索最新信息</li>
+<li><code>@docs</code>：引用项目文档</li>
+<li><code>@git</code>：引用 Git 提交历史</li>
+<li><code>@codebase</code>：让 AI 搜索整个代码库</li>
+</ul>
+<p><strong>使用技巧：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># 好的 Chat Prompt 示例</span><br><span class="line">@codebase 找到所有使用 RedisTemplate 的地方，分析是否有连接泄漏的风险。</span><br><span class="line">重点关注没有调用 connection.close() 的代码路径。</span><br><span class="line"></span><br><span class="line"># 差的 Chat Prompt 示例</span><br><span class="line">帮我看看 Redis 有没有问题</span><br></pre></td></tr></table></figure>
+
+<h3 id="Inline-Edit"><a href="#Inline-Edit" class="headerlink" title="Inline Edit"></a>Inline Edit</h3><p>Inline Edit 是 Cursor 最常用的快捷操作，选中代码后按 <code>Cmd+K</code> 即可进行精确编辑。</p>
+<p><strong>适用场景：</strong></p>
+<ul>
+<li>快速重构选中的函数或代码块</li>
+<li>添加错误处理逻辑</li>
+<li>优化性能热点代码</li>
+<li>修改命名和代码风格</li>
+</ul>
+<h3 id="Agent-Mode"><a href="#Agent-Mode" class="headerlink" title="Agent Mode"></a>Agent Mode</h3><p>Cursor 的 Agent Mode 是其最新的能力突破，让 AI 具备了自主完成复杂任务的能力。</p>
+<p><strong>工作流程：</strong></p>
+<ol>
+<li>开发者描述任务目标</li>
+<li>Agent 自动搜索相关代码文件</li>
+<li>分析依赖关系和影响范围</li>
+<li>制定修改计划并逐步执行</li>
+<li>运行测试验证修改正确性</li>
+<li>自动修复发现的问题</li>
+</ol>
+<p><strong>配置 Agent 行为：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">// .cursorrules</span><br><span class="line">// 控制Agent的行为边界</span><br><span class="line"></span><br><span class="line">// 代码风格规则</span><br><span class="line">- 使用 Java 17 特性，优先使用 record 和 sealed class</span><br><span class="line">- 遵循领域驱动设计（DDD）分层架构</span><br><span class="line">- Repository 层使用 Spring Data JPA</span><br><span class="line">- Service 层使用事务注解，只读操作标记为 readOnly</span><br><span class="line"></span><br><span class="line">// 安全规则</span><br><span class="line">- 禁止在日志中输出敏感信息</span><br><span class="line">- 所有外部输入必须进行参数校验</span><br><span class="line">- SQL 查询必须使用参数化方式</span><br><span class="line">- API 接口必须有权限校验</span><br><span class="line"></span><br><span class="line">// 测试规则</span><br><span class="line">- Service 层单元测试覆盖率不低于 80%</span><br><span class="line">- Controller 层集成测试覆盖核心接口</span><br><span class="line">- 使用 Testcontainers 进行数据库测试</span><br></pre></td></tr></table></figure>
+
+<h2 id="Claude-Code-核心功能解析"><a href="#Claude-Code-核心功能解析" class="headerlink" title="Claude Code 核心功能解析"></a>Claude Code 核心功能解析</h2><h3 id="CLI-工具"><a href="#CLI-工具" class="headerlink" title="CLI 工具"></a>CLI 工具</h3><p>Claude Code 以命令行工具的形式运行，适合习惯终端操作的开发者。</p>
+<p><strong>安装与配置：</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装 Claude Code</span></span><br><span class="line">npm install -g @anthropic-ai/claude-code</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在项目根目录启动</span></span><br><span class="line"><span class="built_in">cd</span> your-project</span><br><span class="line">claude</span><br><span class="line"></span><br><span class="line"><span class="comment"># 常用启动参数</span></span><br><span class="line">claude --model claude-sonnet-4-20250514  <span class="comment"># 指定模型</span></span><br><span class="line">claude --dangerously-skip-permissions    <span class="comment"># 跳过权限确认（不推荐）</span></span><br><span class="line">claude --verbose                         <span class="comment"># 显示详细输出</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>核心工具集：</strong></p>
+<p>Claude Code 内置了丰富的工具，每个工具都有明确的职责：</p>
+<table>
+<thead>
+<tr>
+<th>工具</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Read</td>
+<td>读取文件内容</td>
+</tr>
+<tr>
+<td>Write</td>
+<td>创建或覆盖文件</td>
+</tr>
+<tr>
+<td>Edit</td>
+<td>精确替换文件中的特定字符串</td>
+</tr>
+<tr>
+<td>Bash</td>
+<td>执行 Shell 命令</td>
+</tr>
+<tr>
+<td>Glob</td>
+<td>文件模式匹配搜索</td>
+</tr>
+<tr>
+<td>Grep</td>
+<td>内容搜索（基于 ripgrep）</td>
+</tr>
+<tr>
+<td>TodoWrite</td>
+<td>任务跟踪和进度管理</td>
+</tr>
+<tr>
+<td>NotebookEdit</td>
+<td>Jupyter Notebook 编辑</td>
+</tr>
+</tbody></table>
+<h3 id="Plan-Mode"><a href="#Plan-Mode" class="headerlink" title="Plan Mode"></a>Plan Mode</h3><p>Plan Mode 是 Claude Code 处理复杂任务的核心能力。开启后，Claude 会先制定详细的执行计划，经用户确认后再逐步执行。</p>
+<p><strong>启用方式：</strong></p>
+<p>在对话中输入 <code>Shift+Tab</code> 切换到 Plan Mode，或在对话开头明确要求：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">请先制定计划再执行：重构 OrderService，将订单状态管理抽取为独立的 State Machine</span><br></pre></td></tr></table></figure>
+
+<p><strong>Plan Mode 的优势：</strong></p>
+<ul>
+<li>避免盲目修改导致的错误</li>
+<li>让开发者有机会审查和调整方案</li>
+<li>复杂任务可以分阶段执行</li>
+<li>每个阶段的结果可以独立验证</li>
+</ul>
+<p><strong>典型 Plan 输出：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">## 重构计划</span><br><span class="line"></span><br><span class="line">### 阶段1：分析现有代码</span><br><span class="line">- 读取 OrderService.java，识别所有状态转换逻辑</span><br><span class="line">- 搜索所有调用 OrderService 状态相关方法的地方</span><br><span class="line"></span><br><span class="line">### 阶段2：设计状态机</span><br><span class="line">- 创建 OrderState 枚举</span><br><span class="line">- 创建 OrderStateMachine 类</span><br><span class="line">- 定义合法的状态转换规则</span><br><span class="line"></span><br><span class="line">### 阶段3：实现重构</span><br><span class="line">- 将状态转换逻辑从 OrderService 移至 OrderStateMachine</span><br><span class="line">- 更新 OrderService 调用新的状态机</span><br><span class="line">- 添加状态转换的事件通知</span><br><span class="line"></span><br><span class="line">### 阶段4：验证</span><br><span class="line">- 运行现有测试确保无回归</span><br><span class="line">- 补充状态机相关的单元测试</span><br><span class="line">- 检查并发安全性</span><br><span class="line"></span><br><span class="line">确认执行？(y/n)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Agent-SDK"><a href="#Agent-SDK" class="headerlink" title="Agent SDK"></a>Agent SDK</h3><p>Claude Code 的 Agent SDK 允许开发者构建自定义的多 Agent 协作系统。</p>
+<p><strong>核心概念：</strong></p>
+<ul>
+<li><strong>SubAgent</strong>：独立的 AI Agent 实例，可以并行执行任务</li>
+<li><strong>Tool</strong>：Agent 可以调用的工具</li>
+<li><strong>Prompt</strong>：控制 Agent 行为的指令</li>
+<li><strong>Context</strong>：Agent 可以访问的信息</li>
+</ul>
+<p><strong>使用场景：</strong></p>
+<ol>
+<li><strong>并行代码审查</strong>：同时从安全、性能、可维护性三个维度审查代码</li>
+<li><strong>多模块开发</strong>：多个 Agent 并行开发独立的功能模块</li>
+<li><strong>自动化测试</strong>：一个 Agent 写代码，另一个 Agent 写测试</li>
+</ol>
+<h3 id="Hooks-系统"><a href="#Hooks-系统" class="headerlink" title="Hooks 系统"></a>Hooks 系统</h3><p>Hooks 允许在 Claude Code 的工具调用前后插入自定义逻辑。</p>
+<p><strong>Hook 类型：</strong></p>
+<table>
+<thead>
+<tr>
+<th>Hook 类型</th>
+<th>触发时机</th>
+<th>典型用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>PreToolUse</td>
+<td>工具执行前</td>
+<td>参数验证、权限检查</td>
+</tr>
+<tr>
+<td>PostToolUse</td>
+<td>工具执行后</td>
+<td>自动格式化、日志记录</td>
+</tr>
+<tr>
+<td>Stop</td>
+<td>会话结束时</td>
+<td>最终验证、生成报告</td>
+</tr>
+</tbody></table>
+<p><strong>配置示例：</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">// .claude/settings.json</span><br><span class="line">&#123;</span><br><span class="line">  &quot;hooks&quot;: &#123;</span><br><span class="line">    &quot;PostToolUse&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;matcher&quot;: &quot;Edit|Write&quot;,</span><br><span class="line">        &quot;command&quot;: &quot;npx prettier --write $FILE_PATH&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    ],</span><br><span class="line">    &quot;PreToolUse&quot;: [</span><br><span class="line">      &#123;</span><br><span class="line">        &quot;matcher&quot;: &quot;Bash&quot;,</span><br><span class="line">        &quot;command&quot;: &quot;echo &#x27;请确认执行此命令&#x27; &amp;&amp; exit 0&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="工作流对比：可视化交互-vs-命令行驱动"><a href="#工作流对比：可视化交互-vs-命令行驱动" class="headerlink" title="工作流对比：可视化交互 vs 命令行驱动"></a>工作流对比：可视化交互 vs 命令行驱动</h2><h3 id="Cursor-的可视化工作流"><a href="#Cursor-的可视化工作流" class="headerlink" title="Cursor 的可视化工作流"></a>Cursor 的可视化工作流</h3><p>Cursor 的交互完全在 IDE 内完成，开发者通过图形界面与 AI 协作。</p>
+<p><strong>优势：</strong></p>
+<ul>
+<li>所见即所得的编辑体验</li>
+<li>差异化预览直观清晰</li>
+<li>鼠标选区操作自然流畅</li>
+<li>学习曲线低，新手友好</li>
+</ul>
+<p><strong>劣势：</strong></p>
+<ul>
+<li>受限于 IDE 环境的边界</li>
+<li>复杂任务的可控性不如命令行</li>
+<li>对 CI/CD 集成的支持有限</li>
+</ul>
+<h3 id="Claude-Code-的命令行工作流"><a href="#Claude-Code-的命令行工作流" class="headerlink" title="Claude Code 的命令行工作流"></a>Claude Code 的命令行工作流</h3><p>Claude Code 通过终端交互，以文本形式展示所有信息。</p>
+<p><strong>优势：</strong></p>
+<ul>
+<li>与 Git、Docker、Kubernetes 等命令行工具无缝集成</li>
+<li>可以编写脚本自动化重复任务</li>
+<li>精确的权限控制，每个操作都可以审计</li>
+<li>适合在远程服务器和 CI 环境中使用</li>
+</ul>
+<p><strong>劣势：</strong></p>
+<ul>
+<li>纯文本交互，不如图形界面直观</li>
+<li>需要一定的命令行使用经验</li>
+<li>代码预览不如 IDE 内的差异视图方便</li>
+</ul>
+<h3 id="如何选择"><a href="#如何选择" class="headerlink" title="如何选择"></a>如何选择</h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th align="center">Cursor</th>
+<th align="center">Claude Code</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>学习难度</td>
+<td align="center">低</td>
+<td align="center">中</td>
+</tr>
+<tr>
+<td>日常编码</td>
+<td align="center">极佳</td>
+<td align="center">良好</td>
+</tr>
+<tr>
+<td>复杂重构</td>
+<td align="center">良好</td>
+<td align="center">极佳</td>
+</tr>
+<tr>
+<td>代码搜索</td>
+<td align="center">良好</td>
+<td align="center">极佳</td>
+</tr>
+<tr>
+<td>自动化能力</td>
+<td align="center">有限</td>
+<td align="center">强大</td>
+</tr>
+<tr>
+<td>远程开发</td>
+<td align="center">不支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td>CI/CD 集成</td>
+<td align="center">不支持</td>
+<td align="center">支持</td>
+</tr>
+<tr>
+<td>团队标准化</td>
+<td align="center">良好</td>
+<td align="center">极佳</td>
+</tr>
+</tbody></table>
+<h2 id="MCP（Model-Context-Protocol）协议"><a href="#MCP（Model-Context-Protocol）协议" class="headerlink" title="MCP（Model Context Protocol）协议"></a>MCP（Model Context Protocol）协议</h2><h3 id="什么是-MCP"><a href="#什么是-MCP" class="headerlink" title="什么是 MCP"></a>什么是 MCP</h3><p>MCP 是 Anthropic 提出的开放协议，旨在标准化 AI 模型与外部工具的交互方式。通过 MCP，AI 可以连接到数据库、API、文件系统等外部资源。</p>
+<h3 id="MCP-的架构"><a href="#MCP-的架构" class="headerlink" title="MCP 的架构"></a>MCP 的架构</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AI 应用（如 Claude Code / Cursor）</span><br><span class="line">        |</span><br><span class="line">    MCP Client</span><br><span class="line">        |</span><br><span class="line">    MCP Server（工具提供方）</span><br><span class="line">        |</span><br><span class="line">    外部资源（数据库 / API / 文件系统）</span><br></pre></td></tr></table></figure>
+
+<h3 id="MCP-Server-类型"><a href="#MCP-Server-类型" class="headerlink" title="MCP Server 类型"></a>MCP Server 类型</h3><h4 id="内置-MCP-Server"><a href="#内置-MCP-Server" class="headerlink" title="内置 MCP Server"></a>内置 MCP Server</h4><p>Claude Code 和 Cursor 都内置了一些 MCP Server：</p>
+<ul>
+<li><strong>文件系统 Server</strong>：读写文件、搜索代码</li>
+<li><strong>终端 Server</strong>：执行命令行操作</li>
+<li><strong>Git Server</strong>：版本控制操作</li>
+</ul>
+<h4 id="自定义-MCP-Server"><a href="#自定义-MCP-Server" class="headerlink" title="自定义 MCP Server"></a>自定义 MCP Server</h4><p>开发者可以根据项目需求创建自定义 MCP Server：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 示例：自定义数据库查询 MCP Server</span></span><br><span class="line"><span class="keyword">import</span> &#123; <span class="title class_">McpServer</span> &#125; <span class="keyword">from</span> <span class="string">&quot;@modelcontextprotocol/sdk/server/mcp.js&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> server = <span class="keyword">new</span> <span class="title class_">McpServer</span>(&#123;</span><br><span class="line">  <span class="attr">name</span>: <span class="string">&quot;database-query&quot;</span>,</span><br><span class="line">  <span class="attr">version</span>: <span class="string">&quot;1.0.0&quot;</span>,</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">server.<span class="title function_">tool</span>(</span><br><span class="line">  <span class="string">&quot;query_database&quot;</span>,</span><br><span class="line">  &#123; <span class="attr">sql</span>: z.<span class="title function_">string</span>().<span class="title function_">describe</span>(<span class="string">&quot;SQL 查询语句&quot;</span>) &#125;,</span><br><span class="line">  <span class="title function_">async</span> (&#123; sql &#125;) =&gt; &#123;</span><br><span class="line">    <span class="comment">// 只允许 SELECT 查询，防止数据修改</span></span><br><span class="line">    <span class="keyword">if</span> (!sql.<span class="title function_">trim</span>().<span class="title function_">toUpperCase</span>().<span class="title function_">startsWith</span>(<span class="string">&quot;SELECT&quot;</span>)) &#123;</span><br><span class="line">      <span class="keyword">return</span> &#123; <span class="attr">content</span>: [&#123; <span class="attr">type</span>: <span class="string">&quot;text&quot;</span>, <span class="attr">text</span>: <span class="string">&quot;只允许 SELECT 查询&quot;</span> &#125;] &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">const</span> result = <span class="keyword">await</span> <span class="title function_">executeQuery</span>(sql);</span><br><span class="line">    <span class="keyword">return</span> &#123; <span class="attr">content</span>: [&#123; <span class="attr">type</span>: <span class="string">&quot;text&quot;</span>, <span class="attr">text</span>: <span class="title class_">JSON</span>.<span class="title function_">stringify</span>(result) &#125;] &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h3 id="在-Claude-Code-中配置-MCP"><a href="#在-Claude-Code-中配置-MCP" class="headerlink" title="在 Claude Code 中配置 MCP"></a>在 Claude Code 中配置 MCP</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">// .claude/settings.json</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mcpServers&quot;: &#123;</span><br><span class="line">    &quot;database&quot;: &#123;</span><br><span class="line">      &quot;command&quot;: &quot;node&quot;,</span><br><span class="line">      &quot;args&quot;: [&quot;./mcp-servers/database-query.js&quot;]</span><br><span class="line">    &#125;,</span><br><span class="line">    &quot;jira&quot;: &#123;</span><br><span class="line">      &quot;command&quot;: &quot;node&quot;,</span><br><span class="line">      &quot;args&quot;: [&quot;./mcp-servers/jira-integration.js&quot;],</span><br><span class="line">      &quot;env&quot;: &#123;</span><br><span class="line">        &quot;JIRA_API_TOKEN&quot;: &quot;$&#123;JIRA_API_TOKEN&#125;&quot;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="在-Cursor-中配置-MCP"><a href="#在-Cursor-中配置-MCP" class="headerlink" title="在 Cursor 中配置 MCP"></a>在 Cursor 中配置 MCP</h3><p>Cursor 同样支持 MCP 协议，配置方式类似：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">// .cursor/mcp.json</span><br><span class="line">&#123;</span><br><span class="line">  &quot;mcpServers&quot;: &#123;</span><br><span class="line">    &quot;filesystem&quot;: &#123;</span><br><span class="line">      &quot;command&quot;: &quot;npx&quot;,</span><br><span class="line">      &quot;args&quot;: [&quot;-y&quot;, &quot;@modelcontextprotocol/server-filesystem&quot;, &quot;/path/to/project&quot;]</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="实战场景1：用-Cursor-从零搭建-SpringBoot-项目"><a href="#实战场景1：用-Cursor-从零搭建-SpringBoot-项目" class="headerlink" title="实战场景1：用 Cursor 从零搭建 SpringBoot 项目"></a>实战场景1：用 Cursor 从零搭建 SpringBoot 项目</h2><h3 id="步骤1：项目初始化"><a href="#步骤1：项目初始化" class="headerlink" title="步骤1：项目初始化"></a>步骤1：项目初始化</h3><p>在 Cursor Chat 中描述项目需求：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@web 请帮我创建一个 SpringBoot 3.2 项目，要求：</span><br><span class="line">- Java 17 + Gradle</span><br><span class="line">- 包含 Spring Web、Spring Data JPA、PostgreSQL Driver、Lombok</span><br><span class="line">- 采用 DDD 分层架构：controller、service、repository、domain</span><br><span class="line">- 配置文件使用 YAML 格式</span><br><span class="line">- 包含 Docker Compose 配置（PostgreSQL + Redis）</span><br></pre></td></tr></table></figure>
+
+<p>Cursor 会自动生成完整的项目骨架，包括 <code>build.gradle</code>、配置文件、Docker Compose 和基础包结构。</p>
+<h3 id="步骤2：领域模型设计"><a href="#步骤2：领域模型设计" class="headerlink" title="步骤2：领域模型设计"></a>步骤2：领域模型设计</h3><p>使用 Composer 设计领域模型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">创建一个电商订单系统的领域模型，包括：</span><br><span class="line">- Order：订单聚合根，包含订单项、收货地址、支付信息</span><br><span class="line">- OrderItem：订单项，关联商品和数量</span><br><span class="line">- OrderStatus：订单状态枚举（PENDING、PAID、SHIPPED、COMPLETED、CANCELLED）</span><br><span class="line">- 使用 JPA 注解映射数据库</span><br><span class="line">- 使用 Lombok 减少样板代码</span><br></pre></td></tr></table></figure>
+
+<h3 id="步骤3：接口开发"><a href="#步骤3：接口开发" class="headerlink" title="步骤3：接口开发"></a>步骤3：接口开发</h3><p>使用 Agent Mode 开发完整的 CRUD 接口：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@folder src/main/java/com/example/order 为 Order 实体开发完整的 REST API：</span><br><span class="line">1. POST /api/orders - 创建订单</span><br><span class="line">2. GET /api/orders/&#123;id&#125; - 查询订单详情</span><br><span class="line">3. GET /api/orders - 分页查询订单列表</span><br><span class="line">4. PUT /api/orders/&#123;id&#125;/status - 更新订单状态</span><br><span class="line">5. DELETE /api/orders/&#123;id&#125; - 取消订单</span><br><span class="line"></span><br><span class="line">要求：</span><br><span class="line">- 使用统一的 ApiResponse 包装返回结果</span><br><span class="line">- 参数校验使用 Jakarta Validation</span><br><span class="line">- 异常处理使用 @ControllerAdvice</span><br><span class="line">- 分页参数使用 Pageable</span><br></pre></td></tr></table></figure>
+
+<h3 id="步骤4：测试与调试"><a href="#步骤4：测试与调试" class="headerlink" title="步骤4：测试与调试"></a>步骤4：测试与调试</h3><p>让 Cursor 生成测试代码并运行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">为 OrderService 编写单元测试，要求：</span><br><span class="line">- 使用 JUnit 5 + Mockito</span><br><span class="line">- 覆盖创建订单、查询订单、更新状态的核心逻辑</span><br><span class="line">- 包含异常场景测试（订单不存在、状态转换不合法）</span><br><span class="line">- 使用 @DisplayName 标注测试用例</span><br></pre></td></tr></table></figure>
+
+<h2 id="实战场景2：用-Claude-Code-重构遗留代码"><a href="#实战场景2：用-Claude-Code-重构遗留代码" class="headerlink" title="实战场景2：用 Claude Code 重构遗留代码"></a>实战场景2：用 Claude Code 重构遗留代码</h2><h3 id="步骤1：代码分析"><a href="#步骤1：代码分析" class="headerlink" title="步骤1：代码分析"></a>步骤1：代码分析</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ claude</span><br><span class="line">&gt; 分析 src/legacy/ 目录下的代码结构，识别以下问题：</span><br><span class="line">&gt; 1. 重复代码片段</span><br><span class="line">&gt; 2. 过长的函数（超过 50 行）</span><br><span class="line">&gt; 3. 循环依赖</span><br><span class="line">&gt; 4. 硬编码的魔法值</span><br><span class="line">&gt; 5. 缺少错误处理的地方</span><br></pre></td></tr></table></figure>
+
+<p>Claude Code 会使用 Grep 和 Glob 工具搜索整个代码库，生成详细的代码质量报告。</p>
+<h3 id="步骤2：制定重构计划"><a href="#步骤2：制定重构计划" class="headerlink" title="步骤2：制定重构计划"></a>步骤2：制定重构计划</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&gt; 开启 Plan Mode。基于上面的分析结果，制定一个分阶段的重构计划：</span><br><span class="line">&gt; - 阶段1：提取重复代码为公共工具方法</span><br><span class="line">&gt; - 阶段2：拆分过长函数</span><br><span class="line">&gt; - 阶段3：引入常量替换魔法值</span><br><span class="line">&gt; - 阶段4：补充错误处理</span><br><span class="line">&gt; - 阶段5：运行全量测试验证</span><br></pre></td></tr></table></figure>
+
+<h3 id="步骤3：逐步执行"><a href="#步骤3：逐步执行" class="headerlink" title="步骤3：逐步执行"></a>步骤3：逐步执行</h3><p>确认计划后，Claude Code 会逐步执行每个阶段：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">正在执行阶段1：提取重复代码...</span><br><span class="line"></span><br><span class="line">发现以下重复模式：</span><br><span class="line">- DateUtil.format() 在 12 个文件中重复实现</span><br><span class="line">- ResponseBuilder 在 8 个 Controller 中重复定义</span><br><span class="line"></span><br><span class="line">创建公共工具类：</span><br><span class="line">- common/util/DateUtil.java</span><br><span class="line">- common/response/ResponseBuilder.java</span><br><span class="line"></span><br><span class="line">更新引用：修改 20 个文件的 import 语句</span><br><span class="line"></span><br><span class="line">运行测试... 全部通过 ✓</span><br></pre></td></tr></table></figure>
+
+<h3 id="步骤4：验证与提交"><a href="#步骤4：验证与提交" class="headerlink" title="步骤4：验证与提交"></a>步骤4：验证与提交</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&gt; 运行全量测试，确保重构没有引入回归</span><br><span class="line"></span><br><span class="line">&gt; 为本次重构生成提交信息，遵循 Conventional Commits 格式</span><br></pre></td></tr></table></figure>
+
+<h2 id="上下文管理"><a href="#上下文管理" class="headerlink" title="上下文管理"></a>上下文管理</h2><h3 id="cursorrules-配置"><a href="#cursorrules-配置" class="headerlink" title=".cursorrules 配置"></a>.cursorrules 配置</h3><p><code>.cursorrules</code> 文件放在项目根目录，为 Cursor 提供项目级的行为规则。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">// .cursorrules</span><br><span class="line">&#123;</span><br><span class="line">  &quot;rules&quot;: [</span><br><span class="line">    &quot;项目使用 Next.js 14 + App Router&quot;,</span><br><span class="line">    &quot;样式使用 Tailwind CSS，不使用 CSS Modules&quot;,</span><br><span class="line">    &quot;状态管理使用 Zustand，不使用 Redux&quot;,</span><br><span class="line">    &quot;API 调用使用 Server Actions&quot;,</span><br><span class="line">    &quot;组件命名使用 PascalCase&quot;,</span><br><span class="line">    &quot;工具函数命名使用 camelCase&quot;,</span><br><span class="line">    &quot;文件命名使用 kebab-case&quot;</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="CLAUDE-md-配置"><a href="#CLAUDE-md-配置" class="headerlink" title="CLAUDE.md 配置"></a>CLAUDE.md 配置</h3><p><code>CLAUDE.md</code> 文件为 Claude Code 提供项目级的上下文信息。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># CLAUDE.md</span></span><br><span class="line"></span><br><span class="line"><span class="section">## 项目概述</span></span><br><span class="line">这是一个电商平台后端系统，使用 SpringBoot 3.2 + Java 17。</span><br><span class="line"></span><br><span class="line"><span class="section">## 技术栈</span></span><br><span class="line"><span class="bullet">-</span> 框架：SpringBoot 3.2</span><br><span class="line"><span class="bullet">-</span> 数据库：PostgreSQL 15</span><br><span class="line"><span class="bullet">-</span> 缓存：Redis 7</span><br><span class="line"><span class="bullet">-</span> 消息队列：RabbitMQ</span><br><span class="line"><span class="bullet">-</span> 构建工具：Gradle</span><br><span class="line"></span><br><span class="line"><span class="section">## 代码规范</span></span><br><span class="line"><span class="bullet">-</span> 使用领域驱动设计（DDD）分层架构</span><br><span class="line"><span class="bullet">-</span> 统一使用 ApiResponse<span class="language-xml"><span class="tag">&lt;<span class="name">T</span>&gt;</span></span> 包装返回结果</span><br><span class="line"><span class="bullet">-</span> 异常使用自定义 BusinessException</span><br><span class="line"><span class="bullet">-</span> 日志使用 SLF4J + Logback</span><br><span class="line"></span><br><span class="line"><span class="section">## 禁止操作</span></span><br><span class="line"><span class="bullet">-</span> 不要直接操作 EntityManager</span><br><span class="line"><span class="bullet">-</span> 不要在 Controller 层写业务逻辑</span><br><span class="line"><span class="bullet">-</span> 不要在循环中调用数据库查询</span><br><span class="line"><span class="bullet">-</span> 不要忽略异常</span><br></pre></td></tr></table></figure>
+
+<h3 id="AGENTS-md-配置"><a href="#AGENTS-md-配置" class="headerlink" title="AGENTS.md 配置"></a>AGENTS.md 配置</h3><p><code>AGENTS.md</code> 用于定义多 Agent 协作的分工策略。</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># AGENTS.md</span></span><br><span class="line"></span><br><span class="line"><span class="section">## Agent 职责分工</span></span><br><span class="line"></span><br><span class="line"><span class="section">### planner Agent</span></span><br><span class="line"><span class="bullet">-</span> 负责制定实现计划</span><br><span class="line"><span class="bullet">-</span> 分析依赖关系和风险评估</span><br><span class="line"><span class="bullet">-</span> 输出分阶段的实施方案</span><br><span class="line"></span><br><span class="line"><span class="section">### tdd-guide Agent</span></span><br><span class="line"><span class="bullet">-</span> 负责测试驱动开发流程</span><br><span class="line"><span class="bullet">-</span> 编写测试用例</span><br><span class="line"><span class="bullet">-</span> 验证实现覆盖率</span><br><span class="line"></span><br><span class="line"><span class="section">### code-reviewer Agent</span></span><br><span class="line"><span class="bullet">-</span> 代码质量审查</span><br><span class="line"><span class="bullet">-</span> 安全漏洞检测</span><br><span class="line"><span class="bullet">-</span> 性能问题识别</span><br></pre></td></tr></table></figure>
+
+<h2 id="多文件编辑能力对比"><a href="#多文件编辑能力对比" class="headerlink" title="多文件编辑能力对比"></a>多文件编辑能力对比</h2><h3 id="Cursor-的多文件编辑"><a href="#Cursor-的多文件编辑" class="headerlink" title="Cursor 的多文件编辑"></a>Cursor 的多文件编辑</h3><p>Cursor 通过 Composer 实现多文件编辑，核心机制是：</p>
+<ol>
+<li>分析用户意图，确定涉及的文件列表</li>
+<li>为每个文件生成差异化的修改建议</li>
+<li>在统一的 Composer 面板中展示所有改动</li>
+<li>用户可以逐个 Accept 或 Reject 每处改动</li>
+</ol>
+<p><strong>优势：</strong> 可视化的差异对比，操作直觉化。<br><strong>劣势：</strong> 当涉及文件超过 10 个时，审查所有改动的效率会下降。</p>
+<h3 id="Claude-Code-的多文件编辑"><a href="#Claude-Code-的多文件编辑" class="headerlink" title="Claude Code 的多文件编辑"></a>Claude Code 的多文件编辑</h3><p>Claude Code 通过 Read + Edit 工具的组合实现多文件编辑：</p>
+<ol>
+<li>先读取所有相关文件的内容</li>
+<li>分析文件间的依赖关系</li>
+<li>使用 Edit 工具逐文件进行精确替换</li>
+<li>每次修改都会明确标注 old_string 和 new_string</li>
+</ol>
+<p><strong>优势：</strong> 修改精确可控，每次替换都可追溯。<br><strong>劣势：</strong> 无法一次性预览所有修改的差异视图。</p>
+<h2 id="调试与错误修复流程"><a href="#调试与错误修复流程" class="headerlink" title="调试与错误修复流程"></a>调试与错误修复流程</h2><h3 id="Cursor-调试流程"><a href="#Cursor-调试流程" class="headerlink" title="Cursor 调试流程"></a>Cursor 调试流程</h3><ol>
+<li>遇到错误时，将错误信息粘贴到 Cursor Chat</li>
+<li>使用 <code>@terminal</code> 引用终端输出</li>
+<li>Cursor 分析错误原因并提供修复建议</li>
+<li>使用 Inline Edit 快速应用修复</li>
+</ol>
+<h3 id="Claude-Code-调试流程"><a href="#Claude-Code-调试流程" class="headerlink" title="Claude Code 调试流程"></a>Claude Code 调试流程</h3><ol>
+<li>遇到错误时，直接将错误信息告诉 Claude Code</li>
+<li>Claude Code 使用 Grep 搜索相关代码</li>
+<li>使用 Read 工具读取相关文件</li>
+<li>使用 Edit 工具精确修复问题</li>
+<li>使用 Bash 运行测试验证修复</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&gt; 运行测试时报错：NullPointerException in OrderService.processOrder line 42</span><br><span class="line"></span><br><span class="line">Claude Code 执行步骤：</span><br><span class="line">1. Read OrderService.java</span><br><span class="line">2. Grep &quot;processOrder&quot; 查找所有调用者</span><br><span class="line">3. 分析第42行的变量，发现 orderId 可能为 null</span><br><span class="line">4. Edit: 在调用 processOrder 前添加 null 检查</span><br><span class="line">5. Bash: mvn test -pl order-service</span><br><span class="line">6. 测试通过 ✓</span><br></pre></td></tr></table></figure>
+
+<h2 id="团队协作与最佳实践"><a href="#团队协作与最佳实践" class="headerlink" title="团队协作与最佳实践"></a>团队协作与最佳实践</h2><h3 id="统一配置管理"><a href="#统一配置管理" class="headerlink" title="统一配置管理"></a>统一配置管理</h3><p>团队应统一管理 AI 编程工具的配置文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># .gitignore</span><br><span class="line">.claude/settings.local.json    # 个人配置不提交</span><br><span class="line">.cursor/mcp.local.json         # 本地 MCP 配置不提交</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 应提交到版本控制的文件</span><br><span class="line">.cursorrules          # 项目级 Cursor 规则</span><br><span class="line">CLAUDE.md             # 项目级 Claude Code 规则</span><br><span class="line">AGENTS.md             # Agent 协作配置</span><br><span class="line">.claude/settings.json # 共享的 Claude Code 配置</span><br></pre></td></tr></table></figure>
+
+<h3 id="Code-Review-流程中整合-AI"><a href="#Code-Review-流程中整合-AI" class="headerlink" title="Code Review 流程中整合 AI"></a>Code Review 流程中整合 AI</h3><ol>
+<li>提交 PR 前让 AI 做一次预审查</li>
+<li>使用 Claude Code 分析 PR 的改动范围和潜在风险</li>
+<li>将 AI 审查结果作为 PR Comment 附带提交</li>
+<li>人工审查时重点关注 AI 标记的风险点</li>
+</ol>
+<h3 id="知识传递"><a href="#知识传递" class="headerlink" title="知识传递"></a>知识传递</h3><p>将 AI 生成的代码规范和最佳实践沉淀到项目的 Rules 文件中：</p>
+<ul>
+<li>每次解决复杂 Bug 后，更新 CLAUDE.md 中的相关注意事项</li>
+<li>发现新的编码规范时，更新 .cursorrules</li>
+<li>重构完成后，更新 AGENTS.md 中的职责定义</li>
+</ul>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Cursor 和 Claude Code 各有擅长的领域。Cursor 在日常编码和快速原型开发方面体验更优，其可视化交互让代码编辑更直观。Claude Code 在复杂重构、项目级搜索、自动化和团队标准化方面更具优势，其命令行特性和强大的工具集适合处理系统性工程任务。</p>
+<p>最佳实践是两者结合使用：用 Cursor 做日常开发和快速迭代，用 Claude Code 处理复杂重构和自动化任务。两者的 Rules 文件可以互相参考，形成统一的团队开发规范。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/AI/" rel="tag"># AI</a>
+              <a href="/tags/%E5%AE%9E%E6%88%98/" rel="tag"># 实战</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2026/02/01/AI%E7%BC%96%E7%A8%8B%E5%B7%A5%E5%85%B7%E6%A6%82%E8%A7%88/" rel="prev" title="AI编程工具概览">
+      <i class="fa fa-chevron-left"></i> AI编程工具概览
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2026/02/10/AI%20Coding%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5/" rel="next" title="AI Coding最佳实践">
+      AI Coding最佳实践 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Cursor-%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD%E8%A7%A3%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">Cursor 核心功能解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Composer"><span class="nav-number">1.1.</span> <span class="nav-text">Composer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Chat"><span class="nav-number">1.2.</span> <span class="nav-text">Chat</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Inline-Edit"><span class="nav-number">1.3.</span> <span class="nav-text">Inline Edit</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Agent-Mode"><span class="nav-number">1.4.</span> <span class="nav-text">Agent Mode</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Claude-Code-%E6%A0%B8%E5%BF%83%E5%8A%9F%E8%83%BD%E8%A7%A3%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">Claude Code 核心功能解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#CLI-%E5%B7%A5%E5%85%B7"><span class="nav-number">2.1.</span> <span class="nav-text">CLI 工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Plan-Mode"><span class="nav-number">2.2.</span> <span class="nav-text">Plan Mode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Agent-SDK"><span class="nav-number">2.3.</span> <span class="nav-text">Agent SDK</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hooks-%E7%B3%BB%E7%BB%9F"><span class="nav-number">2.4.</span> <span class="nav-text">Hooks 系统</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B7%A5%E4%BD%9C%E6%B5%81%E5%AF%B9%E6%AF%94%EF%BC%9A%E5%8F%AF%E8%A7%86%E5%8C%96%E4%BA%A4%E4%BA%92-vs-%E5%91%BD%E4%BB%A4%E8%A1%8C%E9%A9%B1%E5%8A%A8"><span class="nav-number">3.</span> <span class="nav-text">工作流对比：可视化交互 vs 命令行驱动</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Cursor-%E7%9A%84%E5%8F%AF%E8%A7%86%E5%8C%96%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="nav-number">3.1.</span> <span class="nav-text">Cursor 的可视化工作流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Claude-Code-%E7%9A%84%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="nav-number">3.2.</span> <span class="nav-text">Claude Code 的命令行工作流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9"><span class="nav-number">3.3.</span> <span class="nav-text">如何选择</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MCP%EF%BC%88Model-Context-Protocol%EF%BC%89%E5%8D%8F%E8%AE%AE"><span class="nav-number">4.</span> <span class="nav-text">MCP（Model Context Protocol）协议</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF-MCP"><span class="nav-number">4.1.</span> <span class="nav-text">什么是 MCP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MCP-%E7%9A%84%E6%9E%B6%E6%9E%84"><span class="nav-number">4.2.</span> <span class="nav-text">MCP 的架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MCP-Server-%E7%B1%BB%E5%9E%8B"><span class="nav-number">4.3.</span> <span class="nav-text">MCP Server 类型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%86%85%E7%BD%AE-MCP-Server"><span class="nav-number">4.3.1.</span> <span class="nav-text">内置 MCP Server</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89-MCP-Server"><span class="nav-number">4.3.2.</span> <span class="nav-text">自定义 MCP Server</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-Claude-Code-%E4%B8%AD%E9%85%8D%E7%BD%AE-MCP"><span class="nav-number">4.4.</span> <span class="nav-text">在 Claude Code 中配置 MCP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8-Cursor-%E4%B8%AD%E9%85%8D%E7%BD%AE-MCP"><span class="nav-number">4.5.</span> <span class="nav-text">在 Cursor 中配置 MCP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E6%88%98%E5%9C%BA%E6%99%AF1%EF%BC%9A%E7%94%A8-Cursor-%E4%BB%8E%E9%9B%B6%E6%90%AD%E5%BB%BA-SpringBoot-%E9%A1%B9%E7%9B%AE"><span class="nav-number">5.</span> <span class="nav-text">实战场景1：用 Cursor 从零搭建 SpringBoot 项目</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A41%EF%BC%9A%E9%A1%B9%E7%9B%AE%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">5.1.</span> <span class="nav-text">步骤1：项目初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A42%EF%BC%9A%E9%A2%86%E5%9F%9F%E6%A8%A1%E5%9E%8B%E8%AE%BE%E8%AE%A1"><span class="nav-number">5.2.</span> <span class="nav-text">步骤2：领域模型设计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A43%EF%BC%9A%E6%8E%A5%E5%8F%A3%E5%BC%80%E5%8F%91"><span class="nav-number">5.3.</span> <span class="nav-text">步骤3：接口开发</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A44%EF%BC%9A%E6%B5%8B%E8%AF%95%E4%B8%8E%E8%B0%83%E8%AF%95"><span class="nav-number">5.4.</span> <span class="nav-text">步骤4：测试与调试</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E6%88%98%E5%9C%BA%E6%99%AF2%EF%BC%9A%E7%94%A8-Claude-Code-%E9%87%8D%E6%9E%84%E9%81%97%E7%95%99%E4%BB%A3%E7%A0%81"><span class="nav-number">6.</span> <span class="nav-text">实战场景2：用 Claude Code 重构遗留代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A41%EF%BC%9A%E4%BB%A3%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-number">6.1.</span> <span class="nav-text">步骤1：代码分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A42%EF%BC%9A%E5%88%B6%E5%AE%9A%E9%87%8D%E6%9E%84%E8%AE%A1%E5%88%92"><span class="nav-number">6.2.</span> <span class="nav-text">步骤2：制定重构计划</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A43%EF%BC%9A%E9%80%90%E6%AD%A5%E6%89%A7%E8%A1%8C"><span class="nav-number">6.3.</span> <span class="nav-text">步骤3：逐步执行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%AD%A5%E9%AA%A44%EF%BC%9A%E9%AA%8C%E8%AF%81%E4%B8%8E%E6%8F%90%E4%BA%A4"><span class="nav-number">6.4.</span> <span class="nav-text">步骤4：验证与提交</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E6%96%87%E7%AE%A1%E7%90%86"><span class="nav-number">7.</span> <span class="nav-text">上下文管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#cursorrules-%E9%85%8D%E7%BD%AE"><span class="nav-number">7.1.</span> <span class="nav-text">.cursorrules 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CLAUDE-md-%E9%85%8D%E7%BD%AE"><span class="nav-number">7.2.</span> <span class="nav-text">CLAUDE.md 配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AGENTS-md-%E9%85%8D%E7%BD%AE"><span class="nav-number">7.3.</span> <span class="nav-text">AGENTS.md 配置</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E6%96%87%E4%BB%B6%E7%BC%96%E8%BE%91%E8%83%BD%E5%8A%9B%E5%AF%B9%E6%AF%94"><span class="nav-number">8.</span> <span class="nav-text">多文件编辑能力对比</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Cursor-%E7%9A%84%E5%A4%9A%E6%96%87%E4%BB%B6%E7%BC%96%E8%BE%91"><span class="nav-number">8.1.</span> <span class="nav-text">Cursor 的多文件编辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Claude-Code-%E7%9A%84%E5%A4%9A%E6%96%87%E4%BB%B6%E7%BC%96%E8%BE%91"><span class="nav-number">8.2.</span> <span class="nav-text">Claude Code 的多文件编辑</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B0%83%E8%AF%95%E4%B8%8E%E9%94%99%E8%AF%AF%E4%BF%AE%E5%A4%8D%E6%B5%81%E7%A8%8B"><span class="nav-number">9.</span> <span class="nav-text">调试与错误修复流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Cursor-%E8%B0%83%E8%AF%95%E6%B5%81%E7%A8%8B"><span class="nav-number">9.1.</span> <span class="nav-text">Cursor 调试流程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Claude-Code-%E8%B0%83%E8%AF%95%E6%B5%81%E7%A8%8B"><span class="nav-number">9.2.</span> <span class="nav-text">Claude Code 调试流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%A2%E9%98%9F%E5%8D%8F%E4%BD%9C%E4%B8%8E%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="nav-number">10.</span> <span class="nav-text">团队协作与最佳实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%9F%E4%B8%80%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86"><span class="nav-number">10.1.</span> <span class="nav-text">统一配置管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Code-Review-%E6%B5%81%E7%A8%8B%E4%B8%AD%E6%95%B4%E5%90%88-AI"><span class="nav-number">10.2.</span> <span class="nav-text">Code Review 流程中整合 AI</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%A5%E8%AF%86%E4%BC%A0%E9%80%92"><span class="nav-number">10.3.</span> <span class="nav-text">知识传递</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">11.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John-1010-cmd</p>
+  <div class="site-description" itemprop="description">Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John-1010-cmd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

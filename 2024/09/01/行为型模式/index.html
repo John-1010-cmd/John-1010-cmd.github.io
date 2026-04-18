@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"john-1010-cmd.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Java 行为型设计模式的实战应用，重点解析策略模式和模板方法在业务系统中的应用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="行为型设计模式实战">
+<meta property="og:url" content="https://john-1010-cmd.github.io/2024/09/01/%E8%A1%8C%E4%B8%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:site_name" content="John&#39;s Blog">
+<meta property="og:description" content="Java 行为型设计模式的实战应用，重点解析策略模式和模板方法在业务系统中的应用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-08-31T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-08-31T16:00:00.000Z">
+<meta property="article:author" content="John-1010-cmd">
+<meta property="article:tag" content="实战">
+<meta property="article:tag" content="设计模式">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://john-1010-cmd.github.io/2024/09/01/%E8%A1%8C%E4%B8%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>行为型设计模式实战 | John's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">John's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-系列导航">
+
+    <a href="/%E7%B3%BB%E5%88%97%E5%AF%BC%E8%88%AA/" rel="section"><i class="fa fa-fw fa-book"></i>系列导航</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://john-1010-cmd.github.io/2024/09/01/%E8%A1%8C%E4%B8%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John-1010-cmd">
+      <meta itemprop="description" content="Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="John's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          行为型设计模式实战
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-09-01 00:00:00" itemprop="dateCreated datePublished" datetime="2024-09-01T00:00:00+08:00">2024-09-01</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index"><span itemprop="name">设计模式</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">Java 行为型设计模式的实战应用，重点解析策略模式和模板方法在业务系统中的应用。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>行为型设计模式关注对象之间的通信和职责分配，描述了对象之间如何协作完成单个对象无法完成的任务。本文深入分析七种行为型模式，结合 Spring 源码和实际业务场景，帮助开发者在日常开发中灵活运用。</p>
+<h2 id="策略模式"><a href="#策略模式" class="headerlink" title="策略模式"></a>策略模式</h2><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>策略模式定义一系列算法，将每个算法封装到具有公共接口的独立类中，使它们可以互相替换。策略模式让算法的变化独立于使用算法的客户端。</p>
+<h3 id="UML-类图"><a href="#UML-类图" class="headerlink" title="UML 类图"></a>UML 类图</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">+------------------+        +------------------+</span><br><span class="line">|   Context        |        |   Strategy       |</span><br><span class="line">+------------------+        +------------------+</span><br><span class="line">| - strategy       |-------&gt;| + algorithm()    |</span><br><span class="line">| + execute()      |        +------------------+</span><br><span class="line">+------------------+                 ^</span><br><span class="line">                                     |</span><br><span class="line">                    +----------------+----------------+</span><br><span class="line">                    |                |                |</span><br><span class="line">            +-------------+  +-------------+  +-------------+</span><br><span class="line">            | StrategyA   |  | StrategyB   |  | StrategyC   |</span><br><span class="line">            +-------------+  +-------------+  +-------------+</span><br><span class="line">            | + algorithm()|  | + algorithm()|  | + algorithm()|</span><br><span class="line">            +-------------+  +-------------+  +-------------+</span><br></pre></td></tr></table></figure>
+
+<h3 id="实战场景：支付方式选择"><a href="#实战场景：支付方式选择" class="headerlink" title="实战场景：支付方式选择"></a>实战场景：支付方式选择</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 策略接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">PaymentStrategy</span> &#123;</span><br><span class="line">    PayResult <span class="title function_">pay</span><span class="params">(PayOrder order)</span>;</span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">supports</span><span class="params">(PayType type)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 微信支付策略</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WechatPayStrategy</span> <span class="keyword">implements</span> <span class="title class_">PaymentStrategy</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> PayResult <span class="title function_">pay</span><span class="params">(PayOrder order)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;调用微信支付 API，订单号: &quot;</span> + order.getOrderId());</span><br><span class="line">        <span class="comment">// 调用微信支付 SDK...</span></span><br><span class="line">        <span class="keyword">return</span> PayResult.success(<span class="string">&quot;微信支付成功&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">supports</span><span class="params">(PayType type)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> type == PayType.WECHAT;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 支付宝支付策略</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AlipayPayStrategy</span> <span class="keyword">implements</span> <span class="title class_">PaymentStrategy</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> PayResult <span class="title function_">pay</span><span class="params">(PayOrder order)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;调用支付宝 API，订单号: &quot;</span> + order.getOrderId());</span><br><span class="line">        <span class="keyword">return</span> PayResult.success(<span class="string">&quot;支付宝支付成功&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">supports</span><span class="params">(PayType type)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> type == PayType.ALIPAY;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 银行卡支付策略</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BankCardPayStrategy</span> <span class="keyword">implements</span> <span class="title class_">PaymentStrategy</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> PayResult <span class="title function_">pay</span><span class="params">(PayOrder order)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;调用银联 API，订单号: &quot;</span> + order.getOrderId());</span><br><span class="line">        <span class="keyword">return</span> PayResult.success(<span class="string">&quot;银行卡支付成功&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">supports</span><span class="params">(PayType type)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> type == PayType.BANK_CARD;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过 Spring 自动收集所有策略实现，消除大量 <code>if-else</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PaymentService</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;PayType, PaymentStrategy&gt; strategyMap;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Spring 自动注入所有 PaymentStrategy 实现</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">PaymentService</span><span class="params">(List&lt;PaymentStrategy&gt; strategies)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.strategyMap = strategies.stream()</span><br><span class="line">                .collect(Collectors.toMap(</span><br><span class="line">                    s -&gt; &#123;</span><br><span class="line">                        <span class="comment">// 通过 supports 方法找到对应的 PayType</span></span><br><span class="line">                        <span class="keyword">for</span> (PayType type : PayType.values()) &#123;</span><br><span class="line">                            <span class="keyword">if</span> (s.supports(type)) <span class="keyword">return</span> type;</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalStateException</span>(<span class="string">&quot;策略未关联 PayType: &quot;</span> + s.getClass());</span><br><span class="line">                    &#125;,</span><br><span class="line">                    Function.identity()</span><br><span class="line">                ));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> PayResult <span class="title function_">pay</span><span class="params">(PayOrder order)</span> &#123;</span><br><span class="line">        <span class="type">PaymentStrategy</span> <span class="variable">strategy</span> <span class="operator">=</span> strategyMap.get(order.getPayType());</span><br><span class="line">        <span class="keyword">if</span> (strategy == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalArgumentException</span>(<span class="string">&quot;不支持的支付方式: &quot;</span> + order.getPayType());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> strategy.pay(order);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Spring-Resource-加载"><a href="#Spring-Resource-加载" class="headerlink" title="Spring Resource 加载"></a>Spring Resource 加载</h3><p>Spring 的 <code>ResourceLoader</code> 也是策略模式的体现，根据资源位置前缀选择不同的加载策略：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">ResourceLoader</span> <span class="variable">loader</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DefaultResourceLoader</span>();</span><br><span class="line"></span><br><span class="line"><span class="comment">// classpath: 前缀 -&gt; ClassPathResource</span></span><br><span class="line"><span class="type">Resource</span> <span class="variable">r1</span> <span class="operator">=</span> loader.getResource(<span class="string">&quot;classpath:config.properties&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// file: 前缀 -&gt; FileSystemResource</span></span><br><span class="line"><span class="type">Resource</span> <span class="variable">r2</span> <span class="operator">=</span> loader.getResource(<span class="string">&quot;file:/etc/app/config.properties&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// https: 前缀 -&gt; UrlResource</span></span><br><span class="line"><span class="type">Resource</span> <span class="variable">r3</span> <span class="operator">=</span> loader.getResource(<span class="string">&quot;https://example.com/config.properties&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 无前缀 -&gt; 根据 ApplicationContext 类型决定</span></span><br><span class="line"><span class="type">Resource</span> <span class="variable">r4</span> <span class="operator">=</span> loader.getResource(<span class="string">&quot;config.properties&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="模板方法模式"><a href="#模板方法模式" class="headerlink" title="模板方法模式"></a>模板方法模式</h2><h3 id="概念-1"><a href="#概念-1" class="headerlink" title="概念"></a>概念</h3><p>模板方法在父类中定义算法骨架，将某些步骤延迟到子类实现。子类可以在不改变算法结构的情况下重新定义某些步骤。</p>
+<h3 id="UML-类图-1"><a href="#UML-类图-1" class="headerlink" title="UML 类图"></a>UML 类图</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">+-----------------------+</span><br><span class="line">|   AbstractClass       |</span><br><span class="line">+-----------------------+</span><br><span class="line">| + templateMethod()    |  &lt;-- 定义算法骨架</span><br><span class="line">| # primitiveOperation1()| &lt;-- 子类实现</span><br><span class="line">| # primitiveOperation2()| &lt;-- 子类实现</span><br><span class="line">+-----------------------+</span><br><span class="line">         ^</span><br><span class="line">         |</span><br><span class="line">+-----------------------+</span><br><span class="line">|   ConcreteClass       |</span><br><span class="line">+-----------------------+</span><br><span class="line">| # primitiveOperation1()|</span><br><span class="line">| # primitiveOperation2()|</span><br><span class="line">+-----------------------+</span><br></pre></td></tr></table></figure>
+
+<h3 id="Spring-AbstractApplicationContext-refresh"><a href="#Spring-AbstractApplicationContext-refresh" class="headerlink" title="Spring AbstractApplicationContext.refresh()"></a>Spring AbstractApplicationContext.refresh()</h3><p>Spring 的 <code>refresh()</code> 方法是模板方法模式的巅峰之作，定义了容器初始化的完整流程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title class_">AbstractApplicationContext</span> <span class="keyword">extends</span> <span class="title class_">DefaultResourceLoader</span></span><br><span class="line">        <span class="keyword">implements</span> <span class="title class_">ConfigurableApplicationContext</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">refresh</span><span class="params">()</span> <span class="keyword">throws</span> BeansException, IllegalStateException &#123;</span><br><span class="line">        <span class="keyword">synchronized</span> (<span class="built_in">this</span>.startupShutdownMonitor) &#123;</span><br><span class="line">            prepareRefresh();                    <span class="comment">// 1. 准备工作，记录状态</span></span><br><span class="line"></span><br><span class="line">            <span class="type">ConfigurableListableBeanFactory</span> <span class="variable">beanFactory</span> <span class="operator">=</span> obtainFreshBeanFactory(); <span class="comment">// 2. 创建/获取 BeanFactory</span></span><br><span class="line"></span><br><span class="line">            prepareBeanFactory(beanFactory);     <span class="comment">// 3. 配置 BeanFactory</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                postProcessBeanFactory(beanFactory);  <span class="comment">// 4. 子类后处理（模板方法）</span></span><br><span class="line">                invokeBeanFactoryPostProcessors(beanFactory); <span class="comment">// 5. 调用 BeanFactoryPostProcessor</span></span><br><span class="line">                registerBeanPostProcessors(beanFactory);      <span class="comment">// 6. 注册 BeanPostProcessor</span></span><br><span class="line">                initMessageSource();              <span class="comment">// 7. 初始化国际化</span></span><br><span class="line">                initApplicationEventMulticaster(); <span class="comment">// 8. 初始化事件广播器</span></span><br><span class="line">                onRefresh();                      <span class="comment">// 9. 子类特殊初始化（模板方法）</span></span><br><span class="line">                registerListeners();              <span class="comment">// 10. 注册监听器</span></span><br><span class="line">                finishBeanFactoryInitialization(beanFactory); <span class="comment">// 11. 完成单例 Bean 初始化</span></span><br><span class="line">                finishRefresh();                  <span class="comment">// 12. 完成刷新</span></span><br><span class="line">            &#125; <span class="keyword">catch</span> (BeansException ex) &#123;</span><br><span class="line">                destroyBeans();                   <span class="comment">// 异常清理</span></span><br><span class="line">                cancelRefresh(ex);</span><br><span class="line">                <span class="keyword">throw</span> ex;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 子类可覆写的模板方法</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">postProcessBeanFactory</span><span class="params">(ConfigurableListableBeanFactory beanFactory)</span> &#123;</span><br><span class="line">        <span class="comment">// 默认空实现，子类可覆写</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">onRefresh</span><span class="params">()</span> <span class="keyword">throws</span> BeansException &#123;</span><br><span class="line">        <span class="comment">// 默认空实现，子类可覆写</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>子类 <code>AnnotationConfigServletWebServerApplicationContext</code> 覆写了 <code>onRefresh()</code> 来创建内嵌 Web 服务器。</p>
+<h3 id="Spring-JdbcTemplate"><a href="#Spring-JdbcTemplate" class="headerlink" title="Spring JdbcTemplate"></a>Spring JdbcTemplate</h3><p><code>JdbcTemplate</code> 使用回调方式的模板方法（不使用继承，而使用组合 + 回调）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">JdbcTemplate</span> <span class="keyword">extends</span> <span class="title class_">JdbcAccessor</span> <span class="keyword">implements</span> <span class="title class_">JdbcOperations</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 查询的模板方法</span></span><br><span class="line">    <span class="keyword">public</span> &lt;T&gt; T <span class="title function_">query</span><span class="params">(PreparedStatementCreator psc, ResultSetExtractor&lt;T&gt; rse)</span> &#123;</span><br><span class="line">        <span class="comment">// 1. 获取连接</span></span><br><span class="line">        <span class="comment">// 2. 创建 Statement</span></span><br><span class="line">        <span class="comment">// 3. 执行查询</span></span><br><span class="line">        <span class="comment">// 4. 处理结果集（回调）</span></span><br><span class="line">        <span class="comment">// 5. 关闭资源</span></span><br><span class="line">        <span class="comment">// 6. 异常转换</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 使用示例</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;User&gt; <span class="title function_">findAllUsers</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> jdbcTemplate.query(<span class="string">&quot;SELECT * FROM users&quot;</span>, (rs, rowNum) -&gt; &#123;</span><br><span class="line">            <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">            user.setId(rs.getLong(<span class="string">&quot;id&quot;</span>));</span><br><span class="line">            user.setName(rs.getString(<span class="string">&quot;name&quot;</span>));</span><br><span class="line">            <span class="keyword">return</span> user;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>回调方式的模板方法 vs 继承方式的模板方法</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>继承方式</th>
+<th>回调方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>扩展方式</td>
+<td>继承抽象类</td>
+<td>传入 Lambda/接口</td>
+</tr>
+<tr>
+<td>灵活性</td>
+<td>较低</td>
+<td>较高</td>
+</tr>
+<tr>
+<td>组合性</td>
+<td>单继承限制</td>
+<td>可自由组合</td>
+</tr>
+<tr>
+<td>典型应用</td>
+<td><code>AbstractApplicationContext</code></td>
+<td><code>JdbcTemplate</code></td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><h3 id="概念-2"><a href="#概念-2" class="headerlink" title="概念"></a>概念</h3><p>观察者模式定义对象间一对多的依赖关系，当一个对象状态改变时，所有依赖它的对象都会收到通知并自动更新。</p>
+<h3 id="Spring-Event-机制"><a href="#Spring-Event-机制" class="headerlink" title="Spring Event 机制"></a>Spring Event 机制</h3><p>Spring 的事件机制是观察者模式的完整实现，由三个核心组件构成：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1. 定义事件</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrderCreatedEvent</span> <span class="keyword">extends</span> <span class="title class_">ApplicationEvent</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Order order;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">OrderCreatedEvent</span><span class="params">(Object source, Order order)</span> &#123;</span><br><span class="line">        <span class="built_in">super</span>(source);</span><br><span class="line">        <span class="built_in">this</span>.order = order;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Order <span class="title function_">getOrder</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> order;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 发布事件</span></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrderService</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> ApplicationEventPublisher eventPublisher;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Transactional</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">createOrder</span><span class="params">(CreateOrderRequest request)</span> &#123;</span><br><span class="line">        <span class="type">Order</span> <span class="variable">order</span> <span class="operator">=</span> saveOrder(request);</span><br><span class="line">        <span class="comment">// 发布事件，所有监听器都会收到通知</span></span><br><span class="line">        eventPublisher.publishEvent(<span class="keyword">new</span> <span class="title class_">OrderCreatedEvent</span>(<span class="built_in">this</span>, order));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. 监听事件（观察者）</span></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EmailNotificationListener</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Async</span> <span class="comment">// 异步处理</span></span><br><span class="line">    <span class="meta">@EventListener</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onOrderCreated</span><span class="params">(OrderCreatedEvent event)</span> &#123;</span><br><span class="line">        <span class="type">Order</span> <span class="variable">order</span> <span class="operator">=</span> event.getOrder();</span><br><span class="line">        sendConfirmationEmail(order.getUserEmail(), order.getOrderId());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">InventoryUpdateListener</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@EventListener</span></span><br><span class="line">    <span class="meta">@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)</span> <span class="comment">// 事务提交后执行</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">onOrderCreated</span><span class="params">(OrderCreatedEvent event)</span> &#123;</span><br><span class="line">        deductInventory(event.getOrder().getItems());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Spring Event 异步与事务</strong>：</p>
+<ul>
+<li><code>@EventListener</code>：默认同步执行，与发布者在同一线程</li>
+<li><code>@Async + @EventListener</code>：异步执行，需要 <code>@EnableAsync</code> 支持</li>
+<li><code>@TransactionalEventListener</code>：在事务特定阶段执行（BEFORE_COMMIT、AFTER_COMMIT 等）</li>
+</ul>
+<h3 id="Vue-响应式"><a href="#Vue-响应式" class="headerlink" title="Vue 响应式"></a>Vue 响应式</h3><p>Vue 的响应式系统本质上也是观察者模式的变体：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">数据变化 (Subject) -&gt; 依赖收集 (Dep) -&gt; 通知更新 (Watcher) -&gt; 重新渲染视图</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Vue 3 响应式原理简化</span></span><br><span class="line"><span class="keyword">const</span> targetMap = <span class="keyword">new</span> <span class="title class_">WeakMap</span>(); <span class="comment">// 存储依赖关系</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">reactive</span>(<span class="params">obj</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Proxy</span>(obj, &#123;</span><br><span class="line">        <span class="title function_">get</span>(<span class="params">target, key</span>) &#123;</span><br><span class="line">            <span class="title function_">track</span>(target, key);  <span class="comment">// 依赖收集：记录当前 Watcher</span></span><br><span class="line">            <span class="keyword">return</span> target[key];</span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="title function_">set</span>(<span class="params">target, key, value</span>) &#123;</span><br><span class="line">            target[key] = value;</span><br><span class="line">            <span class="title function_">trigger</span>(target, key); <span class="comment">// 触发更新：通知所有 Watcher</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="责任链模式"><a href="#责任链模式" class="headerlink" title="责任链模式"></a>责任链模式</h2><h3 id="概念-3"><a href="#概念-3" class="headerlink" title="概念"></a>概念</h3><p>责任链模式将请求的发送者和接收者解耦，使多个对象都有机会处理请求。将这些对象连成一条链，沿着链传递请求，直到有一个对象处理为止。</p>
+<h3 id="UML-类图-2"><a href="#UML-类图-2" class="headerlink" title="UML 类图"></a>UML 类图</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">+------------------+     +------------------+</span><br><span class="line">|   Handler        |     |   Request        |</span><br><span class="line">+------------------+     +------------------+</span><br><span class="line">| - next: Handler  |----&gt;| + handle()       |</span><br><span class="line">| + setNext()      |     +------------------+</span><br><span class="line">| + handleRequest()|</span><br><span class="line">+------------------+</span><br></pre></td></tr></table></figure>
+
+<h3 id="Servlet-Filter"><a href="#Servlet-Filter" class="headerlink" title="Servlet Filter"></a>Servlet Filter</h3><p>Servlet Filter 是责任链模式的经典应用，每个 Filter 可以在请求到达 Servlet 之前或之后执行逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">AuthFilter</span> <span class="keyword">implements</span> <span class="title class_">Filter</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doFilter</span><span class="params">(ServletRequest request, ServletResponse response,</span></span><br><span class="line"><span class="params">                         FilterChain chain)</span> <span class="keyword">throws</span> IOException, ServletException &#123;</span><br><span class="line">        <span class="type">HttpServletRequest</span> <span class="variable">req</span> <span class="operator">=</span> (HttpServletRequest) request;</span><br><span class="line">        <span class="type">String</span> <span class="variable">token</span> <span class="operator">=</span> req.getHeader(<span class="string">&quot;Authorization&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (token == <span class="literal">null</span> || !validateToken(token)) &#123;</span><br><span class="line">            ((HttpServletResponse) response).sendError(<span class="number">401</span>, <span class="string">&quot;未授权&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span>; <span class="comment">// 不继续传递</span></span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 前置处理</span></span><br><span class="line">        System.out.println(<span class="string">&quot;认证通过&quot;</span>);</span><br><span class="line">        chain.doFilter(request, response); <span class="comment">// 传递给下一个 Filter</span></span><br><span class="line">        <span class="comment">// 后置处理</span></span><br><span class="line">        System.out.println(<span class="string">&quot;认证 Filter 后置处理&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LogFilter</span> <span class="keyword">implements</span> <span class="title class_">Filter</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">doFilter</span><span class="params">(ServletRequest request, ServletResponse response,</span></span><br><span class="line"><span class="params">                         FilterChain chain)</span> <span class="keyword">throws</span> IOException, ServletException &#123;</span><br><span class="line">        <span class="type">long</span> <span class="variable">start</span> <span class="operator">=</span> System.currentTimeMillis();</span><br><span class="line">        System.out.println(<span class="string">&quot;请求开始: &quot;</span> + ((HttpServletRequest) request).getRequestURI());</span><br><span class="line">        chain.doFilter(request, response);</span><br><span class="line">        System.out.println(<span class="string">&quot;请求耗时: &quot;</span> + (System.currentTimeMillis() - start) + <span class="string">&quot;ms&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 执行顺序：AuthFilter -&gt; LogFilter -&gt; Servlet -&gt; LogFilter 后置 -&gt; AuthFilter 后置</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Spring-Interceptor"><a href="#Spring-Interceptor" class="headerlink" title="Spring Interceptor"></a>Spring Interceptor</h3><p>Spring MVC 的 <code>HandlerInterceptor</code> 也是责任链模式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RateLimitInterceptor</span> <span class="keyword">implements</span> <span class="title class_">HandlerInterceptor</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="type">RateLimiter</span> <span class="variable">limiter</span> <span class="operator">=</span> RateLimiter.create(<span class="number">100</span>); <span class="comment">// 100 QPS</span></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response,</span></span><br><span class="line"><span class="params">                             Object handler)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!limiter.tryAcquire()) &#123;</span><br><span class="line">            response.setStatus(<span class="number">429</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>; <span class="comment">// 终止链</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>; <span class="comment">// 继续传递</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">TraceInterceptor</span> <span class="keyword">implements</span> <span class="title class_">HandlerInterceptor</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response,</span></span><br><span class="line"><span class="params">                             Object handler)</span> &#123;</span><br><span class="line">        <span class="type">String</span> <span class="variable">traceId</span> <span class="operator">=</span> UUID.randomUUID().toString();</span><br><span class="line">        MDC.put(<span class="string">&quot;traceId&quot;</span>, traceId);</span><br><span class="line">        request.setAttribute(<span class="string">&quot;traceId&quot;</span>, traceId);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">afterCompletion</span><span class="params">(HttpServletRequest request, HttpServletResponse response,</span></span><br><span class="line"><span class="params">                                Object handler, Exception ex)</span> &#123;</span><br><span class="line">        MDC.clear();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 注册拦截器</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">WebConfig</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RateLimitInterceptor rateLimitInterceptor;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> TraceInterceptor traceInterceptor;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addInterceptors</span><span class="params">(InterceptorRegistry registry)</span> &#123;</span><br><span class="line">        registry.addInterceptor(traceInterceptor)</span><br><span class="line">                .addPathPatterns(<span class="string">&quot;/**&quot;</span>)</span><br><span class="line">                .order(<span class="number">1</span>);</span><br><span class="line">        registry.addInterceptor(rateLimitInterceptor)</span><br><span class="line">                .addPathPatterns(<span class="string">&quot;/api/**&quot;</span>)</span><br><span class="line">                .order(<span class="number">2</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>Filter vs Interceptor 对比</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>Filter</th>
+<th>HandlerInterceptor</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>规范</td>
+<td>Servlet 规范</td>
+<td>Spring 框架</td>
+</tr>
+<tr>
+<td>作用范围</td>
+<td>所有请求（包括静态资源）</td>
+<td>仅 Handler 请求</td>
+</tr>
+<tr>
+<td>是否能获取 Handler</td>
+<td>否</td>
+<td>是</td>
+</tr>
+<tr>
+<td>注入 Bean</td>
+<td>需要额外配置</td>
+<td>天然支持</td>
+</tr>
+<tr>
+<td>执行时机</td>
+<td>在 DispatcherServlet 前/后</td>
+<td>在 Handler 执行前/后</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="命令模式"><a href="#命令模式" class="headerlink" title="命令模式"></a>命令模式</h2><h3 id="概念-4"><a href="#概念-4" class="headerlink" title="概念"></a>概念</h3><p>命令模式将请求封装为对象，从而允许用不同的请求对客户端进行参数化、排队请求、记录日志，以及支持撤销操作。</p>
+<h3 id="Runnable"><a href="#Runnable" class="headerlink" title="Runnable"></a>Runnable</h3><p>Java 的 <code>Runnable</code> 接口就是命令模式的体现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 命令接口</span></span><br><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Runnable</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">run</span><span class="params">()</span>; <span class="comment">// 执行命令</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 具体命令</span></span><br><span class="line"><span class="type">Runnable</span> <span class="variable">task1</span> <span class="operator">=</span> () -&gt; System.out.println(<span class="string">&quot;发送邮件&quot;</span>);</span><br><span class="line"><span class="type">Runnable</span> <span class="variable">task2</span> <span class="operator">=</span> () -&gt; System.out.println(<span class="string">&quot;生成报表&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用者：线程池</span></span><br><span class="line"><span class="type">ExecutorService</span> <span class="variable">executor</span> <span class="operator">=</span> Executors.newFixedThreadPool(<span class="number">4</span>);</span><br><span class="line">executor.submit(task1); <span class="comment">// 提交命令</span></span><br><span class="line">executor.submit(task2);</span><br></pre></td></tr></table></figure>
+
+<h3 id="Spring-JdbcTemplate-操作"><a href="#Spring-JdbcTemplate-操作" class="headerlink" title="Spring JdbcTemplate 操作"></a>Spring JdbcTemplate 操作</h3><p>JdbcTemplate 的 <code>execute</code> 方法也体现了命令模式，将数据库操作封装为 <code>ConnectionCallback</code> 或 <code>StatementCallback</code> 命令对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 命令接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ConnectionCallback</span>&lt;T&gt; &#123;</span><br><span class="line">    T <span class="title function_">doInConnection</span><span class="params">(Connection con)</span> <span class="keyword">throws</span> SQLException, DataAccessException;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用命令模式执行复杂操作</span></span><br><span class="line">jdbcTemplate.execute(<span class="keyword">new</span> <span class="title class_">ConnectionCallback</span>&lt;Void&gt;() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> Void <span class="title function_">doInConnection</span><span class="params">(Connection conn)</span> <span class="keyword">throws</span> SQLException &#123;</span><br><span class="line">        <span class="comment">// 批量操作</span></span><br><span class="line">        <span class="type">Statement</span> <span class="variable">stmt</span> <span class="operator">=</span> conn.createStatement();</span><br><span class="line">        stmt.addBatch(<span class="string">&quot;INSERT INTO users VALUES (1, &#x27;张三&#x27;)&quot;</span>);</span><br><span class="line">        stmt.addBatch(<span class="string">&quot;INSERT INTO users VALUES (2, &#x27;李四&#x27;)&quot;</span>);</span><br><span class="line">        stmt.executeBatch();</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="状态模式"><a href="#状态模式" class="headerlink" title="状态模式"></a>状态模式</h2><h3 id="概念-5"><a href="#概念-5" class="headerlink" title="概念"></a>概念</h3><p>状态模式允许对象在内部状态改变时改变其行为，对象看起来像是修改了其类。将状态相关的行为封装到独立的状态类中。</p>
+<h3 id="实战场景：订单状态流转"><a href="#实战场景：订单状态流转" class="headerlink" title="实战场景：订单状态流转"></a>实战场景：订单状态流转</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 状态接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">OrderState</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">pay</span><span class="params">(OrderContext context)</span>;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">ship</span><span class="params">(OrderContext context)</span>;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">deliver</span><span class="params">(OrderContext context)</span>;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">cancel</span><span class="params">(OrderContext context)</span>;</span><br><span class="line">    String <span class="title function_">getStateName</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 待支付状态</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PendingPayState</span> <span class="keyword">implements</span> <span class="title class_">OrderState</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">pay</span><span class="params">(OrderContext context)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;支付成功&quot;</span>);</span><br><span class="line">        context.setState(<span class="keyword">new</span> <span class="title class_">PaidState</span>());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">ship</span><span class="params">(OrderContext context)</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalStateException</span>(<span class="string">&quot;待支付订单不能发货&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">deliver</span><span class="params">(OrderContext context)</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalStateException</span>(<span class="string">&quot;待支付订单不能确认收货&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">cancel</span><span class="params">(OrderContext context)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;订单已取消&quot;</span>);</span><br><span class="line">        context.setState(<span class="keyword">new</span> <span class="title class_">CancelledState</span>());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getStateName</span><span class="params">()</span> &#123; <span class="keyword">return</span> <span class="string">&quot;待支付&quot;</span>; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 已支付状态</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">PaidState</span> <span class="keyword">implements</span> <span class="title class_">OrderState</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">pay</span><span class="params">(OrderContext context)</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalStateException</span>(<span class="string">&quot;订单已支付&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">ship</span><span class="params">(OrderContext context)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;订单已发货&quot;</span>);</span><br><span class="line">        context.setState(<span class="keyword">new</span> <span class="title class_">ShippedState</span>());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">deliver</span><span class="params">(OrderContext context)</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IllegalStateException</span>(<span class="string">&quot;已支付订单不能直接确认收货&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">cancel</span><span class="params">(OrderContext context)</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;退款成功，订单已取消&quot;</span>);</span><br><span class="line">        context.setState(<span class="keyword">new</span> <span class="title class_">CancelledState</span>());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getStateName</span><span class="params">()</span> &#123; <span class="keyword">return</span> <span class="string">&quot;已支付&quot;</span>; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 上下文</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">OrderContext</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> OrderState state;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">OrderContext</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.state = <span class="keyword">new</span> <span class="title class_">PendingPayState</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setState</span><span class="params">(OrderState state)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.state = state;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">pay</span><span class="params">()</span> &#123; state.pay(<span class="built_in">this</span>); &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">ship</span><span class="params">()</span> &#123; state.ship(<span class="built_in">this</span>); &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">deliver</span><span class="params">()</span> &#123; state.deliver(<span class="built_in">this</span>); &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">cancel</span><span class="params">()</span> &#123; state.cancel(<span class="built_in">this</span>); &#125;</span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getState</span><span class="params">()</span> &#123; <span class="keyword">return</span> state.getStateName(); &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>状态模式 vs 策略模式</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>特性</th>
+<th>状态模式</th>
+<th>策略模式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>状态转换</td>
+<td>状态对象内部管理</td>
+<td>客户端控制</td>
+</tr>
+<tr>
+<td>客户端感知</td>
+<td>不感知状态变化</td>
+<td>需要选择策略</td>
+</tr>
+<tr>
+<td>行为约束</td>
+<td>当前状态限制行为</td>
+<td>策略之间独立</td>
+</tr>
+<tr>
+<td>典型场景</td>
+<td>工作流、状态机</td>
+<td>算法选择</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="迭代器模式"><a href="#迭代器模式" class="headerlink" title="迭代器模式"></a>迭代器模式</h2><h3 id="概念-6"><a href="#概念-6" class="headerlink" title="概念"></a>概念</h3><p>迭代器模式提供一种顺序访问聚合对象中元素的方法，而不暴露其底层表示。将遍历逻辑从聚合对象中分离出来。</p>
+<h3 id="Java-Iterator"><a href="#Java-Iterator" class="headerlink" title="Java Iterator"></a>Java Iterator</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Java Iterator 接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">Iterator</span>&lt;E&gt; &#123;</span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">hasNext</span><span class="params">()</span>;</span><br><span class="line">    E <span class="title function_">next</span><span class="params">()</span>;</span><br><span class="line">    <span class="keyword">default</span> <span class="keyword">void</span> <span class="title function_">remove</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UnsupportedOperationException</span>(<span class="string">&quot;remove&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// ArrayList 的迭代器实现</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ArrayList</span>&lt;E&gt; <span class="keyword">extends</span> <span class="title class_">AbstractList</span>&lt;E&gt; &#123;</span><br><span class="line">    <span class="keyword">private</span> Object[] elementData;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> size;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Iterator&lt;E&gt; <span class="title function_">iterator</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Itr</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">class</span> <span class="title class_">Itr</span> <span class="keyword">implements</span> <span class="title class_">Iterator</span>&lt;E&gt; &#123;</span><br><span class="line">        <span class="type">int</span> cursor;       <span class="comment">// 下一个元素的索引</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">lastRet</span> <span class="operator">=</span> -<span class="number">1</span>; <span class="comment">// 上一个返回的元素索引</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">expectedModCount</span> <span class="operator">=</span> modCount; <span class="comment">// 快速失败机制</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">hasNext</span><span class="params">()</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> cursor != size;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="meta">@SuppressWarnings(&quot;unchecked&quot;)</span></span><br><span class="line">        <span class="keyword">public</span> E <span class="title function_">next</span><span class="params">()</span> &#123;</span><br><span class="line">            checkForComodification();</span><br><span class="line">            <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> cursor;</span><br><span class="line">            <span class="keyword">if</span> (i &gt;= size) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">NoSuchElementException</span>();</span><br><span class="line">            Object[] elementData = ArrayList.<span class="built_in">this</span>.elementData;</span><br><span class="line">            <span class="keyword">if</span> (i &gt;= elementData.length) <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ConcurrentModificationException</span>();</span><br><span class="line">            cursor = i + <span class="number">1</span>;</span><br><span class="line">            <span class="keyword">return</span> (E) elementData[lastRet = i];</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">final</span> <span class="keyword">void</span> <span class="title function_">checkForComodification</span><span class="params">()</span> &#123;</span><br><span class="line">            <span class="keyword">if</span> (modCount != expectedModCount)</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">ConcurrentModificationException</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>快速失败（fail-fast）机制</strong>：迭代器在创建时记录 <code>modCount</code>，每次调用 <code>next()</code> 时检查是否被修改。如果在迭代过程中通过非迭代器方法修改集合（如 <code>list.add()</code>），会抛出 <code>ConcurrentModificationException</code>。</p>
+<h3 id="List-遍历方式对比"><a href="#List-遍历方式对比" class="headerlink" title="List 遍历方式对比"></a>List 遍历方式对比</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list = Arrays.asList(<span class="string">&quot;Java&quot;</span>, <span class="string">&quot;Python&quot;</span>, <span class="string">&quot;Go&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1. for-each（语法糖，编译为迭代器）</span></span><br><span class="line"><span class="keyword">for</span> (String item : list) &#123;</span><br><span class="line">    System.out.println(item);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2. 显式迭代器（可安全 remove）</span></span><br><span class="line">Iterator&lt;String&gt; it = list.iterator();</span><br><span class="line"><span class="keyword">while</span> (it.hasNext()) &#123;</span><br><span class="line">    <span class="type">String</span> <span class="variable">item</span> <span class="operator">=</span> it.next();</span><br><span class="line">    <span class="keyword">if</span> (<span class="string">&quot;Python&quot;</span>.equals(item)) &#123;</span><br><span class="line">        it.remove(); <span class="comment">// 安全删除</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3. forEach + Lambda（Java 8）</span></span><br><span class="line">list.forEach(System.out::println);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 4. ListIterator（支持双向遍历和修改）</span></span><br><span class="line">ListIterator&lt;String&gt; lit = list.listIterator();</span><br><span class="line"><span class="keyword">while</span> (lit.hasNext()) &#123;</span><br><span class="line">    System.out.println(lit.nextIndex() + <span class="string">&quot;: &quot;</span> + lit.next());</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">while</span> (lit.hasPrevious()) &#123;</span><br><span class="line">    System.out.println(lit.previousIndex() + <span class="string">&quot;: &quot;</span> + lit.previous());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<hr>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><table>
+<thead>
+<tr>
+<th>模式</th>
+<th>核心意图</th>
+<th>典型场景</th>
+<th>Spring 应用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>策略</td>
+<td>算法封装与替换</td>
+<td>支付方式、排序策略</td>
+<td>ResourceLoader</td>
+</tr>
+<tr>
+<td>模板方法</td>
+<td>定义算法骨架</td>
+<td>框架流程控制</td>
+<td>refresh()、JdbcTemplate</td>
+</tr>
+<tr>
+<td>观察者</td>
+<td>一对多通知</td>
+<td>事件驱动</td>
+<td>Spring Event</td>
+</tr>
+<tr>
+<td>责任链</td>
+<td>请求沿链传递</td>
+<td>过滤、拦截</td>
+<td>Filter、Interceptor</td>
+</tr>
+<tr>
+<td>命令</td>
+<td>请求封装为对象</td>
+<td>异步执行、撤销</td>
+<td>JdbcTemplate</td>
+</tr>
+<tr>
+<td>状态</td>
+<td>状态驱动的行为变化</td>
+<td>订单流转、工作流</td>
+<td>-</td>
+</tr>
+<tr>
+<td>迭代器</td>
+<td>顺序访问聚合对象</td>
+<td>集合遍历</td>
+<td>Java Iterator</td>
+</tr>
+</tbody></table>
+<p>行为型模式是日常开发中使用频率最高的一组模式。其中策略模式和模板方法模式在 Spring 框架中被大量使用，理解这两种模式有助于阅读和扩展 Spring 源码。观察者模式是实现事件驱动架构的基础，在微服务系统中常用于模块间解耦。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E5%AE%9E%E6%88%98/" rel="tag"># 实战</a>
+              <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/08/17/%E7%BB%93%E6%9E%84%E5%9E%8B%E6%A8%A1%E5%BC%8F/" rel="prev" title="结构型设计模式实战">
+      <i class="fa fa-chevron-left"></i> 结构型设计模式实战
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/10/05/Kafka%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/" rel="next" title="Kafka核心原理">
+      Kafka核心原理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.</span> <span class="nav-text">策略模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UML-%E7%B1%BB%E5%9B%BE"><span class="nav-number">1.2.</span> <span class="nav-text">UML 类图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E6%88%98%E5%9C%BA%E6%99%AF%EF%BC%9A%E6%94%AF%E4%BB%98%E6%96%B9%E5%BC%8F%E9%80%89%E6%8B%A9"><span class="nav-number">1.3.</span> <span class="nav-text">实战场景：支付方式选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-Resource-%E5%8A%A0%E8%BD%BD"><span class="nav-number">1.4.</span> <span class="nav-text">Spring Resource 加载</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F"><span class="nav-number">2.</span> <span class="nav-text">模板方法模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-1"><span class="nav-number">2.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UML-%E7%B1%BB%E5%9B%BE-1"><span class="nav-number">2.2.</span> <span class="nav-text">UML 类图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-AbstractApplicationContext-refresh"><span class="nav-number">2.3.</span> <span class="nav-text">Spring AbstractApplicationContext.refresh()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-JdbcTemplate"><span class="nav-number">2.4.</span> <span class="nav-text">Spring JdbcTemplate</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">观察者模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-2"><span class="nav-number">3.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-Event-%E6%9C%BA%E5%88%B6"><span class="nav-number">3.2.</span> <span class="nav-text">Spring Event 机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Vue-%E5%93%8D%E5%BA%94%E5%BC%8F"><span class="nav-number">3.3.</span> <span class="nav-text">Vue 响应式</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%B4%A3%E4%BB%BB%E9%93%BE%E6%A8%A1%E5%BC%8F"><span class="nav-number">4.</span> <span class="nav-text">责任链模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-3"><span class="nav-number">4.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#UML-%E7%B1%BB%E5%9B%BE-2"><span class="nav-number">4.2.</span> <span class="nav-text">UML 类图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Servlet-Filter"><span class="nav-number">4.3.</span> <span class="nav-text">Servlet Filter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-Interceptor"><span class="nav-number">4.4.</span> <span class="nav-text">Spring Interceptor</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%91%BD%E4%BB%A4%E6%A8%A1%E5%BC%8F"><span class="nav-number">5.</span> <span class="nav-text">命令模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-4"><span class="nav-number">5.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Runnable"><span class="nav-number">5.2.</span> <span class="nav-text">Runnable</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spring-JdbcTemplate-%E6%93%8D%E4%BD%9C"><span class="nav-number">5.3.</span> <span class="nav-text">Spring JdbcTemplate 操作</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%8A%B6%E6%80%81%E6%A8%A1%E5%BC%8F"><span class="nav-number">6.</span> <span class="nav-text">状态模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-5"><span class="nav-number">6.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E6%88%98%E5%9C%BA%E6%99%AF%EF%BC%9A%E8%AE%A2%E5%8D%95%E7%8A%B6%E6%80%81%E6%B5%81%E8%BD%AC"><span class="nav-number">6.2.</span> <span class="nav-text">实战场景：订单状态流转</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%AD%E4%BB%A3%E5%99%A8%E6%A8%A1%E5%BC%8F"><span class="nav-number">7.</span> <span class="nav-text">迭代器模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5-6"><span class="nav-number">7.1.</span> <span class="nav-text">概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java-Iterator"><span class="nav-number">7.2.</span> <span class="nav-text">Java Iterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#List-%E9%81%8D%E5%8E%86%E6%96%B9%E5%BC%8F%E5%AF%B9%E6%AF%94"><span class="nav-number">7.3.</span> <span class="nav-text">List 遍历方式对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">8.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John-1010-cmd</p>
+  <div class="site-description" itemprop="description">Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John-1010-cmd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

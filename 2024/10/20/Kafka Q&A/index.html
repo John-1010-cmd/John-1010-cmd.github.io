@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"john-1010-cmd.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="Kafka 高频面试题整理，覆盖架构、存储、消费、可靠性等核心问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kafka Q&amp;A">
+<meta property="og:url" content="https://john-1010-cmd.github.io/2024/10/20/Kafka%20Q&A/index.html">
+<meta property="og:site_name" content="John&#39;s Blog">
+<meta property="og:description" content="Kafka 高频面试题整理，覆盖架构、存储、消费、可靠性等核心问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-10-19T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-10-19T16:00:00.000Z">
+<meta property="article:author" content="John-1010-cmd">
+<meta property="article:tag" content="Kafka">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://john-1010-cmd.github.io/2024/10/20/Kafka%20Q&A/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Kafka Q&A | John's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">John's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-系列导航">
+
+    <a href="/%E7%B3%BB%E5%88%97%E5%AF%BC%E8%88%AA/" rel="section"><i class="fa fa-fw fa-book"></i>系列导航</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://john-1010-cmd.github.io/2024/10/20/Kafka%20Q&A/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John-1010-cmd">
+      <meta itemprop="description" content="Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="John's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Kafka Q&A
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-10-20 00:00:00" itemprop="dateCreated datePublished" datetime="2024-10-20T00:00:00+08:00">2024-10-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Kafka/" itemprop="url" rel="index"><span itemprop="name">Kafka</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">Kafka 高频面试题整理，覆盖架构、存储、消费、可靠性等核心问题。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文整理了 Kafka 高频面试题，覆盖架构设计、存储机制、消费模型、可靠性保障等核心知识点。每道题目从问题本质出发，结合原理进行解答。</p>
+<h2 id="Kafka-如何保证消息不丢失？"><a href="#Kafka-如何保证消息不丢失？" class="headerlink" title="Kafka 如何保证消息不丢失？"></a>Kafka 如何保证消息不丢失？</h2><p>消息在 Kafka 中的流转经历三个阶段：生产者发送、Broker 存储、消费者消费。需要在每个阶段分别保障。</p>
+<ol>
+<li><p><strong>生产者端</strong>：</p>
+<ul>
+<li>设置 <code>acks=all</code>（或 <code>acks=-1</code>），要求 Leader 收到消息后等待所有 ISR 副本确认才算写入成功</li>
+<li>设置 <code>retries</code> 为合理值（配合幂等生产者可设为 <code>Integer.MAX_VALUE</code>）</li>
+<li>使用回调（Callback）确认发送结果，失败时进行重试或记录</li>
+<li>设置 <code>min.insync.replicas=2</code>，确保至少有 2 个副本确认写入</li>
+</ul>
+</li>
+<li><p><strong>Broker 端</strong>：</p>
+<ul>
+<li>设置 <code>replication.factor &gt;= 3</code>，每个 Partition 至少 3 个副本</li>
+<li>设置 <code>min.insync.replicas=2</code>，配合 <code>acks=all</code> 使用</li>
+<li>设置 <code>unclean.leader.election.enable=false</code>，禁止非 ISR 副本成为 Leader（防止数据丢失）</li>
+<li>适当调整 <code>log.flush.interval.messages</code>（一般让 OS 管理）</li>
+</ul>
+</li>
+<li><p><strong>消费者端</strong>：</p>
+<ul>
+<li>关闭自动提交（<code>enable.auto.commit=false</code>）</li>
+<li>消息处理完成后再手动提交 Offset</li>
+<li>使用 <code>commitSync()</code> 确保提交成功</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 生产者配置示例</span></span><br><span class="line">props.put(<span class="string">&quot;acks&quot;</span>, <span class="string">&quot;all&quot;</span>);</span><br><span class="line">props.put(<span class="string">&quot;enable.idempotence&quot;</span>, <span class="string">&quot;true&quot;</span>);</span><br><span class="line">props.put(<span class="string">&quot;retries&quot;</span>, Integer.MAX_VALUE);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 消费者配置示例</span></span><br><span class="line">props.put(<span class="string">&quot;enable.auto.commit&quot;</span>, <span class="string">&quot;false&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+<h2 id="Kafka-如何保证消息顺序性？"><a href="#Kafka-如何保证消息顺序性？" class="headerlink" title="Kafka 如何保证消息顺序性？"></a>Kafka 如何保证消息顺序性？</h2><p>Kafka 只保证** Partition 内消息的局部有序**，不保证 Topic 级别的全局有序。</p>
+<ol>
+<li><strong>Partition 内有序</strong>：消息按写入顺序追加到日志中，消费者按 Offset 顺序消费，天然有序</li>
+<li><strong>保证同一业务实体的消息进入同一 Partition</strong>：通过 Key 路由实现<ul>
+<li>将订单 ID 作为消息 Key，相同订单的消息始终路由到同一 Partition</li>
+<li><code>partition = hash(key) % numPartitions</code></li>
+</ul>
+</li>
+<li><strong>单 Partition 单消费者</strong>：Consumer Group 内每个 Partition 只能被一个消费者消费</li>
+<li><strong>全局有序的特殊场景</strong>：将 Topic 的 Partition 数设为 1，所有消息都在一个 Partition 内，但牺牲了并行度</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 通过 Key 保证同一订单的消息有序</span></span><br><span class="line">producer.send(<span class="keyword">new</span> <span class="title class_">ProducerRecord</span>&lt;&gt;(<span class="string">&quot;orders&quot;</span>, orderId, orderEvent));</span><br></pre></td></tr></table></figure>
+
+<p><strong>注意</strong>：如果需要多 Partition 的全局有序，需要在应用层实现（如使用时间戳排序或版本号机制），但这会牺牲性能和实时性。</p>
+<h2 id="Kafka-的-Rebalance-机制？"><a href="#Kafka-的-Rebalance-机制？" class="headerlink" title="Kafka 的 Rebalance 机制？"></a>Kafka 的 Rebalance 机制？</h2><p>Rebalance 是消费者组内 Partition 重新分配的过程。</p>
+<ol>
+<li><p><strong>触发条件</strong>：</p>
+<ul>
+<li>消费者加入消费者组（新实例启动）</li>
+<li>消费者离开消费者组（实例停止或崩溃）</li>
+<li>消费者心跳超时（超过 <code>session.timeout.ms</code> 未发送心跳）</li>
+<li>消费者处理超时（超过 <code>max.poll.interval.ms</code> 未调用 poll）</li>
+<li>订阅的 Topic Partition 数变化</li>
+<li>订阅的 Topic 被创建或删除</li>
+</ul>
+</li>
+<li><p><strong>Rebalance 流程</strong>：</p>
+<ul>
+<li>所有消费者向 GroupCoordinator 发送 JoinGroupRequest</li>
+<li>Coordinator 选出 Leader Consumer（第一个加入组的消费者）</li>
+<li>Leader Consumer 根据分配策略计算分区方案</li>
+<li>Leader 通过 SyncGroupRequest 将方案发送给 Coordinator</li>
+<li>Coordinator 将分配结果下发给每个消费者</li>
+<li>消费者按新分配开始消费</li>
+</ul>
+</li>
+<li><p><strong>Rebalance 的问题</strong>：</p>
+<ul>
+<li>Rebalance 期间所有消费者暂停消费（STW）</li>
+<li>频繁 Rebalance 严重影响消费性能</li>
+<li>分区重新分配导致重复消费</li>
+</ul>
+</li>
+<li><p><strong>避免不必要 Rebalance 的措施</strong>：</p>
+<ul>
+<li><code>session.timeout.ms</code> 设置为 25s（默认），<code>heartbeat.interval.ms</code> 设置为其 1/3</li>
+<li><code>max.poll.interval.ms</code> 设置为大于最长处理时间</li>
+<li>避免消费者频繁启停</li>
+<li>使用 CooperativeStickyAssignor 减少每次 Rebalance 的分区移动</li>
+</ul>
+</li>
+</ol>
+<h2 id="Kafka-为什么这么快？"><a href="#Kafka-为什么这么快？" class="headerlink" title="Kafka 为什么这么快？"></a>Kafka 为什么这么快？</h2><p>Kafka 的高性能是多种技术手段共同作用的结果。</p>
+<ol>
+<li><p><strong>顺序写</strong>：Partition 是 Append-Only Log，消息只追加到文件末尾。磁盘顺序写速度约 600MB/s（SSD），接近内存写入速度，远高于随机写的 100KB/s（HDD）</p>
+</li>
+<li><p><strong>零拷贝</strong>：使用 Linux <code>sendfile()</code> 系统调用，数据从磁盘直接传输到网卡，跳过用户空间拷贝。将传统的 4 次数据拷贝减少为 2 次</p>
+</li>
+<li><p><strong>PageCache</strong>：利用操作系统页缓存，写入时先写入 PageCache 由 OS 异步刷盘，读取时直接命中 PageCache。避免 JVM GC 问题，进程重启后缓存不丢失</p>
+</li>
+<li><p><strong>批量发送</strong>：生产者将消息攒批发送（<code>batch.size</code> + <code>linger.ms</code>），减少网络请求次数。一个 Batch 内的消息共用 Header 信息，减少协议开销</p>
+</li>
+<li><p><strong>压缩</strong>：在 Producer 端压缩整个 Batch（而非单条消息），Broker 直接存储压缩数据。支持 gzip、snappy、lz4、zstd 等算法</p>
+</li>
+<li><p><strong>稀疏索引</strong>：每 4KB 数据记录一条索引项，索引文件小可常驻内存，查找时先二分定位索引再小范围扫描</p>
+</li>
+<li><p><strong>分区并行</strong>：Topic 分为多个 Partition，分布在不同 Broker 上，生产者和消费者可以并行读写</p>
+</li>
+<li><p><strong>Reactor 网络模型</strong>：Broker 使用 1 个 Acceptor 线程 + N 个 Processor 线程 + M 个 Handler 线程池，高效处理网络请求</p>
+</li>
+</ol>
+<h2 id="Kafka-与-RocketMQ-的区别？"><a href="#Kafka-与-RocketMQ-的区别？" class="headerlink" title="Kafka 与 RocketMQ 的区别？"></a>Kafka 与 RocketMQ 的区别？</h2><p>两者都是优秀的分布式消息队列，设计理念和适用场景有所不同。</p>
+<ol>
+<li><p><strong>架构设计</strong>：</p>
+<ul>
+<li>Kafka：无 NameServer 概念，Broker 通过 ZooKeeper/KRaft 协调。Topic 分为 Partition</li>
+<li>RocketMQ：NameServer 独立部署，Broker 分为 Master/Slave。Topic 分为 MessageQueue</li>
+</ul>
+</li>
+<li><p><strong>消息模型</strong>：</p>
+<ul>
+<li>Kafka：基于 Topic-Partition 模型，Consumer Group 消费</li>
+<li>RocketMQ：支持 Topic-Queue 模型，同时原生支持 Tag 过滤</li>
+</ul>
+</li>
+<li><p><strong>事务消息</strong>：</p>
+<ul>
+<li>Kafka：通过事务协调器实现跨 Partition 原子写入</li>
+<li>RocketMQ：通过半消息 + 本地事务回查机制实现，对业务侵入更小</li>
+</ul>
+</li>
+<li><p><strong>延迟消息</strong>：</p>
+<ul>
+<li>Kafka：原生不支持延迟消息，需要自行实现</li>
+<li>RocketMQ：原生支持 18 个延迟等级（1s-2h）</li>
+</ul>
+</li>
+<li><p><strong>消息过滤</strong>：</p>
+<ul>
+<li>Kafka：只能通过 Consumer 端代码过滤</li>
+<li>RocketMQ：支持 Broker 端 Tag 和 SQL92 过滤，减少网络传输</li>
+</ul>
+</li>
+<li><p><strong>消息回溯</strong>：</p>
+<ul>
+<li>Kafka：支持按 Offset 和时间戳回溯</li>
+<li>RocketMQ：支持按时间戳回溯</li>
+</ul>
+</li>
+<li><p><strong>性能特点</strong>：</p>
+<ul>
+<li>Kafka：在大数据量、高吞吐场景下表现更好（批处理优化更极致）</li>
+<li>RocketMQ：在线业务消息场景下延迟更低（同步刷盘、同步主从复制）</li>
+</ul>
+</li>
+<li><p><strong>适用场景</strong>：</p>
+<ul>
+<li>Kafka：日志收集、实时数据管道、流处理（大数据生态集成好）</li>
+<li>RocketMQ：电商交易消息、金融业务消息（功能更丰富）</li>
+</ul>
+</li>
+</ol>
+<h2 id="Kafka-事务消息原理？"><a href="#Kafka-事务消息原理？" class="headerlink" title="Kafka 事务消息原理？"></a>Kafka 事务消息原理？</h2><p>Kafka 的事务机制支持跨多个 Partition 的原子写入，主要用于 Consume-Transform-Produce 模式。</p>
+<ol>
+<li><p><strong>核心组件</strong>：</p>
+<ul>
+<li><code>transactional.id</code>：Producer 的全局唯一事务标识，用于跨 Session 恢复事务状态</li>
+<li><code>TransactionCoordinator</code>：负责管理事务状态的 Broker 节点</li>
+<li><code>__transaction_state</code>：内部 Topic，存储事务状态日志（类似 Commit Log）</li>
+<li><code>PID</code>（Producer ID）：每个 Producer 实例的唯一标识，配合 Sequence Number 实现幂等</li>
+</ul>
+</li>
+<li><p><strong>事务流程</strong>：</p>
+<ul>
+<li><code>initTransactions()</code>：向 TransactionCoordinator 注册 <code>transactional.id</code>，获取或恢复 PID</li>
+<li><code>beginTransaction()</code>：Producer 本地标记事务开始</li>
+<li><code>send()</code>：发送消息到目标 Partition，同时向 Coordinator 注册该 Partition</li>
+<li><code>commitTransaction()</code>：<br>a. Coordinator 写入 PREPARE_COMMIT 到 <code>__transaction_state</code><br>b. 向每个参与的 Partition 写入 COMMIT 标记（Control Batch）<br>c. Coordinator 写入 COMPLETE_COMMIT</li>
+<li><code>abortTransaction()</code>：类似 commit，但写入 ABORT 标记</li>
+</ul>
+</li>
+<li><p><strong>消费者端</strong>：</p>
+<ul>
+<li><code>isolation.level=read_committed</code>：只消费已提交事务的消息</li>
+<li>Broker 通过 Control Batch 标记过滤未提交或中止的事务消息</li>
+</ul>
+</li>
+<li><p><strong>与 RocketMQ 事务消息的区别</strong>：</p>
+<ul>
+<li>Kafka 事务：解决流处理中跨 Partition 原子写入问题</li>
+<li>RocketMQ 事务：解决本地事务与消息发送的一致性问题（半消息 + 回查）</li>
+</ul>
+</li>
+</ol>
+<h2 id="Kafka-消息积压如何处理？"><a href="#Kafka-消息积压如何处理？" class="headerlink" title="Kafka 消息积压如何处理？"></a>Kafka 消息积压如何处理？</h2><p>消息积压是生产环境的常见问题，需要从发现、应急、根治三个层面处理。</p>
+<ol>
+<li><p><strong>发现积压</strong>：</p>
+<ul>
+<li>监控 <code>RecordsLag</code>（消费者延迟量）</li>
+<li>监控 <code>ConsumerLag</code>（Kafka Consumer Lag 指标）</li>
+<li>使用 Kafka Manager / CMAK / Burrow 等工具</li>
+<li>通过 <code>kafka-consumer-groups.sh --describe</code> 查看</li>
+</ul>
+</li>
+<li><p><strong>应急处理</strong>：</p>
+<ul>
+<li><strong>增加消费者实例</strong>：确保消费者数量等于 Partition 数量（超过 Partition 数无意义）</li>
+<li><strong>增加 Partition</strong>：如果消费者已满配，增加 Topic 的 Partition 数量（注意 Key 路由变化）</li>
+<li><strong>临时扩消费线程</strong>：每个消费者内部增加处理线程</li>
+<li><strong>消息转发</strong>：将积压消息转发到一个有更多 Partition 的新 Topic，用更多消费者消费</li>
+<li><strong>跳过非关键消息</strong>：对于日志类非关键消息，可设置消费者从最新 Offset 开始消费</li>
+</ul>
+</li>
+<li><p><strong>长期优化</strong>：</p>
+<ul>
+<li>优化消费者处理逻辑（批量处理、异步化、减少 IO）</li>
+<li>合理设置 Partition 数量（满足峰值吞吐）</li>
+<li>生产者端限流或降级</li>
+<li>使用背压（Backpressure）机制</li>
+</ul>
+</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查看消费者组延迟</span></span><br><span class="line">kafka-consumer-groups.sh --bootstrap-server localhost:9092 \</span><br><span class="line">    --describe --group order-service</span><br><span class="line"></span><br><span class="line"><span class="comment"># 输出示例：</span></span><br><span class="line"><span class="comment"># TOPIC           PARTITION  CURRENT-OFFSET  LOG-END-OFFSET  LAG</span></span><br><span class="line"><span class="comment"># order-events    0          12345           15678           3333</span></span><br><span class="line"><span class="comment"># order-events    1          12200           15500           3300</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Kafka-分区数如何设定？"><a href="#Kafka-分区数如何设定？" class="headerlink" title="Kafka 分区数如何设定？"></a>Kafka 分区数如何设定？</h2><p>分区数的选择需要综合考虑吞吐量、消费者并行度、Broker 负载等因素。</p>
+<ol>
+<li><p><strong>基于吞吐量计算</strong>：</p>
+<ul>
+<li>评估单 Partition 的生产吞吐（约 10MB/s）和消费吞吐</li>
+<li>目标吞吐量 / 单 Partition 吞吐量 = 最小 Partition 数</li>
+<li>再预留 20%-30% 余量</li>
+</ul>
+</li>
+<li><p><strong>基于消费者数量</strong>：</p>
+<ul>
+<li>Partition 数应大于等于最大消费者数</li>
+<li>多余的消费者会处于空闲状态</li>
+</ul>
+</li>
+<li><p><strong>不宜过多的原因</strong>：</p>
+<ul>
+<li>每个 Partition 占用文件句柄和内存</li>
+<li>Partition 越多，Leader Election 时间越长</li>
+<li>增加 Broker 的恢复时间</li>
+<li>影响可用性（单个 Broker 承载更多 Partition）</li>
+</ul>
+</li>
+<li><p><strong>经验值</strong>：</p>
+<ul>
+<li>小规模集群（3-5 Broker）：每个 Topic 6-12 个 Partition</li>
+<li>中等规模（10+ Broker）：每个 Topic 30-60 个 Partition</li>
+<li>单个 Broker 建议 Partition 总数不超过 1000-2000</li>
+</ul>
+</li>
+<li><p><strong>分区数调整</strong>：</p>
+<ul>
+<li>只能增加，不能减少</li>
+<li>增加后 Key 的路由会变化（hash % numPartitions 结果改变）</li>
+<li>如需保证 Key 顺序性，需提前规划好分区数</li>
+</ul>
+</li>
+</ol>
+<h2 id="Kafka-的零拷贝原理？"><a href="#Kafka-的零拷贝原理？" class="headerlink" title="Kafka 的零拷贝原理？"></a>Kafka 的零拷贝原理？</h2><p>零拷贝技术减少或消除数据在内核空间和用户空间之间的拷贝操作。</p>
+<ol>
+<li><p><strong>传统数据传输（4 次拷贝 + 4 次上下文切换）</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">应用调用 read():</span><br><span class="line">  磁盘 -&gt; 内核 PageCache (DMA 拷贝)</span><br><span class="line">  内核 PageCache -&gt; 用户缓冲区 (CPU 拷贝)</span><br><span class="line">应用调用 write():</span><br><span class="line">  用户缓冲区 -&gt; Socket 缓冲区 (CPU 拷贝)</span><br><span class="line">  Socket 缓冲区 -&gt; 网卡 (DMA 拷贝)</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>零拷贝 sendfile()（2 次拷贝 + 2 次上下文切换）</strong>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">应用调用 sendfile():</span><br><span class="line">  磁盘 -&gt; 内核 PageCache (DMA 拷贝)</span><br><span class="line">  内核 PageCache -&gt; 网卡 (DMA 拷贝，CPU 不参与)</span><br></pre></td></tr></table></figure></li>
+<li><p><strong>Kafka 中的应用</strong>：</p>
+<ul>
+<li>Kafka Broker 读取消息时调用 <code>FileChannel.transferTo()</code></li>
+<li>底层在 Linux 上调用 <code>sendfile()</code> 系统调用</li>
+<li>在 Java NIO 中，<code>transferTo()</code> 直接委托给操作系统的零拷贝机制</li>
+<li>消费者拉取消息时，Broker 无需将消息读入 JVM 堆内存，直接从 PageCache 传输到网卡</li>
+</ul>
+</li>
+<li><p><strong>前提条件</strong>：</p>
+<ul>
+<li>操作系统支持 <code>sendfile()</code>（Linux 2.4+）或 <code>mmap()</code></li>
+<li>数据已缓存在 PageCache 中（Kafka 的消息通常刚写入就被消费，命中率极高）</li>
+</ul>
+</li>
+</ol>
+<h2 id="Kafka-如何实现-Exactly-Once？"><a href="#Kafka-如何实现-Exactly-Once？" class="headerlink" title="Kafka 如何实现 Exactly-Once？"></a>Kafka 如何实现 Exactly-Once？</h2><p>Kafka 的 Exactly-Once 语义通过三个层面协同实现。</p>
+<ol>
+<li><p><strong>幂等生产者（单 Partition 去重）</strong>：</p>
+<ul>
+<li>每个 Producer 分配唯一的 PID（Producer ID）</li>
+<li>每条消息携带 <code>&lt;PID, Partition, SequenceNumber&gt;</code></li>
+<li>Broker 检查序号去重：期望值则接受，小于期望值则丢弃重复消息</li>
+<li>配置：<code>enable.idempotence=true</code></li>
+<li>限制：仅保证单 Partition、单 Producer Session 内去重</li>
+</ul>
+</li>
+<li><p><strong>事务（跨 Partition 原子写入）</strong>：</p>
+<ul>
+<li>通过 <code>transactional.id</code> 标识事务 Producer</li>
+<li>TransactionCoordinator 协调事务状态</li>
+<li>事务日志存储在 <code>__transaction_state</code> 内部 Topic</li>
+<li>支持跨多个 Topic/Partition 的原子写入</li>
+<li>支持 Consume-Transform-Produce 模式的 Exactly-Once</li>
+</ul>
+</li>
+<li><p><strong>消费者端 Read Committed</strong>：</p>
+<ul>
+<li>设置 <code>isolation.level=read_committed</code></li>
+<li>Broker 通过 Control Batch 标记过滤未提交或中止的事务消息</li>
+<li>消费者只看到已成功提交的事务消息</li>
+</ul>
+</li>
+<li><p><strong>完整配置示例</strong>：</p>
+</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 生产者</span></span><br><span class="line">props.put(<span class="string">&quot;enable.idempotence&quot;</span>, <span class="string">&quot;true&quot;</span>);</span><br><span class="line">props.put(<span class="string">&quot;transactional.id&quot;</span>, <span class="string">&quot;tx-producer-1&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 消费者</span></span><br><span class="line">props.put(<span class="string">&quot;isolation.level&quot;</span>, <span class="string">&quot;read_committed&quot;</span>);</span><br><span class="line">props.put(<span class="string">&quot;enable.auto.commit&quot;</span>, <span class="string">&quot;false&quot;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 事务代码模板</span></span><br><span class="line">producer.initTransactions();</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    producer.beginTransaction();</span><br><span class="line">    <span class="comment">// 消费消息 -&gt; 处理 -&gt; 生产新消息</span></span><br><span class="line">    producer.send(<span class="keyword">new</span> <span class="title class_">ProducerRecord</span>&lt;&gt;(<span class="string">&quot;output-topic&quot;</span>, key, value));</span><br><span class="line">    <span class="comment">// 提交消费 Offset（与消息写入在同一个事务中）</span></span><br><span class="line">    producer.sendOffsetsToTransaction(offsets, groupId);</span><br><span class="line">    producer.commitTransaction();</span><br><span class="line">&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">    producer.abortTransaction();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li><strong>Exactly-Once 的边界</strong>：<ul>
+<li>Kafka 内部的 Exactly-Once：完全保证</li>
+<li>Kafka 到外部系统的 Exactly-Once：需要外部系统支持幂等或事务</li>
+<li>常见模式：Kafka -&gt; 处理 -&gt; Kafka（Exactly-Once） vs Kafka -&gt; 处理 -&gt; MySQL（需要应用层幂等）</li>
+</ul>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Kafka/" rel="tag"># Kafka</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/10/05/Kafka%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86/" rel="prev" title="Kafka核心原理">
+      <i class="fa fa-chevron-left"></i> Kafka核心原理
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/11/09/Docker%E5%AE%9E%E6%88%98/" rel="next" title="Docker容器化实战">
+      Docker容器化实战 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%B6%88%E6%81%AF%E4%B8%8D%E4%B8%A2%E5%A4%B1%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">Kafka 如何保证消息不丢失？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E6%B6%88%E6%81%AF%E9%A1%BA%E5%BA%8F%E6%80%A7%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">Kafka 如何保证消息顺序性？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E7%9A%84-Rebalance-%E6%9C%BA%E5%88%B6%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">Kafka 的 Rebalance 机制？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%BF%99%E4%B9%88%E5%BF%AB%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">Kafka 为什么这么快？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E4%B8%8E-RocketMQ-%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-number">5.</span> <span class="nav-text">Kafka 与 RocketMQ 的区别？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E4%BA%8B%E5%8A%A1%E6%B6%88%E6%81%AF%E5%8E%9F%E7%90%86%EF%BC%9F"><span class="nav-number">6.</span> <span class="nav-text">Kafka 事务消息原理？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E6%B6%88%E6%81%AF%E7%A7%AF%E5%8E%8B%E5%A6%82%E4%BD%95%E5%A4%84%E7%90%86%EF%BC%9F"><span class="nav-number">7.</span> <span class="nav-text">Kafka 消息积压如何处理？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E5%88%86%E5%8C%BA%E6%95%B0%E5%A6%82%E4%BD%95%E8%AE%BE%E5%AE%9A%EF%BC%9F"><span class="nav-number">8.</span> <span class="nav-text">Kafka 分区数如何设定？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E7%9A%84%E9%9B%B6%E6%8B%B7%E8%B4%9D%E5%8E%9F%E7%90%86%EF%BC%9F"><span class="nav-number">9.</span> <span class="nav-text">Kafka 的零拷贝原理？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kafka-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0-Exactly-Once%EF%BC%9F"><span class="nav-number">10.</span> <span class="nav-text">Kafka 如何实现 Exactly-Once？</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John-1010-cmd</p>
+  <div class="site-description" itemprop="description">Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John-1010-cmd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

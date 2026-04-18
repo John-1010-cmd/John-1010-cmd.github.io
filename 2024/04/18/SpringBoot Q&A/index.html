@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"john-1010-cmd.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="SpringBoot 高频面试题整理，覆盖自动装配、启动流程、配置加载、Actuator 等核心问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringBoot Q&amp;A">
+<meta property="og:url" content="https://john-1010-cmd.github.io/2024/04/18/SpringBoot%20Q&A/index.html">
+<meta property="og:site_name" content="John&#39;s Blog">
+<meta property="og:description" content="SpringBoot 高频面试题整理，覆盖自动装配、启动流程、配置加载、Actuator 等核心问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-04-17T16:00:00.000Z">
+<meta property="article:modified_time" content="2024-04-17T16:00:00.000Z">
+<meta property="article:author" content="John-1010-cmd">
+<meta property="article:tag" content="SpringBoot">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://john-1010-cmd.github.io/2024/04/18/SpringBoot%20Q&A/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>SpringBoot Q&A | John's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">John's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-系列导航">
+
+    <a href="/%E7%B3%BB%E5%88%97%E5%AF%BC%E8%88%AA/" rel="section"><i class="fa fa-fw fa-book"></i>系列导航</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://john-1010-cmd.github.io/2024/04/18/SpringBoot%20Q&A/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="John-1010-cmd">
+      <meta itemprop="description" content="Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="John's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          SpringBoot Q&A
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2024-04-18 00:00:00" itemprop="dateCreated datePublished" datetime="2024-04-18T00:00:00+08:00">2024-04-18</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SpringBoot/" itemprop="url" rel="index"><span itemprop="name">SpringBoot</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">SpringBoot 高频面试题整理，覆盖自动装配、启动流程、配置加载、Actuator 等核心问题。</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="SpringBoot-自动装配原理是什么？"><a href="#SpringBoot-自动装配原理是什么？" class="headerlink" title="SpringBoot 自动装配原理是什么？"></a>SpringBoot 自动装配原理是什么？</h2><ol>
+<li><strong>入口注解</strong>：<code>@SpringBootApplication</code> 内部通过 <code>@EnableAutoConfiguration</code> 开启自动装配。</li>
+<li><strong>核心调度器</strong>：<code>@EnableAutoConfiguration</code> 通过 <code>@Import</code> 导入 <code>AutoConfigurationImportSelector</code>，该类实现 <code>DeferredImportSelector</code> 接口，延迟到所有用户配置加载完毕后执行。</li>
+<li><strong>加载候选类</strong>：<code>AutoConfigurationImportSelector.selectImports()</code> 调用 <code>getCandidateConfigurations()</code>，通过 <code>SpringFactoriesLoader</code> 从所有 jar 包的 <code>META-INF/spring.factories</code> 文件中读取 <code>EnableAutoConfiguration</code> 对应的配置类全限定名列表。SpringBoot 2.7+ 还支持从 <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code> 加载。</li>
+<li><strong>去重与排除</strong>：对候选列表进行去重，移除通过 <code>@SpringBootApplication(exclude=...)</code> 或 <code>spring.autoconfigure.exclude</code> 配置项指定的排除类。</li>
+<li><strong>条件过滤</strong>：使用 <code>AutoConfigurationImportFilter</code>（包括 <code>OnClassCondition</code>、<code>OnBeanCondition</code>、<code>OnWebApplicationCondition</code>）对候选类进行条件匹配，剔除不满足条件的配置类。</li>
+<li><strong>排序注册</strong>：通过 <code>@AutoConfigureOrder</code>、<code>@AutoConfigureBefore</code>、<code>@AutoConfigureAfter</code> 控制加载顺序，最终将符合条件的配置类注册为 BeanDefinition，由容器在 refresh 阶段实例化。</li>
+<li><strong>本质总结</strong>：自动装配 = SPI 机制加载 + 条件注解过滤 + Bean 注册，实现了”约定优于配置”的设计理念。</li>
+</ol>
+<h2 id="SpringBoot-启动流程是怎样的？"><a href="#SpringBoot-启动流程是怎样的？" class="headerlink" title="SpringBoot 启动流程是怎样的？"></a>SpringBoot 启动流程是怎样的？</h2><ol>
+<li><strong>创建 SpringApplication 实例</strong>：在构造方法中推断应用类型（SERVLET、REACTIVE、NONE），加载 ApplicationContextInitializer 和 ApplicationListener（通过 spring.factories），推断主配置类。</li>
+<li><strong>执行 run() 方法</strong>：核心启动流程包含以下步骤。</li>
+<li><strong>创建并启动 StopWatch</strong>：记录启动耗时。</li>
+<li><strong>获取 SpringApplicationRunListeners</strong>：通过 <code>SpringFactoriesLoader</code> 加载，触发 <code>starting()</code> 事件。</li>
+<li><strong>准备 Environment</strong>：创建并配置 <code>ConfigurableEnvironment</code>，加载命令行参数、系统属性、配置文件（application.yml/properties）。</li>
+<li><strong>创建 ApplicationContext</strong>：根据应用类型选择实现类（如 <code>AnnotationConfigServletWebServerApplicationContext</code>）。</li>
+<li><strong>准备上下文（prepareContext）</strong>：将 Environment 绑定到上下文，执行 <code>ApplicationContextInitializer.initialize()</code>，注册主配置类为 BeanDefinition，触发 <code>contextPrepared</code> 和 <code>contextLoaded</code> 事件。</li>
+<li><strong>刷新上下文（refreshContext）</strong>：调用 <code>ApplicationContext.refresh()</code>，这是最核心的步骤，包括：BeanDefinition 解析、BeanFactoryPostProcessor 执行、BeanPostProcessor 注册、自动配置类处理、单例 Bean 实例化等。</li>
+<li><strong>后置处理（afterRefresh）</strong>：预留的扩展点，默认为空实现。</li>
+<li><strong>发布启动完成事件</strong>：触发 <code>started()</code> 和 <code>ready()</code> 事件，应用开始处理请求。</li>
+<li><strong>返回 ApplicationContext</strong>：启动完成，返回上下文对象。</li>
+</ol>
+<h2 id="application-yml-和-application-properties-加载顺序？"><a href="#application-yml-和-application-properties-加载顺序？" class="headerlink" title="application.yml 和 application.properties 加载顺序？"></a>application.yml 和 application.properties 加载顺序？</h2><ol>
+<li><strong>同时存在时的优先级</strong>：<code>application.properties</code> 的优先级<strong>高于</strong> <code>application.yml</code>。当两个文件中存在相同属性时，<code>properties</code> 文件的值会覆盖 <code>yml</code> 文件的值。</li>
+<li><strong>加载路径优先级</strong>（从高到低）：<ul>
+<li>当前目录的 <code>/config</code> 子目录</li>
+<li>当前目录</li>
+<li>classpath 的 <code>/config</code> 包</li>
+<li>classpath 根目录</li>
+</ul>
+</li>
+<li><strong>Profile 文件加载</strong>：<code>application-&#123;profile&#125;.yml/properties</code> 的优先级高于默认配置文件。例如 <code>application-dev.yml</code> 中的属性会覆盖 <code>application.yml</code> 中的同名属性。</li>
+<li><strong>外部化配置完整优先级</strong>（从高到低）：<ul>
+<li>命令行参数（<code>--server.port=8080</code>）</li>
+<li>JNDI 属性</li>
+<li>Java 系统属性（<code>System.getProperties()</code>）</li>
+<li>OS 环境变量</li>
+<li>jar 包外部的 application-{profile}.yml/properties</li>
+<li>jar 包内部的 application-{profile}.yml/properties</li>
+<li>jar 包外部的 application.yml/properties</li>
+<li>jar 包内部的 application.yml/properties</li>
+<li><code>@PropertySource</code> 注解引入的属性</li>
+<li>默认属性（<code>SpringApplication.setDefaultProperties()</code>）</li>
+</ul>
+</li>
+<li><strong>实践建议</strong>：推荐统一使用 <code>yml</code> 格式，层次分明可读性好。同时存在两种格式时要特别注意覆盖问题。</li>
+</ol>
+<h2 id="SpringBoot-如何实现内嵌-Tomcat？"><a href="#SpringBoot-如何实现内嵌-Tomcat？" class="headerlink" title="SpringBoot 如何实现内嵌 Tomcat？"></a>SpringBoot 如何实现内嵌 Tomcat？</h2><ol>
+<li><strong>依赖引入</strong>：添加 <code>spring-boot-starter-web</code> 依赖后，会自动引入 <code>spring-boot-starter-tomcat</code>，其中包含 <code>tomcat-embed-core</code> 等嵌入式 Tomcat 的 jar 包。</li>
+<li><strong>自动配置类</strong>：<code>ServletWebServerFactoryAutoConfiguration</code> 负责配置嵌入式 Web 容器，通过 <code>@ConditionalOnClass(Servlet.class)</code> 确保只在 Servlet 环境下生效。</li>
+<li><strong>工厂模式</strong>：<code>TomcatServletWebServerFactory</code> 实现 <code>ServletWebServerFactory</code> 接口，在其 <code>getWebServer()</code> 方法中创建并配置 Tomcat 实例。</li>
+<li><strong>核心启动过程</strong>：<ul>
+<li><code>ApplicationContext.refresh()</code> 阶段调用 <code>onRefresh()</code>。</li>
+<li><code>ServletWebServerApplicationContext.onRefresh()</code> 调用 <code>createWebServer()</code>。</li>
+<li>从容器中获取 <code>ServletWebServerFactory</code> Bean（即 <code>TomcatServletWebServerFactory</code>）。</li>
+<li>调用 <code>factory.getWebServer(servletContext)</code> 创建 Tomcat 实例并启动。</li>
+</ul>
+</li>
+<li><strong>非 WAR 部署</strong>：嵌入式 Tomcat 不需要将应用打包为 WAR 文件，直接通过 <code>java -jar</code> 运行。Tomcat 作为应用的一部分运行在同一个 JVM 进程中。</li>
+<li><strong>可替换性</strong>：通过排除 <code>spring-boot-starter-tomcat</code> 并引入 <code>spring-boot-starter-jetty</code> 或 <code>spring-boot-starter-undertow</code> 即可切换 Web 容器，体现了自动配置的灵活性。</li>
+</ol>
+<h2 id="SpringBootApplication-注解包含哪些？"><a href="#SpringBootApplication-注解包含哪些？" class="headerlink" title="@SpringBootApplication 注解包含哪些？"></a>@SpringBootApplication 注解包含哪些？</h2><ol>
+<li><strong>@SpringBootConfiguration</strong>：等价于 <code>@Configuration</code>，标记当前类为 Spring 配置类，支持在类中定义 <code>@Bean</code> 方法。</li>
+<li><strong>@EnableAutoConfiguration</strong>：触发自动装配机制，通过 <code>@Import(AutoConfigurationImportSelector.class)</code> 加载并过滤自动配置类。</li>
+<li><strong>@ComponentScan</strong>：启用组件扫描，默认扫描当前类所在的包及其所有子包。扫描带有 <code>@Component</code>、<code>@Service</code>、<code>@Repository</code>、<code>@Controller</code> 等注解的类并注册为 Spring Bean。</li>
+<li><strong>excludeFilters</strong>：通过 <code>TypeExcludeFilter</code> 和 <code>AutoConfigurationExcludeFilter</code> 排除特定类，避免用户自定义的配置类被重复扫描。</li>
+<li><strong>常用属性</strong>：<ul>
+<li><code>exclude</code> — 排除指定的自动配置类（按 Class）</li>
+<li><code>excludeName</code> — 排除指定的自动配置类（按全限定类名）</li>
+<li><code>scanBasePackages</code> — 自定义组件扫描的基础包路径</li>
+<li><code>scanBasePackageClasses</code> — 通过标记类指定扫描路径</li>
+</ul>
+</li>
+</ol>
+<h2 id="SpringBoot-的-devtools-热部署原理？"><a href="#SpringBoot-的-devtools-热部署原理？" class="headerlink" title="SpringBoot 的 devtools 热部署原理？"></a>SpringBoot 的 devtools 热部署原理？</h2><ol>
+<li><strong>核心机制</strong>：<code>spring-boot-devtools</code> 使用<strong>双 ClassLoader</strong> 策略实现快速重启。</li>
+<li><strong>类加载器分工</strong>：<ul>
+<li><strong>Base ClassLoader</strong>：加载不会变化的类（第三方库 jar 包），缓存在 JVM 中不重新加载。</li>
+<li><strong>Restart ClassLoader</strong>：加载应用自身的类（用户编写的代码），每次检测到变化时丢弃并重建。</li>
+</ul>
+</li>
+<li><strong>文件监听</strong>：<code>devtools</code> 在后台启动一个文件监听线程（<code>FileWatcher</code>），监测 classpath 上的文件变化（默认轮询间隔 1 秒）。</li>
+<li><strong>触发重启</strong>：当检测到 classpath 变化时，触发 <code>Restarter</code> 重新创建 <code>Restart ClassLoader</code>，加载最新的类文件，然后重新初始化 Spring ApplicationContext。</li>
+<li><strong>性能优势</strong>：由于 <code>Base ClassLoader</code> 不重新加载，重启速度远快于冷启动（通常在几秒内完成）。</li>
+<li><strong>触发方式</strong>：<ul>
+<li>IDE 中编译（Build Project）会触发 classpath 变化</li>
+<li>配置 <code>spring.devtools.restart.additional-paths</code> 可监听额外路径</li>
+<li>通过 <code>spring.devtools.restart.enabled=false</code> 可禁用</li>
+</ul>
+</li>
+<li><strong>LiveReload</strong>：<code>devtools</code> 内置 LiveReload 服务器，前端资源变化时自动刷新浏览器，无需手动刷新。</li>
+<li><strong>注意事项</strong>：<code>devtools</code> 仅适用于开发环境，生产环境部署时应排除该依赖。</li>
+</ol>
+<h2 id="SpringBoot-Actuator-有哪些常用端点？"><a href="#SpringBoot-Actuator-有哪些常用端点？" class="headerlink" title="SpringBoot Actuator 有哪些常用端点？"></a>SpringBoot Actuator 有哪些常用端点？</h2><ol>
+<li><strong>health</strong>：显示应用健康状态，包括数据库连接、磁盘空间、Redis 连接等组件的状态信息。常用于负载均衡器的健康检查。</li>
+<li><strong>info</strong>：显示应用信息，可通过 <code>info.*</code> 配置属性或构建信息文件（<code>META-INF/build-info.properties</code>）提供内容。</li>
+<li><strong>beans</strong>：列出 Spring 容器中所有已注册的 Bean，包括类型、作用域、依赖关系等。</li>
+<li><strong>mappings</strong>：显示所有 <code>@RequestMapping</code> 路由映射，包括 URL 路径、请求方法、对应的处理器方法。</li>
+<li><strong>env</strong>：显示所有 Spring Environment 中的配置属性，包括系统属性、环境变量、配置文件中的值。</li>
+<li><strong>configprops</strong>：显示所有 <code>@ConfigurationProperties</code> 绑定的属性及其当前值。</li>
+<li><strong>metrics</strong>：提供应用度量指标，包括 JVM 内存使用、线程数、HTTP 请求统计、数据库连接池状态等。可通过 <code>metrics/&#123;metricName&#125;</code> 查看具体指标。</li>
+<li><strong>loggers</strong>：查看和修改运行时的日志级别。支持通过 POST 请求动态调整 Logger 级别。</li>
+<li><strong>threaddump</strong>：导出当前 JVM 的线程栈信息，用于排查线程死锁和性能问题。</li>
+<li><strong>heapdump</strong>：下载 JVM 堆转储文件（hprof 格式），用于内存泄漏分析。</li>
+<li><strong>端点安全</strong>：生产环境中应通过 <code>management.endpoints.web.exposure.include</code> 控制暴露的端点，结合 Spring Security 进行访问控制。</li>
+</ol>
+<h2 id="SpringBoot-如何实现跨域？"><a href="#SpringBoot-如何实现跨域？" class="headerlink" title="SpringBoot 如何实现跨域？"></a>SpringBoot 如何实现跨域？</h2><ol>
+<li><strong>全局配置（推荐）</strong>：实现 <code>WebMvcConfigurer</code> 接口，重写 <code>addCorsMappings()</code> 方法：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CorsConfig</span> <span class="keyword">implements</span> <span class="title class_">WebMvcConfigurer</span> &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addCorsMappings</span><span class="params">(CorsRegistry registry)</span> &#123;</span><br><span class="line">        registry.addMapping(<span class="string">&quot;/api/**&quot;</span>)</span><br><span class="line">            .allowedOrigins(<span class="string">&quot;https://example.com&quot;</span>)</span><br><span class="line">            .allowedMethods(<span class="string">&quot;GET&quot;</span>, <span class="string">&quot;POST&quot;</span>, <span class="string">&quot;PUT&quot;</span>, <span class="string">&quot;DELETE&quot;</span>)</span><br><span class="line">            .allowedHeaders(<span class="string">&quot;*&quot;</span>)</span><br><span class="line">            .allowCredentials(<span class="literal">true</span>)</span><br><span class="line">            .maxAge(<span class="number">3600</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li><strong>注解方式</strong>：在 Controller 或方法上使用 <code>@CrossOrigin</code> 注解：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="meta">@CrossOrigin(origins = &quot;https://example.com&quot;, maxAge = 3600)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ApiController</span> &#123;</span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li><strong>Filter 方式</strong>：注册自定义 <code>CorsFilter</code> Bean：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> CorsFilter <span class="title function_">corsFilter</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">CorsConfiguration</span> <span class="variable">config</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">CorsConfiguration</span>();</span><br><span class="line">    config.addAllowedOrigin(<span class="string">&quot;https://example.com&quot;</span>);</span><br><span class="line">    config.addAllowedMethod(<span class="string">&quot;*&quot;</span>);</span><br><span class="line">    config.addAllowedHeader(<span class="string">&quot;*&quot;</span>);</span><br><span class="line">    config.setAllowCredentials(<span class="literal">true</span>);</span><br><span class="line">    <span class="type">UrlBasedCorsConfigurationSource</span> <span class="variable">source</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">UrlBasedCorsConfigurationSource</span>();</span><br><span class="line">    source.registerCorsConfiguration(<span class="string">&quot;/**&quot;</span>, config);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">CorsFilter</span>(source);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li><strong>Spring Security 中配置</strong>：在 Security 过滤链中启用 CORS：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> SecurityFilterChain <span class="title function_">filterChain</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    http.cors().and() <span class="comment">// 启用 CORS，使用 CorsConfigurationSource Bean</span></span><br><span class="line">        .csrf().disable()</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    <span class="keyword">return</span> http.build();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li><strong>注意事项</strong>：避免使用 <code>allowedOrigins(&quot;*&quot;)</code> 配合 <code>allowCredentials(true)</code>，这在现代浏览器中会被拒绝。</li>
+</ol>
+<h2 id="SpringBoot-中的-Profile-机制？"><a href="#SpringBoot-中的-Profile-机制？" class="headerlink" title="SpringBoot 中的 Profile 机制？"></a>SpringBoot 中的 Profile 机制？</h2><ol>
+<li><strong>核心概念</strong>：Profile 是 Spring 提供的环境隔离机制，允许为不同环境（开发、测试、生产）定义不同的配置和 Bean。</li>
+<li><strong>配置文件方式</strong>：使用 <code>application-&#123;profile&#125;.yml</code> 命名约定。例如 <code>application-dev.yml</code>、<code>application-test.yml</code>、<code>application-prod.yml</code>。</li>
+<li><strong>激活 Profile</strong>：<ul>
+<li>配置文件中：<code>spring.profiles.active=dev</code></li>
+<li>命令行参数：<code>--spring.profiles.active=prod</code></li>
+<li>环境变量：<code>SPRING_PROFILES_ACTIVE=prod</code></li>
+<li>代码中：<code>SpringApplication.setAdditionalProfiles(&quot;dev&quot;)</code></li>
+</ul>
+</li>
+<li><strong>多 Profile 组合</strong>：<code>spring.profiles.include=db,mq</code> 可以在某个 Profile 下引入其他 Profile，实现配置的模块化组合。</li>
+<li><strong>Bean 级别控制</strong>：使用 <code>@Profile</code> 注解控制 Bean 的注册：</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@Profile(&quot;dev&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DevDataSourceConfig</span> &#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> DataSource <span class="title function_">dataSource</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 开发环境使用 H2 内存数据库</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="meta">@Profile(&quot;prod&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProdDataSourceConfig</span> &#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> DataSource <span class="title function_">dataSource</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 生产环境使用 MySQL</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="6">
+<li><strong>Profile 分组（SpringBoot 2.4+）</strong>：</li>
+</ol>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">profiles:</span></span><br><span class="line">    <span class="attr">group:</span></span><br><span class="line">      <span class="attr">dev:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">devdb</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">devmq</span></span><br><span class="line">      <span class="attr">prod:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">proddb</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">prodmq</span></span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li><strong>默认 Profile</strong>：当没有激活任何 Profile 时，使用 <code>default</code> Profile。可通过 <code>spring.profiles.default=dev</code> 修改默认值。</li>
+</ol>
+<h2 id="SpringBoot-事件机制有哪几种？"><a href="#SpringBoot-事件机制有哪几种？" class="headerlink" title="SpringBoot 事件机制有哪几种？"></a>SpringBoot 事件机制有哪几种？</h2><ol>
+<li><strong>ApplicationStartingEvent</strong>：应用刚启动，尚未做任何处理时触发，此时 ApplicationContext 尚未创建。</li>
+<li><strong>ApplicationEnvironmentPreparedEvent</strong>：Environment 准备完毕，ApplicationContext 尚未创建。适合在此阶段修改环境配置。</li>
+<li><strong>ApplicationContextInitializedEvent</strong>：ApplicationContext 已创建并初始化，BeanDefinition 尚未加载。</li>
+<li><strong>ApplicationPreparedEvent</strong>：BeanDefinition 已加载完毕，Bean 尚未实例化。适合在此阶段修改 BeanDefinition。</li>
+<li><strong>ApplicationStartedEvent</strong>：ApplicationContext 已刷新，所有 Bean 已实例化，但尚未调用 <code>CommandLineRunner</code> 和 <code>ApplicationRunner</code>。</li>
+<li><strong>ApplicationReadyEvent</strong>：应用完全启动并准备就绪，可以处理请求。在此之后发生的异常不会触发 <code>ApplicationFailedEvent</code>。</li>
+<li><strong>ApplicationFailedEvent</strong>：应用启动失败时触发，可用于记录错误日志或发送告警。</li>
+<li><strong>自定义事件</strong>：通过继承 <code>ApplicationEvent</code> 发布自定义事件，使用 <code>ApplicationEventPublisher.publishEvent()</code> 发布，<code>@EventListener</code> 注解监听。</li>
+<li><strong>监听方式</strong>：<ul>
+<li>实现 <code>ApplicationListener</code> 接口并注册为 Bean</li>
+<li>使用 <code>@EventListener</code> 注解标记方法</li>
+<li>通过 <code>spring.factories</code> 注册 <code>ApplicationListener</code></li>
+</ul>
+</li>
+<li><strong>异步事件</strong>：配合 <code>@Async</code> 和 <code>@EnableAsync</code> 可实现异步事件处理，避免阻塞事件发布者。</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/SpringBoot/" rel="tag"># SpringBoot</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/04/01/SpringBoot%20Starter%E5%BC%80%E5%8F%91/" rel="prev" title="SpringBoot Starter开发实战">
+      <i class="fa fa-chevron-left"></i> SpringBoot Starter开发实战
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/05/05/Spring%20IoC%E5%8E%9F%E7%90%86/" rel="next" title="Spring IoC容器原理">
+      Spring IoC容器原理 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot-%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E5%8E%9F%E7%90%86%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">SpringBoot 自动装配原理是什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot-%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B%E6%98%AF%E6%80%8E%E6%A0%B7%E7%9A%84%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">SpringBoot 启动流程是怎样的？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#application-yml-%E5%92%8C-application-properties-%E5%8A%A0%E8%BD%BD%E9%A1%BA%E5%BA%8F%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">application.yml 和 application.properties 加载顺序？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%86%85%E5%B5%8C-Tomcat%EF%BC%9F"><span class="nav-number">4.</span> <span class="nav-text">SpringBoot 如何实现内嵌 Tomcat？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBootApplication-%E6%B3%A8%E8%A7%A3%E5%8C%85%E5%90%AB%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="nav-number">5.</span> <span class="nav-text">@SpringBootApplication 注解包含哪些？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot-%E7%9A%84-devtools-%E7%83%AD%E9%83%A8%E7%BD%B2%E5%8E%9F%E7%90%86%EF%BC%9F"><span class="nav-number">6.</span> <span class="nav-text">SpringBoot 的 devtools 热部署原理？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot-Actuator-%E6%9C%89%E5%93%AA%E4%BA%9B%E5%B8%B8%E7%94%A8%E7%AB%AF%E7%82%B9%EF%BC%9F"><span class="nav-number">7.</span> <span class="nav-text">SpringBoot Actuator 有哪些常用端点？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot-%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E8%B7%A8%E5%9F%9F%EF%BC%9F"><span class="nav-number">8.</span> <span class="nav-text">SpringBoot 如何实现跨域？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot-%E4%B8%AD%E7%9A%84-Profile-%E6%9C%BA%E5%88%B6%EF%BC%9F"><span class="nav-number">9.</span> <span class="nav-text">SpringBoot 中的 Profile 机制？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpringBoot-%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%EF%BC%9F"><span class="nav-number">10.</span> <span class="nav-text">SpringBoot 事件机制有哪几种？</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">John-1010-cmd</p>
+  <div class="site-description" itemprop="description">Java 后端技术博客，分享 JVM、并发、MySQL、Redis、分布式等核心技术</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">60</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">21</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2026</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">John-1010-cmd</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
